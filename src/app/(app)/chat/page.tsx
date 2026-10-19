@@ -34,12 +34,12 @@ export default async function ChatList() {
             const isUnread = unreadSet.has(`/chat/${g.id}`);
             return (
               <Link key={g.id} href={`/chat/${g.id}`} className="flex items-center gap-3 px-5 py-4 hover:bg-paper">
-                <span className={`grid size-10 shrink-0 place-items-center rounded-full ${g.kind === "group" ? "bg-violet-50 text-violet-600" : "bg-teal-50 text-teal-700"}`}>
+                <span className={`grid size-10 shrink-0 place-items-center rounded-full ${g.kind === "group" ? "bg-slate-100 text-slate-700" : "bg-brand-50 text-brand-700"}`}>
                   {g.kind === "group" ? <UsersRound className="size-5" /> : <MessagesSquare className="size-5" />}
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className={`truncate text-sm ${isUnread ? "font-bold text-brand-700" : "font-semibold text-ink"}`}>{title}</p>
+                    <p className={`truncate text-sm ${isUnread ? "font-semibold text-brand-800" : "font-semibold text-ink"}`}>{title}</p>
                     <Badge color={g.kind === "group" ? "violet" : "teal"}>{subjectName(g.subject_id)}</Badge>
                   </div>
                   <p className="truncate text-xs text-muted">
@@ -48,14 +48,14 @@ export default async function ChatList() {
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   {l ? <span className="text-[11px] text-muted">{relTime(l.created_at)}</span> : null}
-                  {isUnread ? <span className="size-2 rounded-full bg-teal-600" aria-label="Unread" /> : null}
+                  {isUnread ? <span className="size-2 rounded-full bg-brand-600" aria-label="Unread" /> : null}
                 </div>
               </Link>
             );
           })}
         </Card>
       ) : (
-        <Empty title="No chats yet" action={profile.role === "mentee" ? <Button asChild variant="teal"><Link href="/find">Find a mentor</Link></Button> : undefined}>
+        <Empty title="No chats yet" action={profile.role === "mentee" ? <Button asChild variant="primary"><Link href="/find">Find a mentor</Link></Button> : undefined}>
           A chatbox opens automatically once a partnership request is accepted.
         </Empty>
       )}

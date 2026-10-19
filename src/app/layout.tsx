@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
+import "@fontsource/instrument-sans/latin-400.css";
+import "@fontsource/instrument-sans/latin-500.css";
+import "@fontsource/instrument-sans/latin-600.css";
+import "@fontsource/instrument-sans/latin-700.css";
+import "@fontsource/kalam/latin-400.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,22 +12,17 @@ export const metadata: Metadata = {
   description: "Find verified Adamson peer mentors for Calculus 1, Calculus 2, and Physics.",
 };
 
-export const viewport: Viewport = { themeColor: "#0B3C8C" };
+export const viewport: Viewport = { themeColor: "#F6F8FB", colorScheme: "light" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body>
+        <a href="#main" className="sr-only z-[100] rounded-control bg-brand-600 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+          Skip to content
+        </a>
         {children}
-        <Toaster position="top-center" richColors closeButton />
+        <Toaster position="top-center" richColors closeButton toastOptions={{ style: { fontFamily: "inherit" } }} />
       </body>
     </html>
   );

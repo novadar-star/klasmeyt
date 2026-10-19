@@ -34,7 +34,7 @@ export function NotificationList({ items }: { items: N[] }) {
     <>
       {unread > 0 && (
         <div className="mb-3 flex justify-end">
-          <Button variant="ghost" size="sm" onClick={markAll}>Mark all as read</Button>
+          <Button variant="quiet" size="sm" onClick={markAll}>Mark all as read</Button>
         </div>
       )}
       <Card className="divide-y divide-line overflow-hidden">

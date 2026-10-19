@@ -61,7 +61,7 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
           </Field>
           <Button type="submit" className="h-[38px]">Search</Button>
           <label className="flex items-center gap-2 text-xs text-ink sm:col-span-2 lg:col-span-5">
-            <input type="checkbox" name="any" value="1" defaultChecked={!matchMine} className="size-4 accent-teal-600" />
+            <input type="checkbox" name="any" value="1" defaultChecked={!matchMine} className="size-4 accent-brand-600" />
             Include mentors whose schedule doesn't overlap mine
           </label>
         </form>
@@ -75,7 +75,7 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
             <Card key={m.id} className="flex flex-col gap-4 p-5 md:flex-row md:items-start">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-lg font-bold text-brand-700">{m.full_name}</h2>
+                  <h2 className="text-lg font-semibold text-brand-800">{m.full_name}</h2>
                   <VerifiedMentorBadge />
                   <VouchedBadge by={m.vouched_by} />
                 </div>
@@ -91,8 +91,8 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
                 </div>
               </div>
               <div className="flex shrink-0 gap-2 md:flex-col">
-                <Button asChild variant="teal"><Link href={`/mentors/${m.id}/request${subject ? `?subject=${subject}` : ""}`}>Request partnership</Link></Button>
-                <Button asChild variant="outline"><Link href={`/mentors/${m.id}`}>View profile</Link></Button>
+                <Button asChild variant="primary"><Link href={`/mentors/${m.id}/request${subject ? `?subject=${subject}` : ""}`}>Request partnership</Link></Button>
+                <Button asChild variant="secondary"><Link href={`/mentors/${m.id}`}>View profile</Link></Button>
               </div>
             </Card>
           ))}

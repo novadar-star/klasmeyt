@@ -1,20 +1,29 @@
 import { BadgeCheck, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Status color is meaning, not decoration:
+ *  blue = done/verified · pad (yellow) = waiting on someone · red = needs action/failed · gray = inactive · neutral = info
+ */
 const tone = {
-  teal: "text-teal-700 ring-teal-600 bg-white",
-  navy: "text-brand-700 ring-brand-300 bg-white",
-  amber: "text-amber-600 ring-amber-400 bg-amber-50/40",
-  red: "text-red-600 ring-red-300 bg-red-50/40",
-  gray: "text-slate-500 ring-slate-300 bg-white",
-  violet: "text-violet-700 ring-violet-300 bg-white",
-  solidAmber: "text-white ring-amber-500 bg-amber-500",
+  blue: "bg-brand-50 text-brand-700",
+  pad: "bg-pad-100 text-pad-800",
+  red: "bg-red-50 text-red-700",
+  gray: "bg-slate-100 text-slate-600",
+  ink: "bg-white text-ink ring-1 ring-inset ring-line",
+  solid: "bg-brand-600 text-white",
+  // legacy aliases
+  teal: "bg-brand-50 text-brand-700",
+  navy: "bg-white text-brand-800 ring-1 ring-inset ring-line",
+  amber: "bg-pad-100 text-pad-800",
+  violet: "bg-white text-ink ring-1 ring-inset ring-line",
+  solidAmber: "bg-pad-300 text-pad-800",
 };
 export type Tone = keyof typeof tone;
 
-export function Badge({ children, color = "teal", className }: { children: React.ReactNode; color?: Tone; className?: string }) {
+export function Badge({ children, color = "blue", className }: { children: React.ReactNode; color?: Tone; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ring-1 ring-inset", tone[color], className)}>
+    <span className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium", tone[color], className)}>
       {children}
     </span>
   );
@@ -22,10 +31,10 @@ export function Badge({ children, color = "teal", className }: { children: React
 
 const V: Record<string, [string, Tone]> = {
   submitted: ["Documents submitted", "gray"],
-  pending: ["Pending", "amber"],
-  under_review: ["Admin review", "violet"],
-  verified: ["Verified", "teal"],
-  info_requested: ["More info requested", "red"],
+  pending: ["Pending review", "pad"],
+  under_review: ["In review", "pad"],
+  verified: ["Verified", "blue"],
+  info_requested: ["Needs more info", "red"],
   rejected: ["Rejected", "red"],
 };
 export function VerificationBadge({ status, kind }: { status: string; kind?: string }) {
@@ -37,8 +46,8 @@ export const verificationLabel = (s: string) =>
 
 export function VerifiedMentorBadge() {
   return (
-    <Badge color="teal">
-      <BadgeCheck className="size-3" aria-hidden /> Verified Falcon Mentor
+    <Badge color="solid">
+      <BadgeCheck className="size-3.5" aria-hidden /> Verified mentor
     </Badge>
   );
 }
@@ -46,22 +55,22 @@ export function VerifiedMentorBadge() {
 export function VouchedBadge({ by }: { by: string | null }) {
   if (!by) return null;
   return (
-    <Badge color="amber">
-      <ShieldCheck className="size-3" aria-hidden /> Vouched by {by}
+    <Badge color="ink">
+      <ShieldCheck className="size-3.5 text-brand-600" aria-hidden /> Vouched by {by}
     </Badge>
   );
 }
 
 const S: Record<string, [string, Tone]> = {
-  pending: ["Pending", "amber"],
-  scheduled: ["Scheduled", "navy"],
-  completed: ["Completed", "teal"],
+  pending: ["Pending", "pad"],
+  scheduled: ["Scheduled", "blue"],
+  completed: ["Completed", "gray"],
   cancelled: ["Cancelled", "gray"],
-  accepted: ["Partnership accepted", "teal"],
+  accepted: ["Partnership accepted", "blue"],
   declined: ["Declined", "red"],
-  confirmed: ["Confirmed", "teal"],
-  invited: ["Group invite", "violet"],
-  active: ["Active", "teal"],
+  confirmed: ["Confirmed", "blue"],
+  invited: ["Group invite", "pad"],
+  active: ["Active", "blue"],
   left: ["Left", "gray"],
 };
 export function StatusBadge({ status, label }: { status: string; label?: string }) {

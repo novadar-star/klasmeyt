@@ -9,25 +9,25 @@ export default function SignupChooser() {
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
       <PublicNav />
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-16 sm:px-6">
-        <p className="text-center text-[11px] font-bold uppercase tracking-wider text-teal-600">Getting started</p>
-        <h1 className="mt-2 text-center text-3xl font-bold tracking-tight text-brand-700">How would you like to use Klasmeyt?</h1>
+      <main id="main" className="mx-auto w-full max-w-4xl flex-1 px-4 py-16 sm:px-6">
+        <p className="text-center text-xs font-semibold text-brand-600">Getting started</p>
+        <h1 className="mt-2 text-center text-3xl font-semibold tracking-[-0.015em] text-brand-800">How would you like to use Klasmeyt?</h1>
         <p className="mx-auto mt-2 max-w-lg text-center text-sm text-muted">Choose your profile type. Mentee and mentor accounts are separate.</p>
         <div className="mt-10 grid gap-5 md:grid-cols-2">
-          <div className="flex flex-col rounded-xl border border-line bg-white p-7">
-            <span className="grid size-11 place-items-center rounded-lg bg-teal-50 text-teal-700"><UserRound className="size-5" /></span>
-            <h2 className="mt-5 text-lg font-bold text-brand-700">Student Mentee</h2>
-            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">Get help in Calculus 1, Calculus 2, or Physics from verified Falcon peer mentors who already passed the subject.</p>
+          <div className="flex flex-col rounded-panel border border-line bg-white p-7">
+            <span className="grid size-11 place-items-center rounded-control bg-brand-50 text-brand-700"><UserRound className="size-5" /></span>
+            <h2 className="mt-5 text-lg font-semibold text-brand-800">Student Mentee</h2>
+            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">Get help in Calculus 1, Calculus 2, or Physics from verified Adamson mentors who already passed the subject.</p>
             <Button asChild className="mt-6 w-full"><Link href="/signup/mentee">Sign up as mentee</Link></Button>
           </div>
-          <div className="flex flex-col rounded-xl border border-line bg-white p-7">
-            <span className="grid size-11 place-items-center rounded-lg bg-amber-50 text-amber-600"><Award className="size-5" /></span>
-            <h2 className="mt-5 text-lg font-bold text-brand-700">Verified Mentor</h2>
+          <div className="flex flex-col rounded-panel border border-line bg-white p-7">
+            <span className="grid size-11 place-items-center rounded-control bg-pad-50 text-pad-800"><Award className="size-5" /></span>
+            <h2 className="mt-5 text-lg font-semibold text-brand-800">Verified Mentor</h2>
             <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">Teach underclassmen in subjects you've completed. Run one-on-one or group sessions and share what worked for you.</p>
-            <Button asChild variant="teal" className="mt-6 w-full"><Link href="/signup/mentor">Apply as mentor</Link></Button>
+            <Button asChild variant="primary" className="mt-6 w-full"><Link href="/signup/mentor">Apply as mentor</Link></Button>
           </div>
         </div>
-        <p className="mt-8 text-center text-sm text-muted">Already have an account? <Link href="/login" className="font-semibold text-teal-700 hover:underline">Log in</Link></p>
+        <p className="mt-8 text-center text-sm text-muted">Already have an account? <Link href="/login" className="font-semibold text-brand-700 hover:underline">Log in</Link></p>
       </main>
       <PublicFooter />
     </div>

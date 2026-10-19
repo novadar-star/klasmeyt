@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Card, Field } from "@/components/ui";
+import { ConfirmButton } from "@/components/modal";
 import { verificationLabel } from "@/components/badges";
 import { errMsg, fmtDateTime } from "@/lib/utils";
 
@@ -37,14 +38,14 @@ export function ReviewPanel({ userId, isMentor, status, note: n0, vouchedBy: vb0
 
   return (
     <Card className="p-6">
-      <h2 className="text-base font-bold text-brand-700">Verification decision</h2>
+      <h2 className="text-base font-semibold text-brand-800">Verification decision</h2>
       <p className="mt-1 text-xs text-muted">Current: {verificationLabel(status)}{reviewedAt ? ` · reviewed ${fmtDateTime(reviewedAt)}` : ""}</p>
       <div className="mt-5 space-y-4">
         {isMentor ? (
           <Field label="Vouched by" htmlFor="vb" hint="Shown on the mentor's card and profile. Only admins can edit this.">
             <div className="flex gap-2">
               <input id="vb" className="field" placeholder="Engr. Reyes" value={vouched} onChange={(e) => setVouched(e.target.value)} />
-              <Button variant="outline" onClick={saveVouched} disabled={busy || vouched === vb0}>Save</Button>
+              <Button variant="secondary" onClick={saveVouched} disabled={busy || vouched === vb0}>Save</Button>
             </div>
           </Field>
         ) : null}
@@ -53,11 +54,11 @@ export function ReviewPanel({ userId, isMentor, status, note: n0, vouchedBy: vb0
         </Field>
         <div className="grid gap-2">
           {status !== "under_review" && status !== "verified" ? (
-            <Button variant="outline" disabled={busy} onClick={() => setStatus("under_review")}>Mark as under review</Button>
+            <Button variant="secondary" disabled={busy} onClick={() => setStatus("under_review")}>Mark as under review</Button>
           ) : null}
-          <Button variant="teal" disabled={busy || status === "verified"} onClick={() => setStatus("verified")}>{isMentor ? "Approve mentor" : "Verify mentee"}</Button>
+          <Button variant="primary" disabled={busy || status === "verified"} onClick={() => setStatus("verified")}>{isMentor ? "Approve mentor" : "Verify mentee"}</Button>
           <Button variant="orange" disabled={busy} onClick={() => setStatus("info_requested")}>Request more information</Button>
-          <Button variant="danger" disabled={busy || status === "rejected"} onClick={() => setStatus("rejected")}>Reject</Button>
+          <ConfirmButton title={isMentor ? "Reject this application?" : "Reject this verification?"} body="The student is notified with your note. You can change the status later." confirmLabel="Reject" disabled={busy || status === "rejected"} onConfirm={() => setStatus("rejected")}>Reject</ConfirmButton>
         </div>
       </div>
     </Card>

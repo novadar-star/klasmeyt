@@ -68,7 +68,7 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
     <form onSubmit={save} className="max-w-3xl">
       <Card className="space-y-6 p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-bold text-brand-700">{isMentor ? "Mentor Profile Details" : "Mentee Profile Details"}</h2>
+          <h2 className="text-base font-semibold text-brand-800">{isMentor ? "Mentor Profile Details" : "Mentee Profile Details"}</h2>
           <div className="flex flex-wrap gap-2">
             {isMentor && verified ? <VerifiedMentorBadge /> : null}
             {isMentor ? <VouchedBadge by={profile.vouched_by} /> : null}

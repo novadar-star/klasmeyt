@@ -15,7 +15,7 @@ export default async function AdminGroups() {
   const list = groups ?? [];
   return (
     <>
-      <PageHeader title="Mentoring Groups" description="Established one-on-one partnerships and group chats. Message contents stay private to members." pill="Admin portal" />
+      <PageHeader title="Mentoring Groups" description="Established one-on-one partnerships and group chats. Message contents stay private to members." />
       {list.length ? (
         <div className="grid gap-3 lg:grid-cols-2">
           {list.map((g) => {
@@ -24,7 +24,7 @@ export default async function AdminGroups() {
               <Card key={g.id} className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="font-bold text-brand-700">{g.name}</p>
+                    <p className="font-semibold text-brand-800">{g.name}</p>
                     <p className="text-xs text-muted">Mentor {people[g.mentor_id]?.full_name} · created {fmtDate(g.created_at)}</p>
                   </div>
                   <div className="flex gap-1.5">

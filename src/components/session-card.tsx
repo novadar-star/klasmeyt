@@ -10,7 +10,7 @@ export function SessionCard({ s, people, me, groupName, compact }: { s: SessionF
   const mentees = s.participants.map((p) => ({ ...p, name: people[p.mentee_id]?.full_name ?? "Mentee" }));
   const canJoin = status === "scheduled" && s.teams_link;
   return (
-    <div className="rounded-xl bg-white p-4 shadow-card">
+    <div className="rounded-panel border border-line bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="font-medium">{subjectName(s.subject_id)} {s.format === "group" ? "group session" : "session"}</p>
@@ -35,7 +35,7 @@ export function SessionCard({ s, people, me, groupName, compact }: { s: SessionF
       {s.notes && !compact ? <p className="mt-2 text-sm text-muted">{s.notes}</p> : null}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {canJoin ? (
-          <a href={s.teams_link!} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700">
+          <a href={s.teams_link!} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-control bg-brand-600 px-4 text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97]">
             <Video className="size-4" /> Join meeting
           </a>
         ) : null}

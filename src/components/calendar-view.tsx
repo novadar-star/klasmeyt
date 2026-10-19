@@ -6,9 +6,9 @@ import { DAYS_SHORT, TZ, cn, fmtClock, fmtDateTime, sessionStatus, subjectName }
 import type { SessionFull } from "@/lib/queries";
 
 const DOT: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-800 ring-amber-200",
+  pending: "bg-pad-50 text-pad-800 ring-pad-200",
   scheduled: "bg-brand-50 text-brand-700 ring-brand-200",
-  completed: "bg-teal-50 text-teal-700 ring-teal-200",
+  completed: "bg-brand-50 text-brand-700 ring-brand-200",
   cancelled: "bg-slate-50 text-slate-400 line-through ring-slate-200",
 };
 
@@ -34,14 +34,14 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
     <>
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between border-b border-line px-5 py-3">
-          <h2 className="font-bold text-brand-700">{label}</h2>
+          <h2 className="font-semibold text-brand-800">{label}</h2>
           <div className="flex items-center gap-1">
-            <Link href={`${basePath}?m=${prev}`} className="rounded-md p-1.5 hover:bg-paper" aria-label="Previous month"><ChevronLeft className="size-4" /></Link>
-            <Link href={basePath} className="rounded-md px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-teal-700 hover:bg-teal-50">Today</Link>
-            <Link href={`${basePath}?m=${next}`} className="rounded-md p-1.5 hover:bg-paper" aria-label="Next month"><ChevronRight className="size-4" /></Link>
+            <Link href={`${basePath}?m=${prev}`} className="rounded-control p-1.5 hover:bg-paper" aria-label="Previous month"><ChevronLeft className="size-4" /></Link>
+            <Link href={basePath} className="rounded-control px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50">Today</Link>
+            <Link href={`${basePath}?m=${next}`} className="rounded-control p-1.5 hover:bg-paper" aria-label="Next month"><ChevronRight className="size-4" /></Link>
           </div>
         </div>
-        <div className="grid grid-cols-7 border-b border-line bg-paper text-center text-[10px] font-bold uppercase tracking-wide text-muted">
+        <div className="grid grid-cols-7 border-b border-line bg-paper text-center text-xs font-medium text-muted">
           {DAYS_SHORT.map((d) => <div key={d} className="py-2">{d}</div>)}
         </div>
         <div className="grid grid-cols-7">
@@ -49,14 +49,14 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
             <div key={i} className={cn("min-h-[5.5rem] border-b border-r border-line p-1.5 text-xs [&:nth-child(7n)]:border-r-0", !c && "bg-paper/60")}>
               {c ? (
                 <>
-                  <span className={cn("inline-grid size-6 place-items-center rounded-full font-semibold", c === today ? "bg-teal-600 text-white" : "text-ink")}>{Number(c.slice(8))}</span>
+                  <span className={cn("inline-grid size-6 place-items-center rounded-full font-semibold", c === today ? "bg-brand-600 text-white" : "text-ink")}>{Number(c.slice(8))}</span>
                   <div className="mt-1 space-y-1">
                     {(byDay[c] ?? []).slice(0, 3).map((s) => (
-                      <Link key={s.id} href={link} className={cn("block truncate rounded px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset", DOT[sessionStatus(s)])} title={`${subjectName(s.subject_id)} · ${fmtClock(s.starts_at)}`}>
+                      <Link key={s.id} href={link} className={cn("block truncate rounded px-1.5 py-0.5 text-xs font-semibold ring-1 ring-inset", DOT[sessionStatus(s)])} title={`${subjectName(s.subject_id)} · ${fmtClock(s.starts_at)}`}>
                         <span className="hidden sm:inline">{fmtClock(s.starts_at)} </span>{subjectName(s.subject_id)}
                       </Link>
                     ))}
-                    {(byDay[c]?.length ?? 0) > 3 ? <p className="px-1 text-[10px] text-muted">+{byDay[c].length - 3} more</p> : null}
+                    {(byDay[c]?.length ?? 0) > 3 ? <p className="px-1 text-xs text-muted">+{byDay[c].length - 3} more</p> : null}
                   </div>
                 </>
               ) : null}

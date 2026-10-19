@@ -34,11 +34,11 @@ export default async function StatusPage() {
 
   const body = (
     <div className="space-y-6">
-      <Card className="mx-auto max-w-xl border-dashed border-teal-300 p-8 text-center">
-        <span className={cn("mx-auto grid size-12 place-items-center rounded-full", status === "rejected" ? "bg-red-50 text-red-500" : status === "verified" ? "bg-teal-50 text-teal-600" : "bg-amber-50 text-amber-500")}>
+      <Card className="mx-auto max-w-xl border-dashed border-brand-300 p-8 text-center">
+        <span className={cn("mx-auto grid size-12 place-items-center rounded-full", status === "rejected" ? "bg-red-50 text-red-500" : status === "verified" ? "bg-brand-50 text-brand-600" : "bg-pad-50 text-pad-500")}>
           {status === "rejected" ? <XCircle className="size-6" /> : status === "verified" ? <Check className="size-6" /> : <Clock className="size-6" />}
         </span>
-        <h1 className="mt-4 text-2xl font-bold text-brand-700">{heading}</h1>
+        <h1 className="mt-4 text-2xl font-semibold text-brand-800">{heading}</h1>
         {status !== "verified" && status !== "rejected" ? (
           <p className="mt-1 text-sm text-muted">Estimated verification wait time: <span className="font-semibold text-ink">1–2 business days</span></p>
         ) : null}
@@ -48,9 +48,9 @@ export default async function StatusPage() {
             <li key={s.title} className="flex gap-3">
               <span
                 className={cn(
-                  "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold",
-                  s.state === "done" && "bg-teal-600 text-white",
-                  s.state === "current" && "bg-amber-500 text-white",
+                  "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-xs font-medium",
+                  s.state === "done" && "bg-brand-600 text-white",
+                  s.state === "current" && "bg-pad-500 text-white",
                   s.state === "blocked" && "bg-red-500 text-white",
                   s.state === "todo" && "bg-slate-100 text-slate-400"
                 )}
@@ -66,26 +66,26 @@ export default async function StatusPage() {
         </ol>
 
         {verification?.reviewer_note && status !== "verified" ? (
-          <div className={cn("mt-6 rounded-lg p-3 text-left text-sm", status === "rejected" ? "bg-red-50 text-red-800" : "bg-amber-50 text-amber-900")}>
+          <div className={cn("mt-6 rounded-control p-3 text-left text-sm", status === "rejected" ? "bg-red-50 text-red-800" : "bg-pad-50 text-pad-800")}>
             <span className="font-semibold">Note from the administrator:</span> {verification.reviewer_note}
           </div>
         ) : null}
 
-        <div className="mt-6 rounded-lg border border-teal-200 bg-teal-50/60 p-3 text-left text-xs text-ink">
+        <div className="mt-6 rounded-control border border-brand-200 bg-brand-50/60 p-3 text-left text-xs text-ink">
           {status === "verified" ? (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span>{isMentor ? "You're a verified mentor. Mentees can now find you." : "You're verified. You can now find a mentor."}</span>
-              <Button asChild size="sm" variant="teal"><Link href={isMentor ? "/dashboard" : "/find"}>{isMentor ? "Open mentor portal" : "Find a mentor"}</Link></Button>
+              <Button asChild size="sm" variant="primary"><Link href={isMentor ? "/dashboard" : "/find"}>{isMentor ? "Open mentor portal" : "Find a mentor"}</Link></Button>
             </div>
           ) : (
-            <><span className="font-semibold text-teal-700">System Note:</span> You'll get a Klasmeyt notification once your {isMentor ? "application" : "documents"} have been reviewed. Log in again anytime to check this page.</>
+            <><span className="font-semibold text-brand-700">System Note:</span> You'll get a Klasmeyt notification once your {isMentor ? "application" : "documents"} have been reviewed. Log in again anytime to check this page.</>
           )}
         </div>
         {verification?.reviewed_at ? <p className="mt-3 text-[11px] text-muted">Last reviewed {fmtDateTime(verification.reviewed_at)}</p> : null}
       </Card>
 
       <Card className="mx-auto max-w-xl p-6">
-        <h2 className="font-bold text-brand-700">Your documents</h2>
+        <h2 className="font-semibold text-brand-800">Your documents</h2>
         <p className="mb-3 text-xs text-muted">Only you and Klasmeyt administrators can open these.</p>
         <DocList docs={(docs ?? []) as Doc[]} urls={urls} />
         {status !== "verified" ? (

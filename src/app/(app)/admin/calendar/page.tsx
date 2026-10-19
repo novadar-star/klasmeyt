@@ -12,7 +12,7 @@ export default async function AdminCalendar({ searchParams }: { searchParams: { 
   const names = Object.fromEntries(Object.values(people).map((p) => [p.id, p.full_name]));
   return (
     <>
-      <PageHeader title="Calendar" description="Sessions across the whole system, by status." pill="Admin portal" />
+      <PageHeader title="Calendar" description="Sessions across the whole system, by status." />
       <CalendarView sessions={sessions} month={searchParams.m} basePath="/admin/calendar" link="/admin/sessions" names={names} />
     </>
   );

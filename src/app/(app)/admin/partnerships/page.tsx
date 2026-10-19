@@ -18,10 +18,10 @@ export default async function AdminPartnerships({ searchParams }: { searchParams
   const people = await profilesById(supabase, (data ?? []).flatMap((r) => [r.mentor_id, r.mentee_id]));
   return (
     <>
-      <PageHeader title="Partnership Requests" description="All requests between mentees and mentors. Admins can view but don't decide requests." pill="Admin portal" />
+      <PageHeader title="Partnership Requests" description="All requests between mentees and mentors. Admins can view but don't decide requests." />
       <div className="mb-4 flex flex-wrap gap-2">
         {F.map((f) => (
-          <Link key={f} href={f ? `/admin/partnerships?status=${f}` : "/admin/partnerships"} className={cn("rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset", status === f ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line")}>
+          <Link key={f} href={f ? `/admin/partnerships?status=${f}` : "/admin/partnerships"} className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", status === f ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line")}>
             {f || "All"}
           </Link>
         ))}
@@ -29,7 +29,7 @@ export default async function AdminPartnerships({ searchParams }: { searchParams
       {data?.length ? (
         <Card className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-line bg-paper text-[10px] font-bold uppercase tracking-wide text-muted">
+            <thead className="border-b border-line bg-paper text-xs font-medium text-muted">
               <tr><th className="px-4 py-3">Mentee</th><th className="px-4 py-3">Mentor</th><th className="px-4 py-3">Subject</th><th className="px-4 py-3">Sent</th><th className="px-4 py-3">Status</th></tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -37,7 +37,7 @@ export default async function AdminPartnerships({ searchParams }: { searchParams
                 <tr key={r.id}>
                   <td className="px-4 py-3"><Link className="font-semibold hover:underline" href={`/admin/users/${r.mentee_id}`}>{people[r.mentee_id]?.full_name}</Link></td>
                   <td className="px-4 py-3"><Link className="font-semibold hover:underline" href={`/admin/users/${r.mentor_id}`}>{people[r.mentor_id]?.full_name}</Link></td>
-                  <td className="px-4 py-3 text-teal-700">{subjectName(r.subject_id)}</td>
+                  <td className="px-4 py-3 text-brand-700">{subjectName(r.subject_id)}</td>
                   <td className="px-4 py-3 text-xs text-muted">{fmtDateTime(r.created_at)}</td>
                   <td className="px-4 py-3"><StatusBadge status={r.status} label={r.status === "accepted" ? "Accepted" : undefined} /></td>
                 </tr>

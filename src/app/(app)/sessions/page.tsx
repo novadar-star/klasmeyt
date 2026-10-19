@@ -40,7 +40,7 @@ export default async function SessionsPage() {
       <PageHeader
         title="Upcoming Sessions"
         description="Sessions are confirmed by both sides, then appear on your calendar with the Teams link."
-        action={<Button asChild variant="teal" size="sm"><Link href="/sessions/new">Schedule session</Link></Button>}
+        action={<Button asChild variant="primary" size="sm"><Link href="/sessions/new">Schedule session</Link></Button>}
       />
       {sessions.length ? (
         <>
@@ -50,7 +50,7 @@ export default async function SessionsPage() {
           <Section title="Past & cancelled" list={past} />
         </>
       ) : (
-        <Empty title="No sessions yet" action={<Button asChild variant="teal"><Link href="/sessions/new">Schedule session</Link></Button>}>
+        <Empty title="No sessions yet" action={<Button asChild variant="primary"><Link href="/sessions/new">Schedule session</Link></Button>}>
           Propose a time inside your shared availability. It shows up here once the other side confirms.
         </Empty>
       )}

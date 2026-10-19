@@ -19,7 +19,7 @@ export function AdminPeople({ rows, base, filter, subs, slots, counts, kind }: {
     <>
       <div className="mb-4 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
-          <Link key={f.v} href={f.v ? `${base}?status=${f.v}` : base} className={cn("rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide ring-1 ring-inset", filter === f.v ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}>
+          <Link key={f.v} href={f.v ? `${base}?status=${f.v}` : base} className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", filter === f.v ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}>
             {f.label}
           </Link>
         ))}
@@ -27,7 +27,7 @@ export function AdminPeople({ rows, base, filter, subs, slots, counts, kind }: {
       {rows.length ? (
         <Card className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="border-b border-line bg-paper text-[10px] font-bold uppercase tracking-wide text-muted">
+            <thead className="border-b border-line bg-paper text-xs font-medium text-muted">
               <tr>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Subjects</th>
@@ -44,11 +44,11 @@ export function AdminPeople({ rows, base, filter, subs, slots, counts, kind }: {
                     <p className="font-semibold">{r.profile.full_name}</p>
                     <p className="text-xs text-muted">{[r.profile.year_level, r.profile.program].filter(Boolean).join(" • ")}</p>
                   </td>
-                  <td className="px-4 py-3 font-medium text-teal-700">{(subs[r.user_id] ?? []).map(subjectName).join(", ") || "—"}</td>
+                  <td className="px-4 py-3 font-medium text-brand-700">{(subs[r.user_id] ?? []).map(subjectName).join(", ") || "—"}</td>
                   <td className="px-4 py-3 text-xs">{daysText(slots[r.user_id])}<br /><span className="text-muted">{timeText(slots[r.user_id])}</span></td>
                   <td className="px-4 py-3 tabular-nums">{counts[r.user_id] ?? 0}</td>
                   <td className="px-4 py-3"><VerificationBadge status={r.status} kind={kind} /><p className="mt-1 text-[11px] text-muted">{relTime(r.updated_at)}</p></td>
-                  <td className="px-4 py-3 text-right"><Button asChild size="sm" variant="outline"><Link href={`/admin/users/${r.user_id}`}>Review</Link></Button></td>
+                  <td className="px-4 py-3 text-right"><Button asChild size="sm" variant="secondary"><Link href={`/admin/users/${r.user_id}`}>Review</Link></Button></td>
                 </tr>
               ))}
             </tbody>

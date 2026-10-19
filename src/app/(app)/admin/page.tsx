@@ -20,7 +20,7 @@ export default async function AdminHome() {
 
   return (
     <>
-      <PageHeader title="Mentor Application Queue" description="Review and approve peer mentor applications and mentee documents." pill="Admin queue operations" />
+      <PageHeader title="Mentor Application Queue" description="Review and approve peer mentor applications and mentee documents." />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Total applications" value={s.mentor_applicants ?? 0} />
         <Stat label="Pending review" value={s.pending_applications ?? 0} />
@@ -35,18 +35,18 @@ export default async function AdminHome() {
       </div>
 
       <Card className="mt-6 p-5">
-        <CardTitle action={<span className="rounded-full bg-teal-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-teal-700">Filter: all programs</span>}>Pending & Reviewed Submissions</CardTitle>
+        <CardTitle action={<span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">Filter: all programs</span>}>Pending & Reviewed Submissions</CardTitle>
         {queue.length ? (
           <div className="space-y-2">
             {queue.map((r) => (
-              <div key={r.user_id} className="grid items-center gap-3 rounded-lg border border-line px-4 py-3 sm:grid-cols-[1.3fr_1fr_auto_auto]">
+              <div key={r.user_id} className="grid items-center gap-3 rounded-control border border-line px-4 py-3 sm:grid-cols-[1.3fr_1fr_auto_auto]">
                 <div className="min-w-0">
-                  <p className="truncate font-bold text-ink">{r.profile.full_name}</p>
+                  <p className="truncate font-semibold text-ink">{r.profile.full_name}</p>
                   <p className="truncate text-xs text-muted">{[r.profile.year_level, r.profile.program].filter(Boolean).join(" • ")}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-muted">Supported courses</p>
-                  <p className="text-sm font-semibold text-teal-700">{(subs[r.user_id] ?? []).map(subjectName).join(", ") || "—"}</p>
+                  <p className="text-xs font-medium text-muted">Supported courses</p>
+                  <p className="text-sm font-semibold text-brand-700">{(subs[r.user_id] ?? []).map(subjectName).join(", ") || "—"}</p>
                 </div>
                 <VerificationBadge status={r.status} kind="mentor" />
                 <Button asChild size="sm"><Link href={`/admin/users/${r.user_id}`}>Review application</Link></Button>
@@ -59,17 +59,17 @@ export default async function AdminHome() {
       </Card>
 
       <Card className="mt-6 p-5">
-        <CardTitle action={<Link href="/admin/mentees" className="text-[11px] font-bold uppercase tracking-wide text-teal-700 hover:underline">View all</Link>}>Mentee Verification</CardTitle>
+        <CardTitle action={<Link href="/admin/mentees" className="text-xs font-semibold text-brand-700 hover:underline">View all</Link>}>Mentee Verification</CardTitle>
         {menteeQueue.length ? (
           <div className="space-y-2">
             {menteeQueue.map((r) => (
-              <div key={r.user_id} className="flex flex-wrap items-center gap-3 rounded-lg border border-line px-4 py-3">
+              <div key={r.user_id} className="flex flex-wrap items-center gap-3 rounded-control border border-line px-4 py-3">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold">{r.profile.full_name}</p>
+                  <p className="truncate font-semibold">{r.profile.full_name}</p>
                   <p className="truncate text-xs text-muted">{[r.profile.year_level, r.profile.program].filter(Boolean).join(" • ")} · {relTime(r.updated_at)}</p>
                 </div>
                 <VerificationBadge status={r.status} />
-                <Button asChild size="sm" variant="outline"><Link href={`/admin/users/${r.user_id}`}>Review documents</Link></Button>
+                <Button asChild size="sm" variant="secondary"><Link href={`/admin/users/${r.user_id}`}>Review documents</Link></Button>
               </div>
             ))}
           </div>

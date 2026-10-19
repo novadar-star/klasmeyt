@@ -35,7 +35,7 @@ export default async function RequestsPage() {
   if (!isMentor) {
     return (
       <>
-        <PageHeader title="Partnership Requests" description="Track the requests you've sent to mentors." action={<Button asChild variant="teal" size="sm"><Link href="/find">Find a mentor</Link></Button>} />
+        <PageHeader title="Partnership Requests" description="Track the requests you've sent to mentors." action={<Button asChild variant="primary" size="sm"><Link href="/find">Find a mentor</Link></Button>} />
         {reqs.length ? (
           <div className="space-y-3">
             {reqs.map((r) => {
@@ -44,7 +44,7 @@ export default async function RequestsPage() {
                 <Card key={r.id} className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-bold text-brand-700">{m?.full_name ?? "Mentor"}</p>
+                      <p className="font-semibold text-brand-800">{m?.full_name ?? "Mentor"}</p>
                       <StatusBadge status={r.status} label={r.status === "accepted" ? "Accepted" : undefined} />
                     </div>
                     <p className="text-xs text-muted">{subjectName(r.subject_id)} · sent {relTime(r.created_at)}</p>
@@ -52,15 +52,15 @@ export default async function RequestsPage() {
                   </div>
                   <div className="flex gap-2">
                     {r.status === "pending" ? <CancelRequest id={r.id} /> : null}
-                    {r.status === "accepted" && r.group_id ? <Button asChild variant="teal" size="sm"><Link href={`/chat/${r.group_id}`}>Open chat</Link></Button> : null}
-                    {r.status === "accepted" ? <Button asChild variant="outline" size="sm"><Link href="/partners">My partner</Link></Button> : null}
+                    {r.status === "accepted" && r.group_id ? <Button asChild variant="primary" size="sm"><Link href={`/chat/${r.group_id}`}>Open chat</Link></Button> : null}
+                    {r.status === "accepted" ? <Button asChild variant="secondary" size="sm"><Link href="/partners">My partner</Link></Button> : null}
                   </div>
                 </Card>
               );
             })}
           </div>
         ) : (
-          <Empty title="No requests yet" action={<Button asChild variant="teal"><Link href="/find">Find a mentor</Link></Button>}>
+          <Empty title="No requests yet" action={<Button asChild variant="primary"><Link href="/find">Find a mentor</Link></Button>}>
             Find a verified mentor and send a request for the subject you need help with.
           </Empty>
         )}
@@ -79,20 +79,20 @@ export default async function RequestsPage() {
               <Card key={r.id} className="p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <Link href={`/mentees/${r.mentee_id}`} className="text-lg font-bold text-brand-700 hover:underline">{p?.full_name ?? "Mentee"}</Link>
+                    <Link href={`/mentees/${r.mentee_id}`} className="text-lg font-semibold text-brand-800 hover:underline">{p?.full_name ?? "Mentee"}</Link>
                     <p className="text-xs text-muted">{[p?.year_level, p?.program].filter(Boolean).join(" • ")}</p>
                   </div>
-                  <Badge color="teal">Co-eligible match ({subjectName(r.subject_id)})</Badge>
+                  <Badge color="teal">{subjectName(r.subject_id)}</Badge>
                 </div>
                 <p className="eyebrow mt-5">Request proposal message</p>
-                <p className="mt-1.5 rounded-lg bg-paper p-4 text-sm leading-relaxed text-ink">{r.message ? `“${r.message}”` : <span className="text-muted">No message.</span>}</p>
+                <p className="mt-1.5 rounded-control bg-paper p-4 text-sm leading-relaxed text-ink">{r.message ? `“${r.message}”` : <span className="text-muted">No message.</span>}</p>
                 <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-ink">
                   <span className="flex items-center gap-1.5"><CalendarDays className="size-3.5 text-muted" /><span className="font-semibold">Proposed availability:</span> {daysText(slots[r.mentee_id])} ({timeText(slots[r.mentee_id])})</span>
                   {p?.modality ? <span className="flex items-center gap-1.5"><MonitorSmartphone className="size-3.5 text-muted" /><span className="font-semibold">Modality preferred:</span> {p.modality}</span> : null}
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   <RespondRequest id={r.id} subjectId={r.subject_id} menteeName={p?.full_name ?? "this mentee"} groups={groups.filter((g) => g.subject_id === r.subject_id)} />
-                  <Button asChild variant="ghost" size="md"><Link href={`/mentees/${r.mentee_id}`}>View profile</Link></Button>
+                  <Button asChild variant="quiet" size="md"><Link href={`/mentees/${r.mentee_id}`}>View profile</Link></Button>
                 </div>
                 <p className="mt-3 text-[11px] text-muted">Received {fmtDateTime(r.created_at)}</p>
               </Card>
@@ -112,7 +112,7 @@ export default async function RequestsPage() {
                 <span className="min-w-0 flex-1 font-semibold text-brand-700">{people[r.mentee_id]?.full_name}</span>
                 <span className="text-xs text-muted">{subjectName(r.subject_id)}</span>
                 <StatusBadge status={r.status} label={r.status === "accepted" ? "Accepted" : undefined} />
-                {r.group_id ? <Link href={`/chat/${r.group_id}`} className="text-[11px] font-bold uppercase tracking-wide text-teal-700 hover:underline">Chat</Link> : null}
+                {r.group_id ? <Link href={`/chat/${r.group_id}`} className="text-xs font-semibold text-brand-700 hover:underline">Chat</Link> : null}
               </div>
             ))}
           </Card>

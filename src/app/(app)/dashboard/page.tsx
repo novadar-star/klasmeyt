@@ -24,9 +24,9 @@ export default async function Dashboard() {
 
   const nextCard = (
     <Card className="p-5">
-      <CardTitle>{profile.role === "mentor" ? "Next Scheduled Review" : "Next Peer Review Session"}</CardTitle>
+      <CardTitle>{profile.role === "mentor" ? "Next session" : "Next session"}</CardTitle>
       {next ? (
-        <Link href="/sessions" className="block rounded-lg bg-paper p-4 ring-1 ring-inset ring-line hover:ring-teal-300">
+        <Link href="/sessions" className="block rounded-control bg-paper p-4 ring-1 ring-inset ring-line hover:ring-brand-300">
           {profile.role === "mentee" ? <VerifiedMentorBadge /> : null}
           <p className="mt-2 font-semibold text-brand-700">{subjectName(next.subject_id)} {next.format === "group" ? "Group Session" : "Review Session"}</p>
           <p className="text-xs text-muted">
@@ -61,19 +61,19 @@ export default async function Dashboard() {
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Card className="p-5">
-            <CardTitle>My Program Aligned Subjects</CardTitle>
+            <CardTitle>Subjects you mentor</CardTitle>
             <div className="space-y-2">
               {subjects.map((id) => (
-                <p key={id} className="rounded-md border border-teal-400 bg-teal-50/50 px-3 py-2 text-sm font-semibold text-teal-700">{subjectName(id)}</p>
+                <p key={id} className="rounded-control border border-brand-300 bg-brand-50/50 px-3 py-2 text-sm font-semibold text-brand-700">{subjectName(id)}</p>
               ))}
             </div>
           </Card>
           <Card className="p-5">
-            <CardTitle>Weekly Agenda Sync</CardTitle>
+            <CardTitle>Your weekly availability</CardTitle>
             <ul className="space-y-2">
               {((slots ?? []) as Slot[]).map((s) => (
-                <li key={s.id} className="flex items-center gap-2 rounded-md bg-paper px-3 py-2 text-sm">
-                  <span className="size-1.5 rounded-full bg-amber-500" /> {DAYS[s.day]} · {fmtTime(s.start_time)} – {fmtTime(s.end_time)}
+                <li key={s.id} className="flex items-center gap-2 rounded-control bg-paper px-3 py-2 text-sm">
+                  <span className="size-1.5 rounded-full bg-pad-500" /> {DAYS[s.day]} · {fmtTime(s.start_time)} – {fmtTime(s.end_time)}
                 </li>
               ))}
             </ul>
@@ -85,25 +85,25 @@ export default async function Dashboard() {
   }
 
   const tiles = [
-    { href: verified ? "/find" : "/status", icon: UserSearch, tint: "bg-teal-50 text-teal-700", title: "Find a Mentor", body: verified ? `Find verified mentors for ${subjects.map(subjectName).join(", ") || "your subjects"}` : "Available once your account is verified" },
+    { href: verified ? "/find" : "/status", icon: UserSearch, tint: "bg-brand-50 text-brand-700", title: "Find a Mentor", body: verified ? `Find verified mentors for ${subjects.map(subjectName).join(", ") || "your subjects"}` : "Available once your account is verified" },
     { href: "/partners", icon: Users, tint: "bg-brand-50 text-brand-600", title: "My Study Partner", body: "Connect with your assigned study buddies and peer mentors" },
-    { href: "/requests", icon: FileText, tint: "bg-amber-50 text-amber-600", title: "Partnership Requests", body: "Check your pending and answered partnership requests" },
+    { href: "/requests", icon: FileText, tint: "bg-pad-50 text-pad-800", title: "Partnership Requests", body: "Check your pending and answered partnership requests" },
   ];
 
   return (
     <>
-      <PageHeader title={`Welcome, ${first}`} description={[profile.program, "Falcon Mentoring Space"].filter(Boolean).join(" · ")} />
+      <PageHeader title={`Welcome, ${first}`} description={[profile.program, "mentee"].filter(Boolean).join(" · ")} />
       {!verified ? (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-control border border-pad-200 bg-pad-50 px-4 py-3 text-sm text-pad-800">
           <span><span className="font-semibold">Verification pending.</span> An administrator is checking your COE and Student ID. You can search for mentors once you're verified.</span>
-          <Link href="/status" className="text-xs font-bold uppercase tracking-wide text-amber-700 hover:underline">View status</Link>
+          <Link href="/status" className="text-xs font-semibold text-pad-800 hover:underline">View status</Link>
         </div>
       ) : null}
       <div className="grid gap-4 sm:grid-cols-3">
         {tiles.map((t) => (
-          <Link key={t.title} href={t.href} className="rounded-xl border border-line bg-white p-5 transition-colors hover:border-teal-300">
-            <span className={`grid size-9 place-items-center rounded-lg ${t.tint}`}><t.icon className="size-4" /></span>
-            <p className="mt-4 font-bold text-brand-700">{t.title}</p>
+          <Link key={t.title} href={t.href} className="rounded-panel border border-line bg-white p-5 transition-colors hover:border-brand-300">
+            <span className={`grid size-9 place-items-center rounded-control ${t.tint}`}><t.icon className="size-4" /></span>
+            <p className="mt-4 font-semibold text-brand-800">{t.title}</p>
             <p className="mt-1 text-xs text-muted">{t.body}</p>
           </Link>
         ))}
@@ -111,11 +111,11 @@ export default async function Dashboard() {
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {nextCard}
         <Card className="p-5">
-          <CardTitle>Curriculum-Course Alignment</CardTitle>
+          <CardTitle>Your subjects</CardTitle>
           <p className="mb-3 text-xs text-muted">Based on the subjects you're taking</p>
           <div className="space-y-2">
             {subjects.length ? subjects.map((id) => (
-              <p key={id} className="rounded-md border border-teal-400 bg-teal-50/50 px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-teal-700">Active matching: {subjectName(id)}</p>
+              <p key={id} className="rounded-control border border-brand-300 bg-brand-50/50 px-3 py-2 text-xs font-semibold text-brand-700">{subjectName(id)}</p>
             )) : <p className="text-sm text-muted">Add subjects in your profile.</p>}
           </div>
         </Card>

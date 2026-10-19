@@ -37,7 +37,7 @@ export default async function NewSession({ searchParams }: { searchParams: { gro
       {opts.length ? (
         <ScheduleForm options={opts} initial={searchParams.group} isMentor={isMentor} />
       ) : (
-        <Empty title="No partnerships to schedule with" action={<Button asChild variant="teal"><Link href={isMentor ? "/requests" : "/find"}>{isMentor ? "View requests" : "Find a mentor"}</Link></Button>}>
+        <Empty title="No partnerships to schedule with" action={<Button asChild variant="primary"><Link href={isMentor ? "/requests" : "/find"}>{isMentor ? "View requests" : "Find a mentor"}</Link></Button>}>
           {isMentor ? "Accept a partnership request first." : "Sessions can be scheduled once a mentor accepts your request. Group sessions are scheduled by the mentor."}
         </Empty>
       )}

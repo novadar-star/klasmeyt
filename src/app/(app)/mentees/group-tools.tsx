@@ -38,7 +38,7 @@ export function AddToGroup(props: Props) {
 
   return (
     <>
-      <Button variant="ghost" size={fromMentee ? "md" : "sm"} onClick={() => setOpen(true)}>{fromMentee ? "Add to group" : "Invite mentee"}</Button>
+      <Button variant="quiet" size={fromMentee ? "md" : "sm"} onClick={() => setOpen(true)}>{fromMentee ? "Add to group" : "Invite mentee"}</Button>
       <Modal
         open={open}
         onOpenChange={setOpen}
@@ -49,7 +49,7 @@ export function AddToGroup(props: Props) {
           {options.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
         </select>
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
           <Button onClick={go} disabled={busy || !pick}>Send invite</Button>
         </div>
       </Modal>
@@ -63,11 +63,11 @@ export function RenameGroup({ id, name }: { id: string; name: string }) {
   const [v, setV] = useState(name);
   return (
     <>
-      <button onClick={() => setOpen(true)} className="rounded-md p-1.5 text-muted hover:bg-paper hover:text-ink" aria-label="Rename group"><Pencil className="size-4" /></button>
+      <button onClick={() => setOpen(true)} className="rounded-control p-1.5 text-muted hover:bg-paper hover:text-ink" aria-label="Rename group"><Pencil className="size-4" /></button>
       <Modal open={open} onOpenChange={setOpen} title="Rename group">
         <input className="field" value={v} onChange={(e) => setV(e.target.value)} aria-label="Group name" />
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
           <Button
             onClick={async () => {
               if (!v.trim()) return;

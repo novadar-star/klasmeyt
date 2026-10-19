@@ -13,7 +13,6 @@ type Role = "mentee" | "mentor";
 
 export function SignupWizard({ role }: { role: Role }) {
   const router = useRouter();
-  const steps = role === "mentor" ? 2 : 1;
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,42 +115,40 @@ export function SignupWizard({ role }: { role: Role }) {
     }
   }
 
-  const title = role === "mentee" ? "Student Mentee Registration" : step === 0 ? "Apply as Verified Falcon Mentor" : "Submit Credentials & Verification";
-  const sub = role === "mentee" ? "Set up your profile for matching with the right peer mentor" : step === 0 ? "Share your academic background with underclassmen. Step 1: Academic profiling" : "Klasmeyt mentors must show they completed the subject. Attach official proof.";
+  const title = role === "mentee" ? "Register as a mentee" : step === 0 ? "Apply to be a mentor" : "Upload your documents";
+  const sub = role === "mentee" ? "Tell us what you're studying so we can match you with the right mentor." : step === 0 ? "Tell mentees what you can help with. You'll upload proof on the next step." : "An administrator checks these before you appear in Find a Mentor.";
 
   return (
     <div>
       <div className="mb-8 text-center">
         {role === "mentor" ? (
-          <ol className="mb-4 inline-flex items-center gap-2 text-[11px] font-semibold">
-            {["Academic Profiling", "Verification Uploads"].map((s, i) => (
-              <li key={s} className={cn("flex items-center gap-1.5 rounded-full px-3 py-1", i === step ? "bg-brand-700 text-white" : "text-muted")}>
-                <span className={cn("grid size-4 place-items-center rounded-full text-[10px]", i === step ? "bg-white text-brand-700" : "bg-slate-200")}>{i + 1}</span>
+          <ol className="mb-4 inline-flex items-center gap-2 text-xs font-medium">
+            {["Profile", "Documents"].map((s, i) => (
+              <li key={s} className={cn("flex items-center gap-1.5 rounded-full px-3 py-1", i === step ? "bg-brand-600 text-white" : i < step ? "text-brand-700" : "text-muted")}>
+                <span className={cn("grid size-4 place-items-center rounded-full text-xs", i === step ? "bg-white text-brand-700" : "bg-slate-200")}>{i + 1}</span>
                 {s}
               </li>
             ))}
           </ol>
-        ) : (
-          <span className="mb-3 inline-block rounded bg-brand-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Step 1 of {steps}</span>
-        )}
-        <h1 className="text-3xl font-bold tracking-tight text-brand-700">{title}</h1>
+        ) : null}
+        <h1 className="text-3xl font-semibold tracking-[-0.015em] text-brand-800">{title}</h1>
         <p className="mt-1 text-sm text-muted">{sub}</p>
       </div>
 
-      <form onSubmit={submit} noValidate className="space-y-6 rounded-xl border border-line bg-white p-6 shadow-sm sm:p-8">
+      <form onSubmit={submit} noValidate className="space-y-6 rounded-panel border border-line bg-white p-6 sm:p-8">
         {step === 0 && (
           <>
-            <Section title={role === "mentee" ? "Account & Academic Credentials" : "Mentor Academic Alignment"}>
+            <Section title={role === "mentee" ? "Your account and program" : "Your account and program"}>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Full Name" htmlFor="name"><input id="name" className="field" placeholder="Juan Dela Cruz" value={f.full_name} onChange={set("full_name")} autoComplete="name" /></Field>
-                <Field label="Email Address (Adamson Mail)" htmlFor="email"><input id="email" type="email" className="field" placeholder="juan.delacruz@adamson.edu.ph" value={f.email} onChange={set("email")} autoComplete="email" /></Field>
-                <Field label="Password" htmlFor="pw"><input id="pw" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
-                <Field label="Confirm Password" htmlFor="pw2"><input id="pw2" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" /></Field>
-                <Field label="Academic Program" htmlFor="prog" hint="Shown for reference only. It doesn't limit matching.">
-                  <input id="prog" list="programs" className="field" placeholder="BS Civil Engineering" value={f.program} onChange={set("program")} />
+                <Field label="Full name" htmlFor="name"><input id="name" name="name" className="field" placeholder="Juan Dela Cruz" value={f.full_name} onChange={set("full_name")} autoComplete="name" /></Field>
+                <Field label="Adamson email" htmlFor="email"><input id="email" name="email" type="email" inputMode="email" spellCheck={false} className="field" placeholder="juan.delacruz@adamson.edu.ph" value={f.email} onChange={set("email")} autoComplete="email" /></Field>
+                <Field label="Password" htmlFor="pw"><input id="pw" name="new-password" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
+                <Field label="Confirm password" htmlFor="pw2"><input id="pw2" name="confirm-password" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" /></Field>
+                <Field label="Academic program" htmlFor="prog" hint="Shown for reference only. It doesn't limit matching.">
+                  <input id="prog" list="programs" className="field" placeholder="BS Civil Engineering…" value={f.program} onChange={set("program")} />
                   <datalist id="programs">{PROGRAMS.map((p) => <option key={p} value={p} />)}</datalist>
                 </Field>
-                <Field label={role === "mentor" ? "Current Year Level" : "Year Level"} htmlFor="yr">
+                <Field label={role === "mentor" ? "Year level" : "Year level"} htmlFor="yr">
                   <select id="yr" className="field" value={f.year_level} onChange={set("year_level")}>
                     <option value="">Choose…</option>
                     {YEAR_LEVELS.map((y) => <option key={y}>{y}</option>)}
@@ -160,29 +157,29 @@ export function SignupWizard({ role }: { role: Role }) {
               </div>
             </Section>
 
-            <Section title={role === "mentee" ? "Subjects I Need Help With" : "Subjects I Can Mentor"}>
-              <p className="rounded-md bg-paper px-3 py-2 text-xs text-muted">
+            <Section title={role === "mentee" ? "Subjects you need help with" : "Subjects you can mentor"}>
+              <p className="rounded-control bg-paper px-3 py-2 text-xs text-muted">
                 {role === "mentee" ? "Pick the subjects you're currently taking." : "Pick only subjects you've completed. You'll attach your grades on the next step."}
               </p>
               <SubjectPicker value={subjects} onChange={setSubjects} />
             </Section>
 
-            <Section title={role === "mentee" ? "Preferred Schedule & Study Preferences" : "Mentor Introduction & Availability"}>
+            <Section title={role === "mentee" ? "When you're free to study" : "Introduction and availability"}>
               {role === "mentor" && (
-                <Field label="Introduction for Mentor Profiles" htmlFor="intro">
+                <Field label="Introduction mentees will see" htmlFor="intro">
                   <textarea id="intro" rows={3} className="field" placeholder="Hello! I'm a 4th year student who topped Calculus 2…" value={f.intro} onChange={set("intro")} />
                 </Field>
               )}
-              <Field label={role === "mentor" ? "Mentoring Availability" : "Availability Window"} hint="Weekly free times. Matching and session scheduling use these.">
+              <Field label={role === "mentor" ? "Weekly availability" : "Weekly availability"} hint="Weekly free times. Matching and session scheduling use these.">
                 <AvailabilityEditor value={slots} onChange={setSlots} />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Preferred Study Schedule" htmlFor="pref"><input id="pref" className="field" placeholder="Mondays & Wednesdays, afternoons" value={f.preferred_schedule} onChange={set("preferred_schedule")} /></Field>
-                <Field label="Preferred Modality" htmlFor="mod">
+                <Field label="Preferred schedule" htmlFor="pref"><input id="pref" className="field" placeholder="Mondays & Wednesdays, afternoons…" value={f.preferred_schedule} onChange={set("preferred_schedule")} /></Field>
+                <Field label="Preferred modality" htmlFor="mod">
                   <select id="mod" className="field" value={f.modality} onChange={set("modality")}>{MODALITIES.map((m) => <option key={m}>{m}</option>)}</select>
                 </Field>
                 {role === "mentor" ? (
-                  <Field label="Mentoring Format" htmlFor="fmt">
+                  <Field label="Mentoring format" htmlFor="fmt">
                     <select id="fmt" className="field" value={f.mentoring_format} onChange={set("mentoring_format")}>
                       <option value="both">One-on-one or group</option>
                       <option value="one_on_one">One-on-one only</option>
@@ -190,15 +187,15 @@ export function SignupWizard({ role }: { role: Role }) {
                     </select>
                   </Field>
                 ) : null}
-                <Field label="Academic Interests / Goals" htmlFor="int"><input id="int" className="field" placeholder="Passing the Calculus 2 finals" value={f.interests} onChange={set("interests")} /></Field>
+                <Field label="Academic interests or goals" htmlFor="int"><input id="int" className="field" placeholder="Passing the Calculus 2 finals…" value={f.interests} onChange={set("interests")} /></Field>
               </div>
               {role === "mentor" && (
                 <>
-                  <Field label="Academic Experience" htmlFor="exp"><textarea id="exp" rows={3} className="field" placeholder="Grades, tutoring, org work…" value={f.academic_experience} onChange={set("academic_experience")} /></Field>
-                  <Field label="Skills & Achievements" htmlFor="sk"><textarea id="sk" rows={2} className="field" value={f.skills_achievements} onChange={set("skills_achievements")} /></Field>
+                  <Field label="Academic experience" htmlFor="exp"><textarea id="exp" rows={3} className="field" placeholder="Grades, tutoring, org work…" value={f.academic_experience} onChange={set("academic_experience")} /></Field>
+                  <Field label="Skills and achievements" htmlFor="sk"><textarea id="sk" rows={2} className="field" value={f.skills_achievements} onChange={set("skills_achievements")} /></Field>
                 </>
               )}
-              <Field label="About Me / Bio" htmlFor="about">
+              <Field label="About you" htmlFor="about">
                 <textarea id="about" rows={3} className="field" placeholder={role === "mentee" ? "Hi, I'm Juan. I'm struggling with integration by parts and looking for a study buddy." : "A bit about you as a student."} value={f.about} onChange={set("about")} />
               </Field>
             </Section>
@@ -206,7 +203,7 @@ export function SignupWizard({ role }: { role: Role }) {
         )}
 
         {(role === "mentee" || step === 1) && (
-          <Section title={role === "mentee" ? "Verification Documents" : "Mandatory Credentials Upload"}>
+          <Section title={role === "mentee" ? "Verification documents" : "Required documents"}>
             <p className="text-xs text-muted">Files are stored privately. Only you and Klasmeyt administrators can open them{role === "mentor" ? " (verified mentees can view your CV once you're approved)" : ""}.</p>
             {role === "mentee" ? (
               <>
@@ -218,8 +215,8 @@ export function SignupWizard({ role }: { role: Role }) {
                 <FilePick label="1. Student ID or Certificate of Registration (Proof of Enrollment)" file={sid} onChange={setSid} required />
                 <FilePick label="2. Academic Record / Proof of Completed Subject (Grades)" file={record} onChange={setRecord} required hint="Grades portal screenshot or TOR. PDF, PNG, JPG (max 10MB)" />
                 <FilePick label="3. Student CV / Resume" file={cv} onChange={setCv} required />
-                <div className="rounded-lg border border-line bg-paper p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-brand-700">Data privacy notice & compliance</p>
+                <div className="rounded-control border border-line bg-paper p-4">
+                  <p className="text-xs font-semibold text-brand-700">Data privacy notice & compliance</p>
                   <p className="mt-2 text-xs leading-relaxed text-muted">
                     In compliance with Republic Act No. 10173 (Data Privacy Act of 2012), the credentials and documents you submit will only be
                     processed to verify your eligibility as a Klasmeyt peer mentor and to match you with mentees. They are accessible only to
@@ -227,7 +224,7 @@ export function SignupWizard({ role }: { role: Role }) {
                     deletion of your data at any time.
                   </p>
                   <label className="mt-3 flex items-start gap-2 text-sm font-medium text-ink">
-                    <input type="checkbox" className="mt-0.5 size-4 accent-teal-600" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+                    <input type="checkbox" className="mt-0.5 size-4 accent-brand-600" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
                     I consent to the official processing of my academic documents for verification purposes.
                   </label>
                 </div>
@@ -236,15 +233,15 @@ export function SignupWizard({ role }: { role: Role }) {
           </Section>
         )}
 
-        {error ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p> : null}
+        {error ? <p className="rounded-control bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p> : null}
 
         <div className="flex flex-col items-center gap-3 pt-2">
           <div className="flex gap-3">
             {role === "mentor" && step === 1 ? (
-              <Button type="button" variant="outline" size="lg" onClick={() => { setError(null); setStep(0); }} disabled={busy}>Back</Button>
+              <Button type="button" variant="secondary" size="lg" onClick={() => { setError(null); setStep(0); }} disabled={busy}>Back</Button>
             ) : null}
-            <Button type="submit" size="lg" disabled={busy}>
-              {busy ? "Submitting…" : role === "mentee" ? "Create mentee account" : step === 0 ? "Continue to uploads & reqs" : "Submit mentor application"}
+            <Button type="submit" size="lg" loading={busy}>
+              {role === "mentee" ? "Create mentee account" : step === 0 ? "Continue to documents" : "Submit mentor application"}
             </Button>
           </div>
           <p className="text-center text-[11px] text-muted">

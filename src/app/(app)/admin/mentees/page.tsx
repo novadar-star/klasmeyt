@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: { status?: 
   });
   return (
     <>
-      <PageHeader title="Mentee Verification" description="Open each COE and Student ID and set the verification status." pill="Admin portal" />
+      <PageHeader title="Mentee Verification" description="Open each COE and Student ID and set the verification status." />
       <AdminPeople rows={rows} base="/admin/mentees" filter={filter} subs={subs} slots={slots} counts={counts} kind="mentee" />
     </>
   );

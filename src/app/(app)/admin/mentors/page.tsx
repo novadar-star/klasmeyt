@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: { status?: 
   });
   return (
     <>
-      <PageHeader title="Verified Mentors" description="Mentor profiles, subjects, availability, and partnership activity." pill="Admin portal" />
+      <PageHeader title="Verified Mentors" description="Mentor profiles, subjects, availability, and partnership activity." />
       <AdminPeople rows={rows} base="/admin/mentors" filter={filter} subs={subs} slots={slots} counts={counts} kind="mentor" />
     </>
   );

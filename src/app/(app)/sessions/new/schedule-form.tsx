@@ -87,7 +87,7 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
           </select>
         </Field>
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Subject"><input className="field font-semibold text-teal-700" value={subjectName(g.subject)} disabled /></Field>
+          <Field label="Subject"><input className="field font-semibold text-brand-700" value={subjectName(g.subject)} disabled /></Field>
           <Field label="Mentoring format"><input className="field" value={g.kind === "group" ? "Group" : "One-on-one"} disabled /></Field>
           <Field label="Duration" htmlFor="du">
             <select id="du" className="field" value={duration} onChange={(e) => { setDuration(Number(e.target.value)); setTime(""); }}>
@@ -111,21 +111,21 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
             <input id="ln" className="field" placeholder="https://teams.microsoft.com/l/meetup-join/…" value={link} onChange={(e) => setLink(e.target.value)} />
           </Field>
         ) : (
-          <p className="rounded-md bg-paper px-3 py-2 text-xs text-muted">Your mentor adds the Microsoft Teams link when they confirm.</p>
+          <p className="rounded-control bg-paper px-3 py-2 text-xs text-muted">Your mentor adds the Microsoft Teams link when they confirm.</p>
         )}
         <Field label="Notes (optional)" htmlFor="no"><textarea id="no" rows={2} className="field" placeholder="Topics to cover, e.g. integration by parts" value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
         <div className="flex justify-end gap-2 border-t border-line pt-5">
-          <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+          <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
           <Button type="submit" disabled={busy}>{busy ? "Sending…" : "Propose session"}</Button>
         </div>
       </Card>
 
       <Card className="h-fit p-5">
-        <p className="font-bold text-brand-700">Shared availability</p>
+        <p className="font-semibold text-brand-800">Shared availability</p>
         <p className="mt-1 text-xs text-muted">Times when {g.mentor}{g.mentees.length ? ` and ${g.mentees.join(", ")}` : ""} are all free.</p>
         <ul className="mt-4 space-y-1.5">
           {DAYS.map((d, i) => (
-            <li key={d} className={cn("flex justify-between gap-2 rounded-md px-2.5 py-1.5 text-xs", weekly[i].length ? "bg-teal-50 text-teal-800" : "text-slate-400", day === i && "ring-1 ring-teal-500")}>
+            <li key={d} className={cn("flex justify-between gap-2 rounded-control px-2.5 py-1.5 text-xs", weekly[i].length ? "bg-brand-50 text-brand-800" : "text-slate-400", day === i && "ring-1 ring-brand-500")}>
               <span className="font-semibold">{d}</span>
               <span className="text-right">{weekly[i].length ? weekly[i].map(([a, b]) => `${fmtTime(toHHMM(a))}–${fmtTime(toHHMM(b))}`).join(", ") : "—"}</span>
             </li>

@@ -30,14 +30,14 @@ export default async function ReviewUser({ params }: { params: { id: string } })
       <PageHeader
         title={isMentor ? "Review Mentor Application" : "Review Mentee Documents"}
         description={<Link href={isMentor ? "/admin" : "/admin/mentees"} className="hover:underline">← Back to {isMentor ? "applications queue" : "mentee verification"}</Link>}
-        pill="Admin portal"
+       
       />
       <div className="grid gap-4 xl:grid-cols-[1fr_24rem]">
         <div className="space-y-4">
           <Card className="p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold text-brand-700">{p.full_name}</h2>
+                <h2 className="text-xl font-semibold text-brand-800">{p.full_name}</h2>
                 <p className="text-sm text-muted">{p.email}</p>
               </div>
               <VerificationBadge status={v?.status ?? "submitted"} kind={p.role} />
@@ -45,7 +45,7 @@ export default async function ReviewUser({ params }: { params: { id: string } })
             <dl className="mt-6 grid gap-5 sm:grid-cols-2">
               <KV k="Year level" v={p.year_level} />
               <KV k="Program" v={p.program} />
-              <KV k={isMentor ? "Mentoring subjects" : "Subjects needed"} v={<span className="font-semibold text-teal-700">{(subs[p.id] ?? []).map(subjectName).join(", ")}</span>} />
+              <KV k={isMentor ? "Mentoring subjects" : "Subjects needed"} v={<span className="font-semibold text-brand-700">{(subs[p.id] ?? []).map(subjectName).join(", ")}</span>} />
               <KV k="Preferred schedule" v={p.preferred_schedule} />
               <KV k="Availability" v={<SlotList slots={slots[p.id]} />} />
               <KV k="Modality" v={p.modality} />

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui";
+import { ConfirmButton } from "@/components/modal";
 import { errMsg } from "@/lib/utils";
 import type { SessionFull } from "@/lib/queries";
 
@@ -32,8 +33,8 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
       return (
         <div className="flex w-full flex-col gap-2 sm:flex-row">
           <input className="field sm:max-w-xs" placeholder="Microsoft Teams link (https://…)" value={link} onChange={(e) => setLink(e.target.value)} aria-label="Teams link" />
-          <Button size="sm" className="h-10" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true, p_teams_link: link }, "Session confirmed")}>Confirm session</Button>
-          <Button size="sm" className="h-10" variant="danger" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: false }, "Session declined")}>Decline</Button>
+          <Button size="sm" className="h-10" loading={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true, p_teams_link: link }, "Session confirmed")}>Confirm session</Button>
+          <ConfirmButton size="sm" title="Decline this session?" body="The mentee is notified and can propose another time." confirmLabel="Decline session" disabled={busy} onConfirm={() => rpc("respond_session", { p_session: s.id, p_accept: false }, "Session declined")}>Decline</ConfirmButton>
         </div>
       );
     }
@@ -44,7 +45,7 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
           <Button size="sm" disabled={busy || !allResponded || confirmed === 0} onClick={() => rpc("finalize_session", { p_session: s.id, p_proceed: true }, "Session scheduled")}>
             Proceed with confirmed
           </Button>
-          <Button size="sm" variant="danger" disabled={busy} onClick={() => rpc("finalize_session", { p_session: s.id, p_proceed: false }, "Session cancelled")}>Cancel session</Button>
+          <ConfirmButton size="sm" title="Cancel this group session?" body="Every invited mentee is notified. You can propose another time afterwards." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("finalize_session", { p_session: s.id, p_proceed: false }, "Session cancelled")}>Cancel session</ConfirmButton>
         </>
       );
     }
@@ -52,14 +53,14 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
       return (
         <>
           <span className="text-sm text-muted">Waiting for the mentee to confirm</span>
-          <Button size="sm" variant="ghost" disabled={busy} onClick={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel</Button>
+          <ConfirmButton size="sm" variant="quiet" title="Cancel this session?" body="The mentee is notified." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel</ConfirmButton>
         </>
       );
     }
     if (mine?.response === "pending") {
       return (
         <>
-          <Button size="sm" variant="success" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true }, "Attendance confirmed")}>Confirm attendance</Button>
+          <Button size="sm" variant="primary" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true }, "Attendance confirmed")}>Confirm attendance</Button>
           <Button size="sm" variant="danger" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: false }, "Response sent")}>Cannot attend</Button>
         </>
       );
@@ -68,16 +69,16 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
       <>
         <span className="text-sm text-muted">{mine?.response === "confirmed" ? (s.mentor_confirmed ? "You confirmed · waiting for the mentor to finalize" : "Waiting for the mentor to confirm") : "You can't attend this one"}</span>
         {s.proposed_by === me ? (
-          <Button size="sm" variant="ghost" disabled={busy} onClick={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Withdraw</Button>
+          <ConfirmButton size="sm" variant="quiet" title="Withdraw your proposal?" body="Your mentor is notified." confirmLabel="Withdraw proposal" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Proposal withdrawn")}>Withdraw</ConfirmButton>
         ) : null}
       </>
     );
   }
   if (status === "scheduled" && isMentor) {
-    return <Button size="sm" variant="ghost" disabled={busy} onClick={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel session</Button>;
+    return <ConfirmButton size="sm" variant="quiet" title="Cancel this scheduled session?" body="Everyone in the session is notified. This can't be undone." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel session</ConfirmButton>;
   }
   if (status === "completed" && isMentor && s.status === "scheduled") {
-    return <Button size="sm" variant="ghost" disabled={busy} onClick={() => rpc("complete_session", { p_session: s.id }, "Marked as completed")}>Mark completed</Button>;
+    return <Button size="sm" variant="quiet" disabled={busy} onClick={() => rpc("complete_session", { p_session: s.id }, "Marked as completed")}>Mark completed</Button>;
   }
   return null;
 }

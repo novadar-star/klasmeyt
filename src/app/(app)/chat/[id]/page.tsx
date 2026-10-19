@@ -34,7 +34,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <Link href="/chat" className="text-xs font-semibold text-muted hover:text-ink">Messages /</Link>
-              <h1 className="truncate text-lg font-bold text-brand-700">{title}</h1>
+              <h1 className="truncate text-lg font-semibold text-brand-800">{title}</h1>
               <Badge color={g.kind === "group" ? "violet" : "teal"}>{g.kind === "group" ? "Group" : "One-on-one"}</Badge>
               <span className="chip">{subjectName(g.subject_id)}</span>
             </div>
@@ -43,7 +43,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
             </p>
           </div>
           {profile.id === g.mentor_id || g.kind === "individual" ? (
-            <Button asChild size="sm" variant="teal"><Link href={`/sessions/new?group=${g.id}`}><CalendarClock /> Schedule session</Link></Button>
+            <Button asChild size="sm" variant="primary"><Link href={`/sessions/new?group=${g.id}`}><CalendarClock /> Schedule session</Link></Button>
           ) : null}
         </div>
         {sessions.length ? (
@@ -56,9 +56,9 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
                 </div>
                 <StatusBadge status={sessionStatus(s)} />
                 {s.status === "scheduled" && s.teams_link ? (
-                  <a href={s.teams_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded bg-brand-700 px-2 py-1 text-[10px] font-bold uppercase text-white hover:bg-brand-800"><Video className="size-3" /> Join</a>
+                  <a href={s.teams_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded bg-brand-700 px-2 py-1 text-xs font-medium text-white hover:bg-brand-800"><Video className="size-3" /> Join</a>
                 ) : (
-                  <Link href="/sessions" className="text-[10px] font-bold uppercase text-teal-700 hover:underline">Respond</Link>
+                  <Link href="/sessions" className="text-xs font-medium text-brand-700 hover:underline">Respond</Link>
                 )}
               </Card>
             ))}

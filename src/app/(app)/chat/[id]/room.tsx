@@ -12,6 +12,7 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
   const [msgs, setMsgs] = useState<Msg[]>(initial);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [fresh, setFresh] = useState<Set<string>>(() => new Set()); // ids that arrived after mount get the entry animation
   const bottom = useRef<HTMLDivElement>(null);
   const supabase = useRef(createClient()).current;
 
@@ -26,6 +27,7 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
       .channel(`chat-${groupId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `group_id=eq.${groupId}` }, (payload) => {
         const m = payload.new as Msg;
+        setFresh((f) => new Set(f).add(m.id));
         setMsgs((cur) => (cur.some((x) => x.id === m.id) ? cur : [...cur, m]));
         if (m.sender_id !== me) {
           supabase.from("notifications").update({ read: true }).eq("type", "message").eq("link", `/chat/${groupId}`).eq("read", false).then(() => {});
@@ -46,6 +48,7 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
     setSending(false);
     if (error) return toast.error("Message not sent. Check your connection and try again.");
     setText("");
+    setFresh((f) => new Set(f).add(data.id));
     setMsgs((cur) => (cur.some((x) => x.id === data.id) ? cur : [...cur, data as Msg]));
   }
 
@@ -54,7 +57,7 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
     <>
       <div className="flex-1 overflow-y-auto bg-paper px-4 py-5 sm:px-6 lg:px-8">
         {isGroup && joinedAt ? (
-          <p className="mx-auto mb-4 max-w-md rounded-md bg-violet-50 px-3 py-2 text-center text-[11px] text-violet-800">
+          <p className="mx-auto mb-4 max-w-md rounded-control bg-pad-50 px-3 py-2 text-center text-xs text-pad-800 ring-1 ring-inset ring-pad-200">
             Group chat. You see messages from when you joined ({fmtDate(joinedAt)}) onward.
           </p>
         ) : null}
@@ -69,16 +72,16 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
             const system = m.body.endsWith(" joined the group") && m.body.startsWith(names[m.sender_id] ?? "\u0000");
             return (
               <div key={m.id}>
-                {showDay ? <p className="my-4 text-center text-[11px] font-semibold uppercase tracking-wide text-muted">{day}</p> : null}
+                {showDay ? <p className="my-4 text-center text-xs font-medium text-muted">{day}</p> : null}
                 {system ? (
                   <p className="text-center text-[11px] text-muted">{m.body}</p>
                 ) : (
-                  <div className={cn("flex flex-col", mine ? "items-end" : "items-start")}>
+                  <div className={cn("flex flex-col", mine ? "items-end" : "items-start", fresh.has(m.id) && "msg-in")}>
                     {showName ? <span className="mb-0.5 px-1 text-[11px] font-semibold text-muted">{names[m.sender_id] ?? "Member"}</span> : null}
-                    <div className={cn("max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm", mine ? "rounded-br-md bg-brand-700 text-white" : "rounded-bl-md bg-white text-ink ring-1 ring-line")}>
+                    <div className={cn("max-w-[80%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm", mine ? "rounded-br-md bg-brand-600 text-white" : "rounded-bl-md bg-white text-ink ring-1 ring-line")}>
                       {m.body}
                     </div>
-                    <span className="mt-0.5 px-1 text-[10px] text-muted">{fmtClock(m.created_at)}</span>
+                    <span className="mt-0.5 px-1 text-xs text-muted">{fmtClock(m.created_at)}</span>
                   </div>
                 )}
               </div>
@@ -100,11 +103,13 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
           rows={1}
           maxLength={4000}
           placeholder="Write a message…"
+          name="message"
+          autoComplete="off"
           className="field max-h-32 min-h-[40px] flex-1 resize-none"
           aria-label="Message"
         />
-        <button type="submit" disabled={sending || !text.trim()} className="grid size-10 shrink-0 place-items-center rounded-md bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-40" aria-label="Send">
-          <SendHorizontal className="size-4" />
+        <button type="submit" disabled={sending || !text.trim()} className="grid size-10 shrink-0 place-items-center rounded-control bg-brand-600 text-white transition-[transform,background-color] duration-150 ease-out hover:bg-brand-700 active:scale-[0.94] disabled:opacity-40" aria-label="Send">
+          <SendHorizontal className="size-4" aria-hidden />
         </button>
       </form>
     </>

@@ -1,0 +1,115 @@
+# Klasmeyt design guidelines
+
+These are the rules the UI is built on. When you add a screen, follow them. When a rule gets in the way, change the rule here first, then change the code.
+
+Sources: Anthropic's *frontend-design* skill (point of view, type, anti-template rules), Emil Kowalski's *emil-design-eng* (motion and component feel), and Vercel's *Web Interface Guidelines* (accessibility, forms, content).
+
+## 1. Point of view
+
+Klasmeyt is a study tool for Adamson students, not a SaaS dashboard. Its visual identity comes from two real things:
+
+- **Adamson blue and white.** The SRS requires it, and students recognize it immediately.
+- **The yellow pad.** The ruled intermediate pad every Filipino student solves problems on. It's the single signature surface (landing hero, login panel). Nowhere else.
+
+Everything else stays quiet so those two read clearly.
+
+## 2. Color
+
+| Token | Hex | Use |
+|---|---|---|
+| `brand-600` | `#1D4196` | Primary actions, links, active states (Adamson royal blue) |
+| `brand-700` | `#173478` | Hover on primary, link text |
+| `brand-800` | `#13295C` | Headings |
+| `brand-900` | `#0C1A3D` | Sidebar, hero, footer |
+| `brand-50/100/200` | | Selected rows, chips, subtle rings |
+| `pad-100/300` | `#FFF3C4` / `#F4D65F` | Yellow-pad accent. **Waiting states only** (pending, invites, unread count) |
+| `ink` | `#111A2E` | Body text |
+| `muted` | `#5D6880` | Secondary text |
+| `line` | `#E2E7EF` | Borders and dividers |
+| `paper` | `#F6F8FB` | App background |
+| `red-*` | Tailwind | Errors and destructive actions only |
+
+Status color is meaning, not decoration:
+
+- **Blue** means done or verified: Verified, Scheduled, Confirmed, Accepted.
+- **Yellow (pad)** means waiting on someone: Pending, In review, Group invite.
+- **Red** means it needs action or failed: Needs more info, Rejected, Declined.
+- **Gray** means inactive: Cancelled, Completed, Left.
+
+Don't introduce new hues (no teal, purple, or orange). If something needs to stand out, use weight, size, or position first.
+
+## 3. Type
+
+- **Instrument Sans** for all UI (self-hosted via `@fontsource`). **Kalam** only for handwriting on the yellow pad.
+- Scale: page title 26px semibold, section title 15px semibold, body 14px, small 12–13px.
+- Headings use slight negative tracking (`-0.01em` to `-0.025em` for display). Never letter-space body text.
+- **Sentence case everywhere**, including buttons and labels. No ALL-CAPS eyebrows or labels.
+- Numbers that get compared (stats, counts, tables) use the `num` class for tabular figures.
+- Use `…` not `...`. Loading labels end with `…`. Use `&nbsp;` in "10&nbsp;MB".
+
+## 4. Shape and layout
+
+- Two radii: `rounded-control` (8px) for buttons, inputs, chips; `rounded-panel` (12px) for cards and panels. Badges are pills.
+- Cards are a white surface with a 1px `line` border. No drop shadows, except modals and the yellow pad.
+- Not everything is a card. Lists inside a card use dividers; pages use the white title band (`PageHeader`) plus content.
+- Labels above values use `.eyebrow` (12px, muted, sentence case).
+- Mobile first: every page works at 390px with a 16px gutter and no horizontal scroll.
+
+## 5. Motion (Emil Kowalski's rules)
+
+Before animating, ask how often the user sees it.
+
+| Frequency | Rule | In Klasmeyt |
+|---|---|---|
+| Dozens of times a day | No animation, just a fast color change | Sidebar nav, list rows |
+| Occasional | Short, purposeful | Modals, drawer, tabs, new chat messages, toasts |
+| Once | Can delight | Yellow-pad handwriting on landing and login |
+
+Easing tokens (`globals.css` / Tailwind):
+
+- `--ease-out` `cubic-bezier(0.23, 1, 0.32, 1)` for anything entering or responding to a press.
+- `--ease-in-out` `cubic-bezier(0.77, 0, 0.175, 1)` for things moving on screen (tab indicator).
+- `--ease-drawer` `cubic-bezier(0.32, 0.72, 0, 1)` for the mobile drawer.
+- Never `ease-in` for UI. Never `transition: all`; list the properties.
+
+Patterns in use:
+
+- **Press feedback:** every button and pressable scales to `0.97` on `:active`, 150ms ease-out.
+- **Loading buttons:** the label blurs out (2px) and a spinner fades in. No layout jump (`Button loading`).
+- **Modals:** enter from `scale(0.96)` plus fade in 220ms; exit faster, 150ms. Centered, never origin-aware.
+- **Mobile drawer:** always mounted, slides with the drawer curve in 300ms, leaves in 200ms; `inert` when closed.
+- **Segmented control (login):** the white indicator slides, 200ms ease-in-out, instead of colors swapping.
+- **Checkbox cards:** the check mark goes from `scale(0.9)`/opacity 0 to full. Never from `scale(0)`.
+- **Chat:** only messages that arrive after the page loads ease in (6px rise plus fade, 180ms, `@starting-style`).
+- **Yellow pad:** each line wipes in with `clip-path: inset()`, 260ms stagger, once.
+- Hover styles only apply on devices that can hover (`future.hoverOnlyWhenSupported`).
+- Everything UI-related stays under 300ms.
+
+**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade, and the pad lines fade in instead of wiping.
+
+## 6. Components and voice
+
+- One primary button per view. Secondary actions use `secondary` (outlined) or `quiet` (text).
+- Button labels say what happens: "Send request", "Accept request", "Cancel session". The confirmation uses the same verb.
+- **Destructive actions always confirm** (`ConfirmButton`): decline request, withdraw, cancel session, reject. The confirm dialog's safe option is "Keep it".
+- Errors say what went wrong and how to fix it, in the interface's voice. They don't apologize.
+- Empty states tell you the next step and usually offer the button for it.
+- Name things the way students say them: "My study partners", "Next session", "Your weekly availability". Avoid system jargon ("Curriculum alignment", "Dossier", "Logistics").
+
+## 7. Accessibility and forms checklist
+
+- [x] Skip link to `#main` on every page
+- [x] Visible `:focus-visible` ring (2px `brand-500`); never remove an outline without a replacement
+- [x] Icon-only buttons have `aria-label`; decorative icons are `aria-hidden`
+- [x] Inputs have labels, `name`, `autocomplete`; emails use `type="email"`, `inputMode="email"`, `spellCheck={false}`
+- [x] Checkbox cards use real (visually hidden) checkboxes in one `<label>` hit area
+- [x] Async messages (login errors) are `aria-live="polite"`; toasts come from Sonner
+- [x] `touch-action: manipulation`, intentional tap highlight, `overscroll-behavior: contain` on modals and drawer
+- [x] Headings `text-wrap: balance`; long text truncates or wraps (`min-w-0`, `truncate`, `break-words`)
+- [x] Filters and tabs live in the URL (Find a Mentor, admin lists, calendar month)
+- [x] Dates and times use `Intl.DateTimeFormat` in Asia/Manila, 12-hour
+
+## 8. Open items
+
+- Replace `/public/logo-coin.png` (a crop from a screenshot) with the client's real logo file.
+- The colors move away from the client's Figma (teal and orange). Layouts and screens still follow it. Get the client's sign-off on the palette.

@@ -34,7 +34,7 @@ export default async function MenteesPage() {
               <Card key={g.id} className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="text-lg font-bold text-brand-700">{p?.full_name}</p>
+                    <p className="text-lg font-semibold text-brand-800">{p?.full_name}</p>
                     <p className="text-xs text-muted">{[p?.year_level, p?.program].filter(Boolean).join(" • ")}</p>
                   </div>
                   <Badge color="teal">Partnership accepted</Badge>
@@ -44,9 +44,9 @@ export default async function MenteesPage() {
                   <div><p className="eyebrow">Sync availability</p><p className="mt-1 text-sm">{daysText(slots[m.mentee_id])} ({timeText(slots[m.mentee_id])})</p></div>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button asChild variant="outline"><Link href={`/mentees/${m.mentee_id}`}>View profile</Link></Button>
-                  <Button asChild variant="teal"><Link href={`/sessions/new?group=${g.id}`}>Schedule session</Link></Button>
-                  <Button asChild variant="ghost"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
+                  <Button asChild variant="secondary"><Link href={`/mentees/${m.mentee_id}`}>View profile</Link></Button>
+                  <Button asChild variant="primary"><Link href={`/sessions/new?group=${g.id}`}>Schedule session</Link></Button>
+                  <Button asChild variant="quiet"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
                   <AddToGroup menteeId={m.mentee_id} menteeName={p?.full_name ?? "Mentee"} groups={teams.filter((t) => t.subject_id === g.subject_id && !t.members.some((x) => x.mentee_id === m.mentee_id && x.status !== "left")).map((t) => ({ id: t.id, name: t.name }))} />
                 </div>
               </Card>
@@ -66,7 +66,7 @@ export default async function MenteesPage() {
               <Card key={g.id} className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="font-bold text-brand-700">{g.name}</p>
+                    <p className="font-semibold text-brand-800">{g.name}</p>
                     <span className="chip mt-1">{subjectName(g.subject_id)}</span>
                   </div>
                   <RenameGroup id={g.id} name={g.name} />
@@ -80,8 +80,8 @@ export default async function MenteesPage() {
                   ))}
                 </ul>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button asChild variant="teal" size="sm"><Link href={`/sessions/new?group=${g.id}`}>Schedule group session</Link></Button>
-                  <Button asChild variant="outline" size="sm"><Link href={`/chat/${g.id}`}>Open group chat</Link></Button>
+                  <Button asChild variant="primary" size="sm"><Link href={`/sessions/new?group=${g.id}`}>Schedule group session</Link></Button>
+                  <Button asChild variant="secondary" size="sm"><Link href={`/chat/${g.id}`}>Open group chat</Link></Button>
                   {eligible.length ? (
                     <AddToGroup groupId={g.id} groupName={g.name} candidates={Array.from(new Set(eligible.map((e) => e.mentee_id))).map((id) => ({ id, name: people[id]?.full_name ?? "Mentee" }))} />
                   ) : null}

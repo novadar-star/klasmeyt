@@ -22,7 +22,7 @@ export default async function MentorProfile({ params }: { params: { id: string }
       <div className="grid gap-4 lg:grid-cols-[22rem_1fr]">
         <div className="space-y-4">
           <Card className="p-6 text-center">
-            <h2 className="text-lg font-bold text-brand-700">{m.full_name}</h2>
+            <h2 className="text-lg font-semibold text-brand-800">{m.full_name}</h2>
             <p className="text-xs text-muted">{[m.year_level, m.program].filter(Boolean).join(" • ")}</p>
             <div className="mt-3 flex flex-col items-center gap-2">
               <VerifiedMentorBadge />
@@ -30,10 +30,10 @@ export default async function MentorProfile({ params }: { params: { id: string }
             </div>
           </Card>
           <Card className="p-6">
-            <h3 className="font-bold text-brand-700">Mentoring Logistics</h3>
+            <h3 className="font-semibold text-brand-800">Availability &amp; format</h3>
             <p className="eyebrow mt-4">Courses</p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {(subs[m.id] ?? []).map((id) => <span key={id} className="text-sm font-semibold text-teal-700">{subjectName(id)}</span>)}
+              {(subs[m.id] ?? []).map((id) => <span key={id} className="text-sm font-semibold text-brand-700">{subjectName(id)}</span>)}
             </div>
             <p className="eyebrow mt-4">Availability schedule</p>
             <div className="mt-1.5"><SlotList slots={slots[m.id]} /></div>
@@ -43,10 +43,10 @@ export default async function MentorProfile({ params }: { params: { id: string }
         </div>
         <Card className="p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="font-bold text-brand-700">Professional Bio & Achievements</h3>
+            <h3 className="font-semibold text-brand-800">About this mentor</h3>
             <div className="flex gap-2">
-              <Button asChild variant="outline" size="sm"><Link href={`/mentors/${m.id}/cv`}>View sample CV</Link></Button>
-              <Button asChild variant="teal" size="sm"><Link href={`/mentors/${m.id}/request`}>Request partnership</Link></Button>
+              <Button asChild variant="secondary" size="sm"><Link href={`/mentors/${m.id}/cv`}>View sample CV</Link></Button>
+              <Button asChild variant="primary" size="sm"><Link href={`/mentors/${m.id}/request`}>Request partnership</Link></Button>
             </div>
           </div>
           <div className="mt-6 space-y-5 text-sm leading-relaxed">
@@ -59,7 +59,7 @@ export default async function MentorProfile({ params }: { params: { id: string }
             ].map(([k, v]) =>
               v ? (
                 <div key={k}>
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-brand-700">{k}</p>
+                  <p className="text-xs font-semibold text-brand-700">{k}</p>
                   <p className="mt-1 whitespace-pre-line text-ink">{v}</p>
                 </div>
               ) : null

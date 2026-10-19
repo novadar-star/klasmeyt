@@ -5,28 +5,26 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui";
-import { Modal } from "@/components/modal";
+import { ConfirmButton, Modal } from "@/components/modal";
 import { cn, errMsg, subjectName } from "@/lib/utils";
 
 export function CancelRequest({ id }: { id: string }) {
   const router = useRouter();
-  const [busy, setBusy] = useState(false);
   return (
-    <Button
-      variant="danger"
+    <ConfirmButton
       size="sm"
-      disabled={busy}
-      onClick={async () => {
-        setBusy(true);
+      title="Withdraw this request?"
+      body="The mentor won't see it anymore. You can send a new one later."
+      confirmLabel="Withdraw request"
+      onConfirm={async () => {
         const { error } = await createClient().rpc("cancel_request", { p_request: id });
-        setBusy(false);
         if (error) return toast.error(errMsg(error));
         toast.success("Request withdrawn");
         router.refresh();
       }}
     >
       Withdraw
-    </Button>
+    </ConfirmButton>
   );
 }
 
@@ -70,19 +68,19 @@ export function RespondRequest({ id, subjectId, menteeName, groups }: { id: stri
   return (
     <>
       <Button onClick={() => setOpen(true)}>Accept request</Button>
-      <Button variant="outline" disabled={busy} onClick={() => respond(false)}>Decline</Button>
+      <ConfirmButton variant="secondary" title={`Decline ${menteeName}'s request?`} body="They'll be notified and can ask another mentor." confirmLabel="Decline request" disabled={busy} onConfirm={() => respond(false)}>Decline</ConfirmButton>
       <Modal open={open} onOpenChange={setOpen} title={`Accept ${menteeName}?`} description={`Choose how you'll mentor them in ${subjectName(subjectId)}.`}>
         <div className="space-y-2">
           {opts.map((o) => (
             <label
               key={o.v}
               className={cn(
-                "flex cursor-pointer gap-3 rounded-lg p-3 ring-1 ring-inset",
-                mode === o.v ? "bg-teal-50/60 ring-teal-500" : "ring-line hover:ring-teal-300",
+                "flex cursor-pointer gap-3 rounded-control p-3 ring-1 ring-inset",
+                mode === o.v ? "bg-brand-50/60 ring-brand-500" : "ring-line hover:ring-brand-300",
                 o.disabled && "cursor-not-allowed opacity-50"
               )}
             >
-              <input type="radio" name="mode" className="mt-1 accent-teal-600" checked={mode === o.v} disabled={o.disabled} onChange={() => setMode(o.v)} />
+              <input type="radio" name="mode" className="mt-1 accent-brand-600" checked={mode === o.v} disabled={o.disabled} onChange={() => setMode(o.v)} />
               <span>
                 <span className="block text-sm font-semibold text-brand-700">{o.title}</span>
                 <span className="block text-xs text-muted">{o.body}</span>
@@ -97,8 +95,8 @@ export function RespondRequest({ id, subjectId, menteeName, groups }: { id: stri
         ) : null}
         {mode === "new_group" ? <input className="field mt-4" value={name} onChange={(e) => setName(e.target.value)} aria-label="Group name" /> : null}
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={busy}>Cancel</Button>
-          <Button onClick={() => respond(true)} disabled={busy}>{busy ? "Accepting…" : "Accept request"}</Button>
+          <Button variant="secondary" onClick={() => setOpen(false)} disabled={busy}>Cancel</Button>
+          <Button onClick={() => respond(true)} loading={busy}>Accept request</Button>
         </div>
       </Modal>
     </>

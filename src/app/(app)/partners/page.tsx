@@ -20,16 +20,16 @@ export default async function PartnersPage() {
 
   return (
     <>
-      <PageHeader title="My Peer Mentors & Study Buddies" description="Your accepted partnerships and study groups" />
+      <PageHeader title="My study partners" description="Your accepted partnerships and study groups" />
 
       {invites.length ? (
         <div className="mb-6 space-y-3">
           <p className="eyebrow">Group invitations</p>
           {invites.map((g) => (
-            <Card key={g.id} className="flex flex-col gap-3 border-violet-200 p-5 sm:flex-row sm:items-center">
+            <Card key={g.id} className="flex flex-col gap-3 border-slate-200 p-5 sm:flex-row sm:items-center">
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-bold text-brand-700">{g.name}</p>
+                  <p className="font-semibold text-brand-800">{g.name}</p>
                   <StatusBadge status="invited" />
                 </div>
                 <p className="text-xs text-muted">{people[g.mentor_id]?.full_name} invited you · {subjectName(g.subject_id)} · {g.members.filter((m) => m.status === "active").length} members</p>
@@ -50,7 +50,7 @@ export default async function PartnersPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="text-lg font-bold text-brand-700">{m?.full_name}</p>
+                      <p className="text-lg font-semibold text-brand-800">{m?.full_name}</p>
                       <p className="text-xs text-muted">{m?.program}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -68,15 +68,15 @@ export default async function PartnersPage() {
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2 md:w-44 md:flex-col">
                   {g.kind === "individual" ? <Button asChild><Link href={`/sessions/new?group=${g.id}`}>Schedule session</Link></Button> : null}
-                  <Button asChild variant="teal"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
-                  <Button asChild variant="outline-teal"><Link href={`/mentors/${g.mentor_id}`}>View profile</Link></Button>
+                  <Button asChild variant="primary"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
+                  <Button asChild variant="secondary"><Link href={`/mentors/${g.mentor_id}`}>View profile</Link></Button>
                 </div>
               </Card>
             );
           })}
         </div>
       ) : (
-        <Empty title="No study partner yet" action={<Button asChild variant="teal"><Link href="/find">Find a mentor</Link></Button>}>
+        <Empty title="No study partner yet" action={<Button asChild variant="primary"><Link href="/find">Find a mentor</Link></Button>}>
           When a mentor accepts your request, they'll appear here with your chatbox and scheduling.
         </Empty>
       )}
