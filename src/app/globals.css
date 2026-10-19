@@ -8,8 +8,6 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --pad-line: #b9cbec; /* blue rule on the yellow pad */
-  --pad-margin: #e8a0a0; /* red margin rule */
 }
 
 html {
@@ -63,24 +61,32 @@ p {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Yellow pad: ruled lines + red margin. The one signature surface. */
-  .yellow-pad {
-    background-color: #fff6c9;
-    background-image:
-      linear-gradient(90deg, transparent 47px, var(--pad-margin) 47px, var(--pad-margin) 49px, transparent 49px),
-      repeating-linear-gradient(to bottom, transparent 0, transparent 31px, var(--pad-line) 31px, var(--pad-line) 32px);
-    background-position: 0 0, 0 12px;
+  /* Landing hero: availability bars wipe up once, then the overlap and session settle in */
+  .bar-in {
+    clip-path: inset(100% 0 0 0);
+    animation: bar-in 420ms var(--ease-out) forwards;
+    animation-delay: calc(var(--i, 0) * 70ms + 200ms);
   }
-
-  /* Handwriting reveal: each line wipes in left-to-right once (clip-path, compositor friendly) */
-  .write-in {
-    clip-path: inset(0 100% 0 0);
-    animation: write-in 700ms var(--ease-out) forwards;
-    animation-delay: calc(var(--i, 0) * 260ms + 250ms);
-  }
-  @keyframes write-in {
+  @keyframes bar-in {
     to {
       clip-path: inset(0 0 0 0);
+    }
+  }
+  .match-in {
+    opacity: 0;
+    animation: fade-in 300ms ease forwards;
+    animation-delay: 750ms;
+  }
+  .session-in {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    animation: settle-in 320ms var(--ease-out) forwards;
+    animation-delay: 1000ms;
+  }
+  @keyframes settle-in {
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 
@@ -96,10 +102,18 @@ p {
 
 @media (prefers-reduced-motion: reduce) {
   /* Fewer, gentler animations — keep opacity, drop movement */
-  .write-in {
+  .bar-in {
     clip-path: none;
-    animation: fade-in 200ms ease forwards;
     opacity: 0;
+    animation: fade-in 200ms ease forwards;
+    animation-delay: 0ms;
+  }
+  .session-in {
+    transform: none;
+    animation: fade-in 200ms ease forwards;
+    animation-delay: 0ms;
+  }
+  .match-in {
     animation-delay: 0ms;
   }
   .msg-in {

@@ -11,7 +11,6 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["Instrument Sans", "ui-sans-serif", "system-ui", "sans-serif"],
-        hand: ["Kalam", "ui-rounded", "cursive"],
       },
       colors: {
         brand: {

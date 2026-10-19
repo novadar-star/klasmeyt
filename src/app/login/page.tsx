@@ -7,7 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/logo";
 import { Button, Field } from "@/components/ui";
-import { YellowPad } from "@/components/yellow-pad";
+import { AvailabilityMatch } from "@/components/availability-match";
 import { cn } from "@/lib/utils";
 
 function LoginForm() {
@@ -97,12 +97,12 @@ export default function LoginPage() {
         </main>
       </div>
       <div className="relative hidden place-items-center overflow-hidden bg-brand-900 p-12 lg:grid">
-        <div className="w-full max-w-[480px] -rotate-[1.5deg]">
-          <YellowPad />
+        <div className="w-full max-w-[440px]">
+          <AvailabilityMatch />
+          <p className="mt-6 text-sm text-brand-200">
+            Matched on subject and the hours you're both free. <span className="text-white">Calculus 1, Calculus 2, and Physics.</span>
+          </p>
         </div>
-        <p className="absolute bottom-10 left-12 right-12 text-sm text-brand-200">
-          Mentors write it out with you, step by step. <span className="text-white">Calculus 1, Calculus 2, and Physics.</span>
-        </p>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ Sources: Anthropic's *frontend-design* skill (point of view, type, anti-template
 Klasmeyt is a study tool for Adamson students, not a SaaS dashboard. Its visual identity comes from two real things:
 
 - **Adamson blue and white.** The SRS requires it, and students recognize it immediately.
-- **The yellow pad.** The ruled intermediate pad every Filipino student solves problems on. It's the single signature surface (landing hero, login panel). Nowhere else.
+- **"Free together."** Klasmeyt matches by the hours a mentee and mentor are both free. The landing hero and login panel show exactly that: two weekly schedules (mentee in yellow, mentor in blue), their shared hours, and the session that lands inside them. It's built from real UI, not an illustration, and it's the single signature moment.
 
 Everything else stays quiet so those two read clearly.
 
@@ -22,7 +22,7 @@ Everything else stays quiet so those two read clearly.
 | `brand-800` | `#13295C` | Headings |
 | `brand-900` | `#0C1A3D` | Sidebar, hero, footer |
 | `brand-50/100/200` | | Selected rows, chips, subtle rings |
-| `pad-100/300` | `#FFF3C4` / `#F4D65F` | Yellow-pad accent. **Waiting states only** (pending, invites, unread count) |
+| `pad-100/300` | `#FFF3C4` / `#F4D65F` | Warm accent. **Waiting states** (pending, invites, unread count) and the mentee's side of a schedule |
 | `ink` | `#111A2E` | Body text |
 | `muted` | `#5D6880` | Secondary text |
 | `line` | `#E2E7EF` | Borders and dividers |
@@ -40,7 +40,7 @@ Don't introduce new hues (no teal, purple, or orange). If something needs to sta
 
 ## 3. Type
 
-- **Instrument Sans** for all UI (self-hosted via `@fontsource`). **Kalam** only for handwriting on the yellow pad.
+- **Instrument Sans** for all UI (self-hosted via `@fontsource`). One family, no decorative fonts.
 - Scale: page title 26px semibold, section title 15px semibold, body 14px, small 12–13px.
 - Headings use slight negative tracking (`-0.01em` to `-0.025em` for display). Never letter-space body text.
 - **Sentence case everywhere**, including buttons and labels. No ALL-CAPS eyebrows or labels.
@@ -50,7 +50,7 @@ Don't introduce new hues (no teal, purple, or orange). If something needs to sta
 ## 4. Shape and layout
 
 - Two radii: `rounded-control` (8px) for buttons, inputs, chips; `rounded-panel` (12px) for cards and panels. Badges are pills.
-- Cards are a white surface with a 1px `line` border. No drop shadows, except modals and the yellow pad.
+- Cards are a white surface with a 1px `line` border. No drop shadows, except modals and the hero schedule card.
 - Not everything is a card. Lists inside a card use dividers; pages use the white title band (`PageHeader`) plus content.
 - Labels above values use `.eyebrow` (12px, muted, sentence case).
 - Mobile first: every page works at 390px with a 16px gutter and no horizontal scroll.
@@ -63,7 +63,7 @@ Before animating, ask how often the user sees it.
 |---|---|---|
 | Dozens of times a day | No animation, just a fast color change | Sidebar nav, list rows |
 | Occasional | Short, purposeful | Modals, drawer, tabs, new chat messages, toasts |
-| Once | Can delight | Yellow-pad handwriting on landing and login |
+| Once | Can delight | Hero schedule: bars fill in, shared hours appear, session settles |
 
 Easing tokens (`globals.css` / Tailwind):
 
@@ -81,11 +81,11 @@ Patterns in use:
 - **Segmented control (login):** the white indicator slides, 200ms ease-in-out, instead of colors swapping.
 - **Checkbox cards:** the check mark goes from `scale(0.9)`/opacity 0 to full. Never from `scale(0)`.
 - **Chat:** only messages that arrive after the page loads ease in (6px rise plus fade, 180ms, `@starting-style`).
-- **Yellow pad:** each line wipes in with `clip-path: inset()`, 260ms stagger, once.
+- **Hero schedule:** availability bars wipe up with `clip-path: inset()` (420ms, 70ms stagger), then the "free together" band fades in and the session block settles from `scale(0.98)`. Plays once, about 1.3s total.
 - Hover styles only apply on devices that can hover (`future.hoverOnlyWhenSupported`).
 - Everything UI-related stays under 300ms.
 
-**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade, and the pad lines fade in instead of wiping.
+**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade, and the hero schedule fades in instead of wiping.
 
 ## 6. Components and voice
 

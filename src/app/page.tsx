@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BadgeCheck, CalendarCheck, MessagesSquare, UserSearch } from "lucide-react";
 import { Button } from "@/components/ui";
 import { PublicFooter, PublicNav } from "@/components/public-chrome";
-import { YellowPad } from "@/components/yellow-pad";
+import { AvailabilityMatch } from "@/components/availability-match";
 
 const steps = [
   { icon: UserSearch, title: "Find a mentor who passed it", body: "Search verified upperclassmen by subject, year level, and the hours you're both free." },
@@ -41,8 +41,8 @@ export default function Landing() {
               Already registered? <Link href="/login" className="font-medium text-white underline decoration-white/40 underline-offset-4 hover:decoration-white">Log in</Link>
             </p>
           </div>
-          <div className="relative mx-auto w-full max-w-[520px] md:rotate-[1.2deg]">
-            <YellowPad />
+          <div className="relative mx-auto w-full max-w-[460px]">
+            <AvailabilityMatch />
           </div>
         </div>
       </section>
