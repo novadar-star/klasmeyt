@@ -8,7 +8,7 @@ import { daysText, timeText } from "@/components/avail";
 import { DAYS, FORMAT_LABEL, SUBJECTS, YEAR_LEVELS, subjectName } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
-export const metadata = { title: "Find a Mentor" };
+export const metadata = { title: "Find a mentor" };
 
 type SP = { subject?: string; year?: string; format?: string; day?: string; any?: string };
 
@@ -31,10 +31,10 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
 
   return (
     <>
-      <PageHeader title="Find a verified Peer Mentor" description="Mentors are matched by subject and your weekly availability. Program is shown for reference only." />
+      <PageHeader title="Find a mentor" description="Verified mentors for your subject. By default you only see mentors whose free hours overlap yours." />
       <Card className="p-5">
         <form className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end">
-          <Field label="Course alignment" htmlFor="s">
+          <Field label="Subject" htmlFor="s">
             <select id="s" name="subject" defaultValue={subject} className="field">
               <option value="">All subjects</option>
               {SUBJECTS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -46,7 +46,7 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
               {YEAR_LEVELS.map((y) => <option key={y}>{y}</option>)}
             </select>
           </Field>
-          <Field label="Mentoring format" htmlFor="f">
+          <Field label="Format" htmlFor="f">
             <select id="f" name="format" defaultValue={searchParams.format ?? ""} className="field">
               <option value="">Any format</option>
               <option value="one_on_one">One-on-one</option>
@@ -67,7 +67,7 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
         </form>
       </Card>
 
-      <p className="eyebrow mb-3 mt-6">{mentors.length} verified mentor {mentors.length === 1 ? "match" : "matches"} found</p>
+      <p className="eyebrow mb-3 mt-6" aria-live="polite">{mentors.length} verified {mentors.length === 1 ? "mentor" : "mentors"} found</p>
       {error ? <p className="text-sm text-red-600">{error.message}</p> : null}
       {mentors.length ? (
         <div className="space-y-3">
@@ -79,14 +79,14 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
                   <VerifiedMentorBadge />
                   <VouchedBadge by={m.vouched_by} />
                 </div>
-                <p className="text-xs text-muted">{[m.year_level, m.program].filter(Boolean).join(" • ")} · {FORMAT_LABEL[m.mentoring_format ?? "both"]}</p>
-                <p className="eyebrow mt-3">Courses focus</p>
+                <p className="text-xs text-muted">{[m.year_level, m.program, FORMAT_LABEL[m.mentoring_format ?? "both"]].filter(Boolean).join(", ")}</p>
+                <p className="eyebrow mt-3">Subjects</p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {(subs[m.id] ?? []).map((id) => <span key={id} className="chip">{subjectName(id)}</span>)}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-ink">
-                  <span className="flex items-center gap-1.5"><CalendarDays className="size-3.5 text-muted" />{daysText(slots[m.id])}</span>
-                  <span className="flex items-center gap-1.5"><Clock className="size-3.5 text-muted" />{timeText(slots[m.id])}</span>
+                  <span className="flex items-center gap-1.5"><CalendarDays className="size-3.5 text-muted" aria-hidden /><span className="sr-only">Free on </span>{daysText(slots[m.id])}</span>
+                  <span className="flex items-center gap-1.5"><Clock className="size-3.5 text-muted" aria-hidden />{timeText(slots[m.id])}</span>
                   {m.preferred_schedule ? <span className="text-muted">Prefers {m.preferred_schedule}</span> : null}
                 </div>
               </div>

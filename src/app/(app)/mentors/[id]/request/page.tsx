@@ -17,7 +17,7 @@ export default async function RequestPage({ params, searchParams }: { params: { 
   const pre = Number(searchParams.subject) || mine.find((s) => mentorSubs.includes(s)) || mentorSubs[0];
   return (
     <>
-      <PageHeader title="Partnership Request" description="Send a study partnership request to a verified mentor" />
+      <PageHeader title="Request a mentor" description="The mentor can accept you one-on-one, add you to a study group for this subject, or decline." />
       <RequestForm mentor={{ id: m.id, name: m.full_name, program: m.program }} subjects={mentorSubs} initial={pre} />
     </>
   );

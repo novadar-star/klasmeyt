@@ -47,6 +47,9 @@ p {
       transition-[border-color,box-shadow] duration-150 ease-out
       focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:bg-paper disabled:text-muted;
   }
+  .field[aria-invalid="true"] {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-100;
+  }
   .label {
     @apply mb-1.5 block text-[13px] font-medium text-ink;
   }

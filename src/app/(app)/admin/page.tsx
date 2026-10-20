@@ -20,12 +20,12 @@ export default async function AdminHome() {
 
   return (
     <>
-      <PageHeader title="Mentor Application Queue" description="Review and approve peer mentor applications and mentee documents." />
+      <PageHeader title="Applications queue" description="Review mentor applications and mentee documents. Students are notified of every decision." />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Total applications" value={s.mentor_applicants ?? 0} />
         <Stat label="Pending review" value={s.pending_applications ?? 0} />
         <Stat label="Approved mentors" value={s.verified_mentors ?? 0} />
-        <Stat label="Rejected" value={mentors.filter((m) => m.status === "rejected").length} />
+        <Stat label="Rejected applications" value={mentors.filter((m) => m.status === "rejected").length} />
       </div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Registered mentees" value={s.mentees ?? 0} />
@@ -35,7 +35,7 @@ export default async function AdminHome() {
       </div>
 
       <Card className="mt-6 p-5">
-        <CardTitle action={<span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">Filter: all programs</span>}>Pending & Reviewed Submissions</CardTitle>
+        <CardTitle action={<Link href="/admin/mentors?status=all" className="text-xs font-semibold text-brand-700 hover:underline">View all mentors</Link>}>Mentor applications, newest needing review first</CardTitle>
         {queue.length ? (
           <div className="space-y-2">
             {queue.map((r) => (
@@ -59,7 +59,7 @@ export default async function AdminHome() {
       </Card>
 
       <Card className="mt-6 p-5">
-        <CardTitle action={<Link href="/admin/mentees" className="text-xs font-semibold text-brand-700 hover:underline">View all</Link>}>Mentee Verification</CardTitle>
+        <CardTitle action={<Link href="/admin/mentees" className="text-xs font-semibold text-brand-700 hover:underline">View all</Link>}>Mentees waiting for verification</CardTitle>
         {menteeQueue.length ? (
           <div className="space-y-2">
             {menteeQueue.map((r) => (

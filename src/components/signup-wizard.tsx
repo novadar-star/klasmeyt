@@ -31,30 +31,45 @@ export function SignupWizard({ role }: { role: Role }) {
   const [cv, setCv] = useState<File | null>(null);
   const [consent, setConsent] = useState(false);
 
-  function checkProfile(): string | null {
-    if (!f.full_name.trim()) return "Enter your full name.";
-    if (!/^\S+@\S+\.\S+$/.test(f.email)) return "Enter a valid email address.";
-    if (f.password.length < 8) return "Use at least 8 characters for your password.";
-    if (f.password !== f.confirm) return "The passwords don't match.";
-    if (!f.program.trim()) return "Enter your academic program.";
-    if (!f.year_level) return "Choose your year level.";
-    if (!subjects.length) return role === "mentee" ? "Choose at least one subject you need help with." : "Choose at least one subject you can mentor.";
-    if (!validSlots(slots)) return "Add at least one availability slot, with the end time after the start time.";
-    if (role === "mentor" && !f.intro.trim()) return "Write a short introduction for your mentor profile.";
+  // Each check returns [message, id of the field to focus] so the student lands on what needs fixing.
+  type Problem = [string, string] | null;
+  function checkProfile(): Problem {
+    if (!f.full_name.trim()) return ["Enter your full name.", "name"];
+    if (!/^\S+@\S+\.\S+$/.test(f.email)) return ["Enter a valid email address.", "email"];
+    if (f.password.length < 8) return ["Use at least 8 characters for your password.", "pw"];
+    if (f.password !== f.confirm) return ["The passwords don't match.", "pw2"];
+    if (!f.program.trim()) return ["Enter your academic program.", "prog"];
+    if (!f.year_level) return ["Choose your year level.", "yr"];
+    if (!subjects.length) return [role === "mentee" ? "Choose at least one subject you need help with." : "Choose at least one subject you can mentor.", "subjects"];
+    if (!validSlots(slots)) return ["Add at least one availability slot, with the end time after the start time.", "availability"];
+    if (role === "mentor" && !f.intro.trim()) return ["Write a short introduction for your mentor profile.", "intro"];
     return null;
   }
-  function checkDocs(): string | null {
-    if (role === "mentee" && (!coe || !sid)) return "Upload both your Certificate of Enrollment and Student ID.";
-    if (role === "mentor" && (!sid || !record || !cv)) return "Upload your Student ID or COR, academic record, and CV.";
-    if (role === "mentor" && !consent) return "Agree to the data privacy notice to submit your application.";
+  function checkDocs(): Problem {
+    if (role === "mentee" && !coe) return ["Upload your Certificate of Enrollment.", "doc-coe"];
+    if (!sid) return [role === "mentee" ? "Upload your Student ID." : "Upload your Student ID or COR.", "doc-sid"];
+    if (role === "mentor" && !record) return ["Upload your grades for the subjects you'll mentor.", "doc-record"];
+    if (role === "mentor" && !cv) return ["Upload your CV.", "doc-cv"];
+    if (role === "mentor" && !consent) return ["Agree to the data privacy notice to submit your application.", "consent"];
     return null;
+  }
+  const [badField, setBadField] = useState<string | null>(null);
+  const [partial, setPartial] = useState(false);
+  function report(p: Problem) {
+    setError(p ? p[0] : null);
+    setBadField(p ? p[1] : null);
+    if (p) {
+      const el = document.getElementById(p[1]);
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      (el as HTMLElement | null)?.focus({ preventScroll: true });
+    }
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (role === "mentor" && step === 0) {
       const v = checkProfile();
-      setError(v);
+      report(v);
       if (!v) {
         setStep(1);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -62,10 +77,12 @@ export function SignupWizard({ role }: { role: Role }) {
       return;
     }
     const v = checkProfile() ?? checkDocs();
-    if (v) return setError(v);
+    if (v) return report(v);
     setBusy(true);
     setError(null);
+    setBadField(null);
     const supabase = createClient();
+    let created = false;
     try {
       const { data, error } = await supabase.auth.signUp({
         email: f.email.trim().toLowerCase(),
@@ -75,6 +92,7 @@ export function SignupWizard({ role }: { role: Role }) {
       if (error) throw error;
       if (!data.session || !data.user) throw new Error("Your account was created, but email confirmation is turned on in Supabase. Turn it off, then log in.");
       const uid = data.user.id;
+      created = true;
       const { error: pe } = await supabase
         .from("profiles")
         .update({
@@ -110,7 +128,14 @@ export function SignupWizard({ role }: { role: Role }) {
       router.refresh();
     } catch (err) {
       const m = errMsg(err);
-      setError(/already (been )?registered/i.test(m) ? "An account with this email already exists. Log in instead." : m);
+      if (created) {
+        // The account exists and the student is signed in, but a later step (profile, subjects, or an upload) failed.
+        // Retrying this form would only say "already registered", so send them to the page where they can finish.
+        setPartial(true);
+        setError(`Your account was created, but this step didn't finish: ${m}. Open your status page to upload any missing documents.`);
+      } else {
+        setError(/already (been )?registered/i.test(m) ? "An account with this email already exists. Log in instead." : m);
+      }
       setBusy(false);
     }
   }
@@ -138,18 +163,18 @@ export function SignupWizard({ role }: { role: Role }) {
       <form onSubmit={submit} noValidate className="space-y-6 rounded-panel border border-line bg-white p-6 sm:p-8">
         {step === 0 && (
           <>
-            <Section title={role === "mentee" ? "Your account and program" : "Your account and program"}>
+            <Section title="Your account and program">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Full name" htmlFor="name"><input id="name" name="name" className="field" placeholder="Juan Dela Cruz" value={f.full_name} onChange={set("full_name")} autoComplete="name" /></Field>
-                <Field label="Adamson email" htmlFor="email"><input id="email" name="email" type="email" inputMode="email" spellCheck={false} className="field" placeholder="juan.delacruz@adamson.edu.ph" value={f.email} onChange={set("email")} autoComplete="email" /></Field>
-                <Field label="Password" htmlFor="pw"><input id="pw" name="new-password" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
-                <Field label="Confirm password" htmlFor="pw2"><input id="pw2" name="confirm-password" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" /></Field>
+                <Field label="Full name" htmlFor="name"><input id="name" aria-invalid={badField === "name" || undefined} name="name" className="field" placeholder="Juan Dela Cruz" value={f.full_name} onChange={set("full_name")} autoComplete="name" /></Field>
+                <Field label="Adamson email" htmlFor="email"><input id="email" aria-invalid={badField === "email" || undefined} name="email" type="email" inputMode="email" spellCheck={false} className="field" placeholder="juan.delacruz@adamson.edu.ph" value={f.email} onChange={set("email")} autoComplete="email" /></Field>
+                <Field label="Password" htmlFor="pw"><input id="pw" aria-invalid={badField === "pw" || undefined} name="new-password" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
+                <Field label="Confirm password" htmlFor="pw2"><input id="pw2" aria-invalid={badField === "pw2" || undefined} name="confirm-password" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" /></Field>
                 <Field label="Academic program" htmlFor="prog" hint="Shown for reference only. It doesn't limit matching.">
-                  <input id="prog" list="programs" className="field" placeholder="BS Civil Engineering…" value={f.program} onChange={set("program")} />
+                  <input id="prog" aria-invalid={badField === "prog" || undefined} list="programs" className="field" placeholder="BS Civil Engineering…" value={f.program} onChange={set("program")} />
                   <datalist id="programs">{PROGRAMS.map((p) => <option key={p} value={p} />)}</datalist>
                 </Field>
-                <Field label={role === "mentor" ? "Year level" : "Year level"} htmlFor="yr">
-                  <select id="yr" className="field" value={f.year_level} onChange={set("year_level")}>
+                <Field label="Year level" htmlFor="yr">
+                  <select id="yr" aria-invalid={badField === "yr" || undefined} className="field" value={f.year_level} onChange={set("year_level")}>
                     <option value="">Choose…</option>
                     {YEAR_LEVELS.map((y) => <option key={y}>{y}</option>)}
                   </select>
@@ -161,17 +186,19 @@ export function SignupWizard({ role }: { role: Role }) {
               <p className="rounded-control bg-paper px-3 py-2 text-xs text-muted">
                 {role === "mentee" ? "Pick the subjects you're currently taking." : "Pick only subjects you've completed. You'll attach your grades on the next step."}
               </p>
-              <SubjectPicker value={subjects} onChange={setSubjects} />
+              <SubjectPicker id="subjects" value={subjects} onChange={setSubjects} invalid={badField === "subjects"} />
             </Section>
 
             <Section title={role === "mentee" ? "When you're free to study" : "Introduction and availability"}>
               {role === "mentor" && (
                 <Field label="Introduction mentees will see" htmlFor="intro">
-                  <textarea id="intro" rows={3} className="field" placeholder="Hello! I'm a 4th year student who topped Calculus 2…" value={f.intro} onChange={set("intro")} />
+                  <textarea id="intro" aria-invalid={badField === "intro" || undefined} rows={3} className="field" placeholder="Hello! I'm a 4th year student who topped Calculus 2…" value={f.intro} onChange={set("intro")} />
                 </Field>
               )}
-              <Field label={role === "mentor" ? "Weekly availability" : "Weekly availability"} hint="Weekly free times. Matching and session scheduling use these.">
-                <AvailabilityEditor value={slots} onChange={setSlots} />
+              <Field label="Weekly availability" hint="The times you're free every week. Matching and session scheduling use these.">
+                <div id="availability" tabIndex={-1} className="rounded-control focus:outline-none">
+                  <AvailabilityEditor value={slots} onChange={setSlots} />
+                </div>
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Preferred schedule" htmlFor="pref"><input id="pref" className="field" placeholder="Mondays & Wednesdays, afternoons…" value={f.preferred_schedule} onChange={set("preferred_schedule")} /></Field>
@@ -207,16 +234,16 @@ export function SignupWizard({ role }: { role: Role }) {
             <p className="text-xs text-muted">Files are stored privately. Only you and Klasmeyt administrators can open them{role === "mentor" ? " (verified mentees can view your CV once you're approved)" : ""}.</p>
             {role === "mentee" ? (
               <>
-                <FilePick label="1. Certificate of Enrollment (COE)" file={coe} onChange={setCoe} required />
-                <FilePick label="2. Student ID" file={sid} onChange={setSid} required />
+                <FilePick id="doc-coe" label="Certificate of Enrollment (COE)" file={coe} onChange={setCoe} required />
+                <FilePick id="doc-sid" label="Student ID" file={sid} onChange={setSid} required />
               </>
             ) : (
               <>
-                <FilePick label="1. Student ID or Certificate of Registration (Proof of Enrollment)" file={sid} onChange={setSid} required />
-                <FilePick label="2. Academic Record / Proof of Completed Subject (Grades)" file={record} onChange={setRecord} required hint="Grades portal screenshot or TOR. PDF, PNG, JPG (max 10MB)" />
-                <FilePick label="3. Student CV / Resume" file={cv} onChange={setCv} required />
+                <FilePick id="doc-sid" label="Student ID or Certificate of Registration (COR)" file={sid} onChange={setSid} required />
+                <FilePick id="doc-record" label="Grades for the subjects you'll mentor" file={record} onChange={setRecord} required hint="A grades portal screenshot or your TOR. PDF, PNG, or JPG, up to 10 MB" />
+                <FilePick id="doc-cv" label="CV or resume" file={cv} onChange={setCv} required />
                 <div className="rounded-control border border-line bg-paper p-4">
-                  <p className="text-xs font-semibold text-brand-700">Data privacy notice & compliance</p>
+                  <p className="text-xs font-semibold text-brand-700">Data privacy notice</p>
                   <p className="mt-2 text-xs leading-relaxed text-muted">
                     In compliance with Republic Act No. 10173 (Data Privacy Act of 2012), the credentials and documents you submit will only be
                     processed to verify your eligibility as a Klasmeyt peer mentor and to match you with mentees. They are accessible only to
@@ -224,7 +251,7 @@ export function SignupWizard({ role }: { role: Role }) {
                     deletion of your data at any time.
                   </p>
                   <label className="mt-3 flex items-start gap-2 text-sm font-medium text-ink">
-                    <input type="checkbox" className="mt-0.5 size-4 accent-brand-600" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+                    <input id="consent" type="checkbox" className="mt-0.5 size-4 accent-brand-600" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
                     I consent to the official processing of my academic documents for verification purposes.
                   </label>
                 </div>
@@ -233,7 +260,14 @@ export function SignupWizard({ role }: { role: Role }) {
           </Section>
         )}
 
-        {error ? <p className="rounded-control bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p> : null}
+        {error ? (
+          <div className="rounded-control bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+            <p>{error}</p>
+            {partial ? (
+              <a href="/status" className="mt-2 inline-block font-semibold text-red-800 underline underline-offset-4">Go to my status page</a>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="flex flex-col items-center gap-3 pt-2">
           <div className="flex gap-3">
@@ -249,7 +283,7 @@ export function SignupWizard({ role }: { role: Role }) {
               ? "An administrator verifies your COE and Student ID before you can request mentors."
               : step === 0
               ? "Step 1 of 2. You'll upload your academic proof on the next step."
-              : "Step 2 of 2. Applications generally take 1–2 working days to review."}
+              : "Step 2 of 2. You'll get a notification in Klasmeyt when an administrator reviews your application."}
           </p>
         </div>
       </form>

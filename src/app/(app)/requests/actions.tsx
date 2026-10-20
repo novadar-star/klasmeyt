@@ -53,14 +53,14 @@ export function RespondRequest({ id, subjectId, menteeName, groups }: { id: stri
     if (!accept) {
       toast.success("Request declined");
     } else {
-      toast.success(mode === "existing_group" ? `${menteeName} was invited to the group` : "Request accepted. A chatbox was created.");
+      toast.success(mode === "existing_group" ? `${menteeName} was invited to the group` : "Request accepted. Your chat is ready.");
       if (data && mode !== "existing_group") router.push(`/chat/${data}`);
     }
     router.refresh();
   }
 
   const opts: { v: Mode; title: string; body: string; disabled?: boolean }[] = [
-    { v: "individual", title: "One-on-one", body: "Create a private chatbox with this mentee." },
+    { v: "individual", title: "One-on-one", body: "Start a private chat with this mentee." },
     { v: "existing_group", title: "Add to an existing group", body: groups.length ? "The mentee sees a group notice and joins when they accept." : `You have no ${subjectName(subjectId)} groups yet.`, disabled: !groups.length },
     { v: "new_group", title: "Start a new group", body: "Create a group chat for this subject. You can add more compatible mentees later." },
   ];

@@ -28,7 +28,7 @@ export default async function ReviewUser({ params }: { params: { id: string } })
   return (
     <>
       <PageHeader
-        title={isMentor ? "Review Mentor Application" : "Review Mentee Documents"}
+        title={isMentor ? "Mentor application" : "Mentee documents"}
         description={<Link href={isMentor ? "/admin" : "/admin/mentees"} className="hover:underline">← Back to {isMentor ? "applications queue" : "mentee verification"}</Link>}
        
       />

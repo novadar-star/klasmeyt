@@ -61,8 +61,8 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
             Group chat. You see messages from when you joined ({fmtDate(joinedAt)}) onward.
           </p>
         ) : null}
-        {!msgs.length ? <p className="py-16 text-center text-sm text-muted">No messages yet. Start the conversation.</p> : null}
-        <div className="mx-auto max-w-3xl space-y-2">
+        {!msgs.length ? <p className="py-16 text-center text-sm text-muted">No messages yet. Say hello and mention what you&rsquo;re working on.</p> : null}
+        <div className="mx-auto max-w-3xl space-y-2" role="log" aria-live="polite" aria-label="Messages">
           {msgs.map((m, i) => {
             const mine = m.sender_id === me;
             const day = fmtDate(m.created_at);
@@ -95,7 +95,7 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
               (e.currentTarget.form as HTMLFormElement).requestSubmit();
             }

@@ -6,7 +6,7 @@ import { SlotList } from "@/components/avail";
 import { subjectName } from "@/lib/utils";
 import type { Slot } from "@/lib/types";
 
-export const metadata = { title: "My Subjects" };
+export const metadata = { title: "My subjects" };
 
 export default async function SubjectsPage() {
   const { supabase, profile } = await requireVerified("mentor");
@@ -17,17 +17,17 @@ export default async function SubjectsPage() {
   ]);
   return (
     <>
-      <PageHeader title="My Subjects" description="The subjects you mentor and your weekly availability." action={<Button asChild size="sm" variant="secondary"><Link href="/profile">Edit in profile</Link></Button>} />
+      <PageHeader title="My subjects" description="The subjects you mentor and the hours you're free each week." action={<Button asChild size="sm" variant="secondary"><Link href="/profile">Edit in profile</Link></Button>} />
       <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-3">
           {(subs ?? []).map(({ subject_id }) => {
             const gs = groups.filter((g) => g.subject_id === subject_id);
             const mentees = new Set(gs.flatMap((g) => g.members.filter((m) => m.status === "active").map((m) => m.mentee_id)));
             return (
-              <Card key={subject_id} className="flex items-center justify-between gap-3 border-brand-300 p-5">
+              <Card key={subject_id} className="flex items-center justify-between gap-3 p-5">
                 <div>
                   <p className="font-semibold text-brand-800">{subjectName(subject_id)}</p>
-                  <p className="text-xs text-muted">{mentees.size} active {mentees.size === 1 ? "mentee" : "mentees"} · {gs.filter((g) => g.kind === "group").length} groups</p>
+                  <p className="text-xs text-muted">{mentees.size} active {mentees.size === 1 ? "mentee" : "mentees"}, {gs.filter((g) => g.kind === "group").length} study {gs.filter((g) => g.kind === "group").length === 1 ? "group" : "groups"}</p>
                 </div>
                 <Button asChild variant="secondary" size="sm"><Link href="/mentees">View mentees</Link></Button>
               </Card>

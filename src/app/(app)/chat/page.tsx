@@ -25,7 +25,7 @@ export default async function ChatList() {
 
   return (
     <>
-      <PageHeader title="Messages" description="Every accepted partnership and mentoring group has its own chatbox." />
+      <PageHeader title="Messages" description="Every partnership and study group has its own chat." />
       {groups.length ? (
         <Card className="divide-y divide-line overflow-hidden">
           {groups.map((g) => {
@@ -43,12 +43,12 @@ export default async function ChatList() {
                     <Badge color={g.kind === "group" ? "violet" : "teal"}>{subjectName(g.subject_id)}</Badge>
                   </div>
                   <p className="truncate text-xs text-muted">
-                    {l ? `${l.sender_id === profile.id ? "You" : people[l.sender_id]?.full_name.split(" ")[0] ?? ""}: ${l.body}` : "No messages yet. Say hi!"}
+                    {l ? `${l.sender_id === profile.id ? "You" : people[l.sender_id]?.full_name.split(" ")[0] ?? ""}: ${l.body}` : "No messages yet."}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   {l ? <span className="text-[11px] text-muted">{relTime(l.created_at)}</span> : null}
-                  {isUnread ? <span className="size-2 rounded-full bg-brand-600" aria-label="Unread" /> : null}
+                  {isUnread ? <span className="size-2 rounded-full bg-brand-600" role="img" aria-label="Unread" /> : null}
                 </div>
               </Link>
             );
@@ -56,7 +56,7 @@ export default async function ChatList() {
         </Card>
       ) : (
         <Empty title="No chats yet" action={profile.role === "mentee" ? <Button asChild variant="primary"><Link href="/find">Find a mentor</Link></Button> : undefined}>
-          A chatbox opens automatically once a partnership request is accepted.
+          A chat opens automatically when a mentor accepts a request.
         </Empty>
       )}
     </>

@@ -4,13 +4,13 @@ import { slotsFor, subjectsFor } from "@/lib/queries";
 import { PageHeader } from "@/components/ui";
 import { AdminPeople } from "@/components/admin-people";
 
-export const metadata = { title: "Verified Mentors" };
+export const metadata = { title: "Mentors" };
 
 export default async function Page({ searchParams }: { searchParams: { status?: string } }) {
   const { supabase } = await requireRole("admin");
   const filter = searchParams.status ?? "verified";
   const all = await applicants(supabase, "mentor");
-  const rows = all.filter((r) => (filter === "" ? true : filter === "open" ? OPEN_STATUSES.includes(r.status) : r.status === filter));
+  const rows = all.filter((r) => (filter === "all" ? true : filter === "open" ? OPEN_STATUSES.includes(r.status) : r.status === filter));
   const ids = rows.map((r) => r.user_id);
   const [subs, slots, { data: reqs }] = await Promise.all([
     subjectsFor(supabase, ids),
@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: { status?: 
   });
   return (
     <>
-      <PageHeader title="Verified Mentors" description="Mentor profiles, subjects, availability, and partnership activity." />
+      <PageHeader title="Mentors" description="Mentor profiles, subjects, availability, and partnership activity." />
       <AdminPeople rows={rows} base="/admin/mentors" filter={filter} subs={subs} slots={slots} counts={counts} kind="mentor" />
     </>
   );

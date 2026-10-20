@@ -72,9 +72,15 @@ export function manilaToISO(date: string, time: string) {
   return new Date(`${date}T${time}:00+08:00`).toISOString();
 }
 
-/** Effective status: a scheduled session whose end time passed shows as completed */
+/**
+ * Effective status shown to people:
+ *  - a scheduled session whose end time passed shows as completed
+ *  - a pending session whose start time passed was never confirmed: "expired" (nothing left to respond to)
+ */
 export function sessionStatus(s: { status: string; starts_at: string; duration_min: number }) {
-  if (s.status === "scheduled" && new Date(s.starts_at).getTime() + s.duration_min * 60000 < Date.now()) return "completed";
+  const start = new Date(s.starts_at).getTime();
+  if (s.status === "scheduled" && start + s.duration_min * 60000 < Date.now()) return "completed";
+  if (s.status === "pending" && start <= Date.now()) return "expired";
   return s.status;
 }
 

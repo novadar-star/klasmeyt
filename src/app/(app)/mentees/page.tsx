@@ -2,12 +2,12 @@ import Link from "next/link";
 import { requireVerified } from "@/lib/auth";
 import { myGroups, profilesById, slotsFor } from "@/lib/queries";
 import { Button, Card, Empty, PageHeader } from "@/components/ui";
-import { Badge, StatusBadge } from "@/components/badges";
+import { StatusBadge } from "@/components/badges";
 import { daysText, timeText } from "@/components/avail";
 import { subjectName } from "@/lib/utils";
 import { AddToGroup, RenameGroup } from "./group-tools";
 
-export const metadata = { title: "My Mentees" };
+export const metadata = { title: "My mentees" };
 
 export default async function MenteesPage() {
   const { supabase, profile } = await requireVerified("mentor");
@@ -22,7 +22,7 @@ export default async function MenteesPage() {
 
   return (
     <>
-      <PageHeader title="My Mentees" description="Monitor accepted peer partnerships and schedule review blocks." />
+      <PageHeader title="My mentees" description="Everyone you've accepted, one-on-one and in study groups." />
 
       <p className="eyebrow mb-3">One-on-one partnerships</p>
       {individuals.length ? (
@@ -37,16 +37,16 @@ export default async function MenteesPage() {
                     <p className="text-lg font-semibold text-brand-800">{p?.full_name}</p>
                     <p className="text-xs text-muted">{[p?.year_level, p?.program].filter(Boolean).join(" • ")}</p>
                   </div>
-                  <Badge color="teal">Partnership accepted</Badge>
+                  <span className="chip">{subjectName(g.subject_id)}</span>
                 </div>
-                <div className="mt-4 grid gap-3 border-t border-line pt-4 sm:grid-cols-2">
-                  <div><p className="eyebrow">Engagement subject</p><p className="mt-1 text-sm font-semibold text-brand-700">{subjectName(g.subject_id)}</p></div>
-                  <div><p className="eyebrow">Sync availability</p><p className="mt-1 text-sm">{daysText(slots[m.mentee_id])} ({timeText(slots[m.mentee_id])})</p></div>
+                <div className="mt-4 border-t border-line pt-4">
+                  <p className="eyebrow">Free on</p>
+                  <p className="mt-1 text-sm">{daysText(slots[m.mentee_id])}, {timeText(slots[m.mentee_id])}</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button asChild variant="secondary"><Link href={`/mentees/${m.mentee_id}`}>View profile</Link></Button>
                   <Button asChild variant="primary"><Link href={`/sessions/new?group=${g.id}`}>Schedule session</Link></Button>
-                  <Button asChild variant="quiet"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
+                  <Button asChild variant="secondary"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
+                  <Button asChild variant="quiet"><Link href={`/mentees/${m.mentee_id}`}>View profile</Link></Button>
                   <AddToGroup menteeId={m.mentee_id} menteeName={p?.full_name ?? "Mentee"} groups={teams.filter((t) => t.subject_id === g.subject_id && !t.members.some((x) => x.mentee_id === m.mentee_id && x.status !== "left")).map((t) => ({ id: t.id, name: t.name }))} />
                 </div>
               </Card>
@@ -57,7 +57,7 @@ export default async function MenteesPage() {
         <Empty title="No one-on-one mentees yet">Accept a partnership request to start a private chatbox.</Empty>
       )}
 
-      <p className="eyebrow mb-3 mt-8">Mentoring groups</p>
+      <p className="eyebrow mb-3 mt-8">Study groups</p>
       {teams.length ? (
         <div className="grid gap-3 lg:grid-cols-2">
           {teams.map((g) => {
@@ -91,7 +91,7 @@ export default async function MenteesPage() {
           })}
         </div>
       ) : (
-        <Empty title="No groups yet">When accepting a request, choose “Start a new group” to create one. Then invite other compatible mentees from here.</Empty>
+        <Empty title="No study groups yet">When you accept a request, choose &ldquo;Start a new group&rdquo; to create one. Then invite other mentees for the same subject from here.</Empty>
       )}
     </>
   );

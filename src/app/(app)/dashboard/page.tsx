@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { CalendarDays, FileText, UserSearch, Users } from "lucide-react";
+import { CalendarDays, ChevronRight } from "lucide-react";
 import { requireMe } from "@/lib/auth";
 import { myGroups, profilesById, sessionsFor } from "@/lib/queries";
 import { Card, CardTitle, PageHeader, Stat } from "@/components/ui";
-import { VerifiedMentorBadge } from "@/components/badges";
+import { Badge } from "@/components/badges";
 import { fmtClock, fmtDate, sessionStatus, subjectName, DAYS, fmtTime } from "@/lib/utils";
 import type { Slot } from "@/lib/types";
 
@@ -24,23 +24,26 @@ export default async function Dashboard() {
 
   const nextCard = (
     <Card className="p-5">
-      <CardTitle>{profile.role === "mentor" ? "Next session" : "Next session"}</CardTitle>
+      <CardTitle>Next session</CardTitle>
       {next ? (
         <Link href="/sessions" className="block rounded-control bg-paper p-4 ring-1 ring-inset ring-line hover:ring-brand-300">
-          {profile.role === "mentee" ? <VerifiedMentorBadge /> : null}
-          <p className="mt-2 font-semibold text-brand-700">{subjectName(next.subject_id)} {next.format === "group" ? "Group Session" : "Review Session"}</p>
-          <p className="text-xs text-muted">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-semibold text-brand-800">{subjectName(next.subject_id)} {next.format === "group" ? "group session" : "session"}</p>
+            {next.status === "pending" ? <Badge color="pad">Waiting for confirmation</Badge> : <Badge color="blue">Scheduled</Badge>}
+          </div>
+          <p className="mt-0.5 text-xs text-muted">
             {profile.role === "mentor"
               ? `With ${next.participants.map((p) => people[p.mentee_id]?.full_name.split(" ")[0]).filter(Boolean).join(", ")}`
               : `With ${people[next.mentor_id]?.full_name ?? "your mentor"}`}
-            {next.status === "pending" ? " · awaiting confirmation" : ""}
           </p>
           <p className="mt-2 flex items-center gap-1.5 text-xs text-ink">
-            <CalendarDays className="size-3.5 text-muted" /> {fmtDate(next.starts_at)} · {fmtClock(next.starts_at)} – {fmtClock(new Date(new Date(next.starts_at).getTime() + next.duration_min * 60000).toISOString())}
+            <CalendarDays className="size-3.5 text-muted" aria-hidden /> {fmtDate(next.starts_at)}, {fmtClock(next.starts_at)} – {fmtClock(new Date(new Date(next.starts_at).getTime() + next.duration_min * 60000).toISOString())}
           </p>
         </Link>
       ) : (
-        <p className="text-sm text-muted">No upcoming sessions yet.</p>
+        <p className="text-sm text-muted">
+          No upcoming sessions. {profile.role === "mentor" ? "Schedule one from My mentees." : "Once a mentor accepts you, schedule one from My study partners."}
+        </p>
       )}
     </Card>
   );
@@ -53,11 +56,11 @@ export default async function Dashboard() {
     const mentees = new Set(groups.flatMap((g) => g.members.filter((m) => m.status === "active").map((m) => m.mentee_id)));
     return (
       <>
-        <PageHeader title={`Welcome, ${first}`} description={[profile.year_level, profile.program, "Verified Mentor"].filter(Boolean).join(" | ")} />
+        <PageHeader title={`Welcome, ${first}`} description={[profile.year_level, profile.program, "verified mentor"].filter(Boolean).join(", ")} />
         <div className="grid gap-4 sm:grid-cols-3">
-          <Link href="/requests"><Stat label="Pending partnerships" value={`${pending ?? 0} ${pending === 1 ? "Request" : "Requests"}`} /></Link>
-          <Link href="/mentees"><Stat label="Active mentees" value={`${mentees.size} ${mentees.size === 1 ? "Mentee" : "Mentees"}`} /></Link>
-          <Link href="/subjects"><Stat label="My supported subjects" value={`${subjects.length} ${subjects.length === 1 ? "Course" : "Courses"}`} /></Link>
+          <Link href="/requests" className="rounded-panel"><Stat label="Requests waiting for you" value={pending ?? 0} /></Link>
+          <Link href="/mentees" className="rounded-panel"><Stat label="Active mentees" value={mentees.size} /></Link>
+          <Link href="/subjects" className="rounded-panel"><Stat label="Subjects you mentor" value={subjects.length} /></Link>
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Card className="p-5">
@@ -72,8 +75,8 @@ export default async function Dashboard() {
             <CardTitle>Your weekly availability</CardTitle>
             <ul className="space-y-2">
               {((slots ?? []) as Slot[]).map((s) => (
-                <li key={s.id} className="flex items-center gap-2 rounded-control bg-paper px-3 py-2 text-sm">
-                  <span className="size-1.5 rounded-full bg-pad-500" /> {DAYS[s.day]} · {fmtTime(s.start_time)} – {fmtTime(s.end_time)}
+                <li key={s.id} className="flex items-center justify-between gap-2 rounded-control bg-paper px-3 py-2 text-sm">
+                  <span className="font-medium">{DAYS[s.day]}</span> <span className="text-muted">{fmtTime(s.start_time)} – {fmtTime(s.end_time)}</span>
                 </li>
               ))}
             </ul>
@@ -84,35 +87,54 @@ export default async function Dashboard() {
     );
   }
 
-  const tiles = [
-    { href: verified ? "/find" : "/status", icon: UserSearch, tint: "bg-brand-50 text-brand-700", title: "Find a Mentor", body: verified ? `Find verified mentors for ${subjects.map(subjectName).join(", ") || "your subjects"}` : "Available once your account is verified" },
-    { href: "/partners", icon: Users, tint: "bg-brand-50 text-brand-600", title: "My Study Partner", body: "Connect with your assigned study buddies and peer mentors" },
-    { href: "/requests", icon: FileText, tint: "bg-pad-50 text-pad-800", title: "Partnership Requests", body: "Check your pending and answered partnership requests" },
+  const [{ count: waiting }, partners] = await Promise.all([
+    supabase.from("partnership_requests").select("id", { count: "exact", head: true }).eq("mentee_id", profile.id).eq("status", "pending"),
+    myGroups(supabase, profile.id, "mentee"),
+  ]);
+  const activeCount = partners.filter((g) => g.members.some((m) => m.mentee_id === profile.id && m.status === "active")).length;
+  const invites = partners.filter((g) => g.members.some((m) => m.mentee_id === profile.id && m.status === "invited")).length;
+  const actions = [
+    {
+      href: verified ? "/find" : "/status",
+      title: "Find a mentor",
+      body: verified ? `Verified mentors for ${subjects.map(subjectName).join(", ") || "your subjects"} who are free when you are.` : "Unlocks once an administrator verifies your account.",
+    },
+    {
+      href: "/partners",
+      title: "My study partners",
+      body: invites ? `${invites} group ${invites === 1 ? "invite" : "invites"} waiting for your answer.` : activeCount ? `${activeCount} active ${activeCount === 1 ? "partnership" : "partnerships"}.` : "No partners yet. They appear here when a mentor accepts you.",
+    },
+    {
+      href: "/requests",
+      title: "Partnership requests",
+      body: waiting ? `${waiting} waiting for a mentor to answer.` : "Nothing waiting right now.",
+    },
   ];
 
   return (
     <>
-      <PageHeader title={`Welcome, ${first}`} description={[profile.program, "mentee"].filter(Boolean).join(" · ")} />
+      <PageHeader title={`Welcome, ${first}`} description={[profile.year_level, profile.program].filter(Boolean).join(", ")} />
       {!verified ? (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-control border border-pad-200 bg-pad-50 px-4 py-3 text-sm text-pad-800">
-          <span><span className="font-semibold">Verification pending.</span> An administrator is checking your COE and Student ID. You can search for mentors once you're verified.</span>
+          <span><span className="font-semibold">Verification in progress.</span> An administrator is checking your COE and Student ID. You can search for mentors once you&rsquo;re verified.</span>
           <Link href="/status" className="text-xs font-semibold text-pad-800 hover:underline">View status</Link>
         </div>
       ) : null}
-      <div className="grid gap-4 sm:grid-cols-3">
-        {tiles.map((t) => (
-          <Link key={t.title} href={t.href} className="rounded-panel border border-line bg-white p-5 transition-colors hover:border-brand-300">
-            <span className={`grid size-9 place-items-center rounded-control ${t.tint}`}><t.icon className="size-4" /></span>
-            <p className="mt-4 font-semibold text-brand-800">{t.title}</p>
-            <p className="mt-1 text-xs text-muted">{t.body}</p>
+      <Card className="divide-y divide-line">
+        {actions.map((t) => (
+          <Link key={t.title} href={t.href} className="group flex items-center gap-4 px-5 py-4 transition-colors duration-100 hover:bg-paper">
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-brand-800">{t.title}</span>
+              <span className="mt-0.5 block text-sm text-muted">{t.body}</span>
+            </span>
+            <ChevronRight className="size-4 shrink-0 text-muted transition-transform duration-150 ease-out group-hover:translate-x-0.5" aria-hidden />
           </Link>
         ))}
-      </div>
+      </Card>
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {nextCard}
         <Card className="p-5">
-          <CardTitle>Your subjects</CardTitle>
-          <p className="mb-3 text-xs text-muted">Based on the subjects you're taking</p>
+          <CardTitle action={<Link href="/profile" className="text-xs font-semibold text-brand-700 hover:underline">Edit</Link>}>Subjects you need help with</CardTitle>
           <div className="space-y-2">
             {subjects.length ? subjects.map((id) => (
               <p key={id} className="rounded-control border border-brand-300 bg-brand-50/50 px-3 py-2 text-xs font-semibold text-brand-700">{subjectName(id)}</p>

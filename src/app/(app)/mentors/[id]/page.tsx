@@ -18,7 +18,7 @@ export default async function MentorProfile({ params }: { params: { id: string }
 
   return (
     <>
-      <PageHeader title={`${m.full_name} - Peer Mentor Profile`} description="Adamson University peer mentoring" />
+      <PageHeader title={m.full_name} description={[m.year_level, m.program, "verified mentor"].filter(Boolean).join(", ")} />
       <div className="grid gap-4 lg:grid-cols-[22rem_1fr]">
         <div className="space-y-4">
           <Card className="p-6 text-center">
@@ -30,14 +30,14 @@ export default async function MentorProfile({ params }: { params: { id: string }
             </div>
           </Card>
           <Card className="p-6">
-            <h3 className="font-semibold text-brand-800">Availability &amp; format</h3>
-            <p className="eyebrow mt-4">Courses</p>
+            <h3 className="font-semibold text-brand-800">When and how they mentor</h3>
+            <p className="eyebrow mt-4">Subjects</p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {(subs[m.id] ?? []).map((id) => <span key={id} className="text-sm font-semibold text-brand-700">{subjectName(id)}</span>)}
+              {(subs[m.id] ?? []).map((id) => <span key={id} className="chip">{subjectName(id)}</span>)}
             </div>
-            <p className="eyebrow mt-4">Availability schedule</p>
+            <p className="eyebrow mt-4">Free every week</p>
             <div className="mt-1.5"><SlotList slots={slots[m.id]} /></div>
-            <p className="eyebrow mt-4">Format & modality</p>
+            <p className="eyebrow mt-4">Format and meeting place</p>
             <p className="mt-1 text-sm">{FORMAT_LABEL[m.mentoring_format ?? "both"]}{m.modality ? ` · ${m.modality}` : ""}</p>
           </Card>
         </div>
@@ -45,7 +45,7 @@ export default async function MentorProfile({ params }: { params: { id: string }
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="font-semibold text-brand-800">About this mentor</h3>
             <div className="flex gap-2">
-              <Button asChild variant="secondary" size="sm"><Link href={`/mentors/${m.id}/cv`}>View sample CV</Link></Button>
+              <Button asChild variant="secondary" size="sm"><Link href={`/mentors/${m.id}/cv`}>View CV</Link></Button>
               <Button asChild variant="primary" size="sm"><Link href={`/mentors/${m.id}/request`}>Request partnership</Link></Button>
             </div>
           </div>

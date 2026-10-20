@@ -21,7 +21,9 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
 
   const active = (members ?? []).filter((m) => m.status === "active");
   const people = await profilesById(supabase, [g.mentor_id, ...active.map((m) => m.mentee_id)]);
-  const { data: messages } = await supabase.from("messages").select("*").eq("group_id", g.id).order("created_at", { ascending: true }).limit(500);
+  // newest 500, shown oldest first
+  const { data: latest } = await supabase.from("messages").select("*").eq("group_id", g.id).order("created_at", { ascending: false }).limit(500);
+  const messages = (latest ?? []).reverse();
   const sessions = (await sessionsFor(supabase, { groupId: g.id })).filter((s) => ["pending", "scheduled"].includes(sessionStatus(s)));
 
   const title = profile.role === "mentee" && g.kind === "individual" ? people[g.mentor_id]?.full_name ?? g.name : g.name;
@@ -65,7 +67,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
           </div>
         ) : null}
       </div>
-      <ChatRoom groupId={g.id} me={profile.id} names={names} initial={messages ?? []} joinedAt={me?.joined_at ?? null} isGroup={g.kind === "group"} />
+      <ChatRoom groupId={g.id} me={profile.id} names={names} initial={messages} joinedAt={me?.joined_at ?? null} isGroup={g.kind === "group"} />
     </div>
   );
 }

@@ -41,7 +41,7 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
     if (isMentor && s.format === "group") {
       return (
         <>
-          <span className="text-sm text-muted">{allResponded ? `All responded · ${confirmed} confirmed` : "Waiting for mentees to respond"}</span>
+          <span className="text-sm text-muted">{allResponded ? `Everyone responded. ${confirmed} confirmed.` : "Waiting for mentees to respond."}</span>
           <Button size="sm" disabled={busy || !allResponded || confirmed === 0} onClick={() => rpc("finalize_session", { p_session: s.id, p_proceed: true }, "Session scheduled")}>
             Proceed with confirmed
           </Button>
@@ -52,7 +52,7 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
     if (isMentor) {
       return (
         <>
-          <span className="text-sm text-muted">Waiting for the mentee to confirm</span>
+          <span className="text-sm text-muted">Waiting for the mentee to confirm.</span>
           <ConfirmButton size="sm" variant="quiet" title="Cancel this session?" body="The mentee is notified." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel</ConfirmButton>
         </>
       );
@@ -60,14 +60,23 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
     if (mine?.response === "pending") {
       return (
         <>
-          <Button size="sm" variant="primary" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true }, "Attendance confirmed")}>Confirm attendance</Button>
-          <Button size="sm" variant="danger" disabled={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: false }, "Response sent")}>Cannot attend</Button>
+          <Button size="sm" variant="primary" loading={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true }, "Attendance confirmed")}>Confirm attendance</Button>
+          <ConfirmButton
+            size="sm"
+            title="Tell your mentor you can't attend?"
+            body={s.format === "group" ? "Your mentor is notified. The session can still go ahead with the others." : "This cancels the session and notifies your mentor. Either of you can propose another time."}
+            confirmLabel="I can't attend"
+            disabled={busy}
+            onConfirm={() => rpc("respond_session", { p_session: s.id, p_accept: false }, s.format === "group" ? "Your mentor was told you can't attend" : "Session cancelled. Your mentor was notified.")}
+          >
+            Can&rsquo;t attend
+          </ConfirmButton>
         </>
       );
     }
     return (
       <>
-        <span className="text-sm text-muted">{mine?.response === "confirmed" ? (s.mentor_confirmed ? "You confirmed · waiting for the mentor to finalize" : "Waiting for the mentor to confirm") : "You can't attend this one"}</span>
+        <span className="text-sm text-muted">{mine?.response === "confirmed" ? (s.mentor_confirmed ? "You confirmed. Waiting for the mentor to finalize." : "Waiting for your mentor to confirm and add the Teams link.") : "You said you can't attend this one."}</span>
         {s.proposed_by === me ? (
           <ConfirmButton size="sm" variant="quiet" title="Withdraw your proposal?" body="Your mentor is notified." confirmLabel="Withdraw proposal" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Proposal withdrawn")}>Withdraw</ConfirmButton>
         ) : null}

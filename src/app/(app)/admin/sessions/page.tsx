@@ -4,7 +4,7 @@ import { Card, Empty, PageHeader } from "@/components/ui";
 import { StatusBadge } from "@/components/badges";
 import { fmtDateTime, sessionStatus, subjectName } from "@/lib/utils";
 
-export const metadata = { title: "Mentoring Sessions" };
+export const metadata = { title: "Sessions" };
 
 export default async function AdminSessions() {
   const { supabase } = await requireRole("admin");
@@ -12,7 +12,7 @@ export default async function AdminSessions() {
   const people = await profilesById(supabase, sessions.flatMap((s) => [s.mentor_id, ...s.participants.map((p) => p.mentee_id)]));
   return (
     <>
-      <PageHeader title="Mentoring Sessions" description="Every proposed and scheduled session, with its Microsoft Teams link." />
+      <PageHeader title="Sessions" description="Every proposed and scheduled session, with its Microsoft Teams link." />
       {sessions.length ? (
         <Card className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">

@@ -8,9 +8,11 @@ import type { SessionFull } from "@/lib/queries";
 const DOT: Record<string, string> = {
   pending: "bg-pad-50 text-pad-800 ring-pad-200",
   scheduled: "bg-brand-50 text-brand-700 ring-brand-200",
-  completed: "bg-brand-50 text-brand-700 ring-brand-200",
-  cancelled: "bg-slate-50 text-slate-400 line-through ring-slate-200",
+  completed: "bg-slate-100 text-slate-600 ring-slate-200",
+  cancelled: "bg-white text-slate-500 line-through ring-slate-200",
+  expired: "bg-white text-slate-500 ring-slate-200",
 };
+const LEGEND: [string, string][] = [["pending", "Waiting for a response"], ["scheduled", "Scheduled"], ["completed", "Completed"], ["cancelled", "Cancelled"]];
 
 const ymd = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date(iso));
 
@@ -64,8 +66,8 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
           ))}
         </div>
         <div className="flex flex-wrap gap-3 px-5 py-3 text-[11px] text-muted">
-          {["pending", "scheduled", "completed", "cancelled"].map((k) => (
-            <span key={k} className="flex items-center gap-1.5"><span className={cn("size-2.5 rounded-sm ring-1 ring-inset", DOT[k])} /> {k[0].toUpperCase() + k.slice(1)}</span>
+          {LEGEND.map(([k, l]) => (
+            <span key={k} className="flex items-center gap-1.5"><span className={cn("size-2.5 rounded-sm ring-1 ring-inset", DOT[k])} aria-hidden /> {l}</span>
           ))}
         </div>
       </Card>

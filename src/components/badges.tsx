@@ -66,6 +66,7 @@ const S: Record<string, [string, Tone]> = {
   scheduled: ["Scheduled", "blue"],
   completed: ["Completed", "gray"],
   cancelled: ["Cancelled", "gray"],
+  expired: ["Not confirmed in time", "gray"],
   accepted: ["Partnership accepted", "blue"],
   declined: ["Declined", "red"],
   confirmed: ["Confirmed", "blue"],

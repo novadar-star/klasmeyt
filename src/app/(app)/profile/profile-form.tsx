@@ -68,21 +68,21 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
     <form onSubmit={save} className="max-w-3xl">
       <Card className="space-y-6 p-6 sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-brand-800">{isMentor ? "Mentor Profile Details" : "Mentee Profile Details"}</h2>
+          <h2 className="text-base font-semibold text-brand-800">{isMentor ? "Your mentor profile" : "Your profile"}</h2>
           <div className="flex flex-wrap gap-2">
             {isMentor && verified ? <VerifiedMentorBadge /> : null}
             {isMentor ? <VouchedBadge by={profile.vouched_by} /> : null}
-            {!isMentor ? <Badge color={verified ? "teal" : "amber"}>{verified ? "Verified mentee" : "Pending verification"}</Badge> : null}
+            {!isMentor ? <Badge color={verified ? "blue" : "pad"}>{verified ? "Verified mentee" : "Verification in progress"}</Badge> : null}
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Full Name (Locked)"><input className="field" value={profile.full_name} disabled /></Field>
-          <Field label="Adamson Email (Locked)"><input className="field" value={profile.email} disabled /></Field>
-          <Field label="Academic Program" htmlFor="p">
+          <Field label="Full name" hint="Ask an administrator to change this."><input className="field" value={profile.full_name} disabled /></Field>
+          <Field label="Adamson email" hint="Used to log in. It can't be changed here."><input className="field" value={profile.email} disabled /></Field>
+          <Field label="Academic program" htmlFor="p">
             <input id="p" list="programs" className="field" value={f.program} onChange={set("program")} />
             <datalist id="programs">{PROGRAMS.map((p) => <option key={p} value={p} />)}</datalist>
           </Field>
-          <Field label="Year Level" htmlFor="y">
+          <Field label="Year level" htmlFor="y">
             <select id="y" className="field" value={f.year_level} onChange={set("year_level")}>
               <option value="">Choose…</option>
               {YEAR_LEVELS.map((y) => <option key={y}>{y}</option>)}
@@ -90,19 +90,19 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
           </Field>
         </div>
 
-        <Section title={isMentor ? "Verified Supported Courses" : "Subjects I Need Help With"}>
+        <Section title={isMentor ? "Subjects you mentor" : "Subjects you need help with"}>
           <SubjectPicker value={subjects} onChange={setSubjects} />
         </Section>
 
-        <Section title="Weekly Availability Block">
-          <Field label="Availability"><AvailabilityEditor value={slots} onChange={setSlots} /></Field>
+        <Section title="When you're free">
+          <Field label="Weekly availability" hint="Matching and session scheduling use these hours."><AvailabilityEditor value={slots} onChange={setSlots} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Preferred Study Schedule" htmlFor="ps"><input id="ps" className="field" value={f.preferred_schedule} onChange={set("preferred_schedule")} /></Field>
-            <Field label={isMentor ? "Preferred Mentoring Modality" : "Preferred Modality"} htmlFor="mo">
+            <Field label="Preferred schedule" htmlFor="ps"><input id="ps" className="field" value={f.preferred_schedule} onChange={set("preferred_schedule")} /></Field>
+            <Field label="Where you prefer to meet" htmlFor="mo">
               <select id="mo" className="field" value={f.modality} onChange={set("modality")}>{MODALITIES.map((m) => <option key={m}>{m}</option>)}</select>
             </Field>
             {isMentor ? (
-              <Field label="Mentoring Format" htmlFor="mf">
+              <Field label="Mentoring format" htmlFor="mf">
                 <select id="mf" className="field" value={f.mentoring_format} onChange={set("mentoring_format")}>
                   <option value="both">One-on-one or group</option>
                   <option value="one_on_one">One-on-one only</option>
@@ -110,21 +110,21 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
                 </select>
               </Field>
             ) : (
-              <Field label="Academic Interests / Goals" htmlFor="ai"><input id="ai" className="field" value={f.interests} onChange={set("interests")} /></Field>
+              <Field label="Academic interests or goals" htmlFor="ai"><input id="ai" className="field" value={f.interests} onChange={set("interests")} /></Field>
             )}
           </div>
-          {isMentor && <Field label="Introduction for Mentor Profiles" htmlFor="in"><textarea id="in" rows={3} className="field" value={f.intro} onChange={set("intro")} /></Field>}
-          <Field label="About Me (Bio)" htmlFor="ab"><textarea id="ab" rows={3} className="field" value={f.about} onChange={set("about")} /></Field>
+          {isMentor && <Field label="Introduction mentees will see" htmlFor="in"><textarea id="in" rows={3} className="field" value={f.intro} onChange={set("intro")} /></Field>}
+          <Field label="About you" htmlFor="ab"><textarea id="ab" rows={3} className="field" value={f.about} onChange={set("about")} /></Field>
           {isMentor && (
             <>
-              <Field label="Academic Experience" htmlFor="ae"><textarea id="ae" rows={3} className="field" value={f.academic_experience} onChange={set("academic_experience")} /></Field>
-              <Field label="Experience & Skills" htmlFor="sa"><textarea id="sa" rows={2} className="field" value={f.skills_achievements} onChange={set("skills_achievements")} /></Field>
-              <Field label="Academic Interests" htmlFor="ai2"><input id="ai2" className="field" value={f.interests} onChange={set("interests")} /></Field>
+              <Field label="Academic experience" htmlFor="ae"><textarea id="ae" rows={3} className="field" value={f.academic_experience} onChange={set("academic_experience")} /></Field>
+              <Field label="Skills and achievements" htmlFor="sa"><textarea id="sa" rows={2} className="field" value={f.skills_achievements} onChange={set("skills_achievements")} /></Field>
+              <Field label="Academic interests" htmlFor="ai2"><input id="ai2" className="field" value={f.interests} onChange={set("interests")} /></Field>
             </>
           )}
         </Section>
         <div className="flex justify-center pt-2">
-          <Button type="submit" size="lg" disabled={busy}>{busy ? "Saving…" : "Save profile"}</Button>
+          <Button type="submit" size="lg" loading={busy}>Save profile</Button>
         </div>
       </Card>
     </form>

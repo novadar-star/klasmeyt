@@ -17,20 +17,27 @@ export default async function StatusPage() {
   const urls = await signDocs(supabase, (docs ?? []) as Doc[]);
   const hasDocs = (docs ?? []).length > 0;
 
-  // checklist state: done | current | todo | blocked
-  const reviewState = status === "verified" ? "done" : status === "rejected" || status === "info_requested" ? "blocked" : hasDocs ? "current" : "todo";
+  // checklist state: done | current | todo | blocked. Once verified, every step is done (seeded accounts may have no files).
+  const verified = status === "verified";
+  const reviewState = verified ? "done" : status === "rejected" || status === "info_requested" ? "blocked" : hasDocs ? "current" : "todo";
   const steps = [
-    { title: "Requirements Submitted", body: isMentor ? "Student ID, academic record, and CV uploaded." : "COE and Student ID uploaded.", state: hasDocs ? "done" : "current" },
-    ...(isMentor ? [{ title: "Privacy Notice Accepted", body: "Republic Act No. 10173 data agreement signed.", state: profile.privacy_consent_at ? "done" : "todo" }] : []),
-    { title: "Admin Academic Review", body: status === "under_review" ? "An administrator is reviewing your documents now." : "A Klasmeyt administrator verifies your records.", state: reviewState },
-    { title: isMentor ? "Mentor Portal Verification" : "Mentee Account Verified", body: isMentor ? "Your Mentor dashboard unlocks once your application is approved." : "Find a Mentor unlocks once you're verified.", state: status === "verified" ? "done" : "todo" },
+    { title: "Documents uploaded", body: isMentor ? "Student ID or COR, grades, and CV." : "COE and Student ID.", state: verified || hasDocs ? "done" : "current" },
+    ...(isMentor ? [{ title: "Privacy notice accepted", body: "Consent under the Data Privacy Act (RA 10173).", state: verified || profile.privacy_consent_at ? "done" : "todo" }] : []),
+    {
+      title: "Reviewed by an administrator",
+      body: status === "under_review" ? "An administrator is reviewing your documents now." : status === "info_requested" ? "The administrator needs something else from you. See the note below." : status === "rejected" ? "Not approved. See the note below." : "An administrator checks each file.",
+      state: reviewState,
+    },
+    { title: isMentor ? "Approved as a mentor" : "Account verified", body: isMentor ? "Mentees can find you, and your mentor tools unlock." : "Find a mentor unlocks.", state: verified ? "done" : "todo" },
   ];
 
   const heading =
-    status === "verified" ? (isMentor ? "Application Approved" : "Account Verified")
-    : status === "rejected" ? (isMentor ? "Application Not Approved" : "Verification Rejected")
-    : status === "info_requested" ? "Additional Information Requested"
-    : isMentor ? "Application Submitted" : "Verification Pending";
+    verified ? (isMentor ? "Application approved" : "Account verified")
+    : status === "rejected" ? (isMentor ? "Application not approved" : "Verification not approved")
+    : status === "info_requested" ? "More information needed"
+    : isMentor ? "Application submitted" : "Verification in progress";
+  // Pending mentors see this page without the app's page header, so the card heading is the page's h1.
+  const Heading = isMentor && !verified ? "h1" : "h2";
 
   const body = (
     <div className="space-y-6">
@@ -38,10 +45,7 @@ export default async function StatusPage() {
         <span className={cn("mx-auto grid size-12 place-items-center rounded-full", status === "rejected" ? "bg-red-50 text-red-500" : status === "verified" ? "bg-brand-50 text-brand-600" : "bg-pad-50 text-pad-500")}>
           {status === "rejected" ? <XCircle className="size-6" /> : status === "verified" ? <Check className="size-6" /> : <Clock className="size-6" />}
         </span>
-        <h1 className="mt-4 text-2xl font-semibold text-brand-800">{heading}</h1>
-        {status !== "verified" && status !== "rejected" ? (
-          <p className="mt-1 text-sm text-muted">Estimated verification wait time: <span className="font-semibold text-ink">1–2 business days</span></p>
-        ) : null}
+        <Heading className="display mt-4 text-[34px] text-brand-800">{heading}</Heading>
 
         <ol className="mx-auto mt-6 max-w-sm space-y-4 text-left">
           {steps.map((s, i) => (
@@ -55,11 +59,12 @@ export default async function StatusPage() {
                   s.state === "todo" && "bg-slate-100 text-slate-400"
                 )}
               >
-                {s.state === "done" ? <Check className="size-3" strokeWidth={3} /> : i + 1}
+                {s.state === "done" ? <Check className="size-3" strokeWidth={3} aria-hidden /> : i + 1}
+                <span className="sr-only">{s.state === "done" ? " (done)" : s.state === "current" ? " (in progress)" : s.state === "blocked" ? " (needs attention)" : " (not yet)"}</span>
               </span>
               <span>
-                <span className={cn("block text-sm font-semibold", s.state === "todo" ? "text-slate-400" : "text-brand-700")}>{s.title}</span>
-                <span className={cn("block text-xs", s.state === "todo" ? "text-slate-400" : "text-muted")}>{s.body}</span>
+                <span className={cn("block text-sm font-semibold", s.state === "todo" ? "text-slate-500" : "text-brand-800")}>{s.title}</span>
+                <span className={cn("block text-xs", s.state === "todo" ? "text-slate-500" : "text-muted")}>{s.body}</span>
               </span>
             </li>
           ))}
@@ -78,7 +83,7 @@ export default async function StatusPage() {
               <Button asChild size="sm" variant="primary"><Link href={isMentor ? "/dashboard" : "/find"}>{isMentor ? "Open mentor portal" : "Find a mentor"}</Link></Button>
             </div>
           ) : (
-            <><span className="font-semibold text-brand-700">System Note:</span> You'll get a Klasmeyt notification once your {isMentor ? "application" : "documents"} have been reviewed. Log in again anytime to check this page.</>
+            <>You&rsquo;ll get a notification in Klasmeyt when your {isMentor ? "application" : "documents"} are reviewed. You can check this page anytime.</>
           )}
         </div>
         {verification?.reviewed_at ? <p className="mt-3 text-[11px] text-muted">Last reviewed {fmtDateTime(verification.reviewed_at)}</p> : null}
@@ -101,7 +106,7 @@ export default async function StatusPage() {
   if (isMentor && status !== "verified") return body;
   return (
     <>
-      <PageHeader title="Verification Status" description="Only verified mentees can search for mentors and send partnership requests." />
+      <PageHeader title="Verification status" description="Only verified mentees can search for mentors and send requests." />
       {body}
     </>
   );

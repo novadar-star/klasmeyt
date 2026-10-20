@@ -33,7 +33,7 @@ export default async function NewSession({ searchParams }: { searchParams: { gro
 
   return (
     <>
-      <PageHeader title="Schedule Session" description={isMentor ? "Propose a session. Mentees confirm attendance before it's scheduled." : "Propose a session. Your mentor confirms it and adds the Microsoft Teams link."} />
+      <PageHeader title="Schedule a session" description={isMentor ? "Propose a session. Mentees confirm attendance before it's scheduled." : "Propose a session. Your mentor confirms it and adds the Microsoft Teams link."} />
       {opts.length ? (
         <ScheduleForm options={opts} initial={searchParams.group} isMentor={isMentor} />
       ) : (

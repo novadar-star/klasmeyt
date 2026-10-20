@@ -32,7 +32,7 @@ export function ReviewPanel({ userId, isMentor, status, note: n0, vouchedBy: vb0
     const { error } = await createClient().from("profiles").update({ vouched_by: vouched.trim() || null }).eq("id", userId);
     setBusy(false);
     if (error) return toast.error(errMsg(error));
-    toast.success("Vouched By saved");
+    toast.success("Saved");
     router.refresh();
   }
 
@@ -57,7 +57,7 @@ export function ReviewPanel({ userId, isMentor, status, note: n0, vouchedBy: vb0
             <Button variant="secondary" disabled={busy} onClick={() => setStatus("under_review")}>Mark as under review</Button>
           ) : null}
           <Button variant="primary" disabled={busy || status === "verified"} onClick={() => setStatus("verified")}>{isMentor ? "Approve mentor" : "Verify mentee"}</Button>
-          <Button variant="orange" disabled={busy} onClick={() => setStatus("info_requested")}>Request more information</Button>
+          <Button variant="secondary" disabled={busy} onClick={() => setStatus("info_requested")}>Request more information</Button>
           <ConfirmButton title={isMentor ? "Reject this application?" : "Reject this verification?"} body="The student is notified with your note. You can change the status later." confirmLabel="Reject" disabled={busy || status === "rejected"} onConfirm={() => setStatus("rejected")}>Reject</ConfirmButton>
         </div>
       </div>

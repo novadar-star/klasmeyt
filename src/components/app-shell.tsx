@@ -19,11 +19,11 @@ function nav(role: Role): Item[] {
   if (role === "admin")
     return [
       { href: "/admin", label: "Applications queue", icon: FileText },
-      { href: "/admin/mentors", label: "Verified mentors", icon: BadgeCheck },
+      { href: "/admin/mentors", label: "Mentors", icon: BadgeCheck },
       { href: "/admin/mentees", label: "Mentee verification", icon: ShieldCheck },
-      { href: "/admin/partnerships", label: "Partnerships", icon: Handshake },
-      { href: "/admin/groups", label: "Mentoring groups", icon: UsersRound },
-      { href: "/admin/sessions", label: "Mentoring sessions", icon: Video },
+      { href: "/admin/partnerships", label: "Partnership requests", icon: Handshake },
+      { href: "/admin/groups", label: "Partnerships and groups", icon: UsersRound },
+      { href: "/admin/sessions", label: "Sessions", icon: Video },
       { href: "/admin/calendar", label: "Calendar", icon: CalendarDays },
     ];
   if (role === "mentor")
@@ -41,7 +41,7 @@ function nav(role: Role): Item[] {
   return [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/find", label: "Find a mentor", icon: Search },
-    { href: "/partners", label: "My partner", icon: Users },
+    { href: "/partners", label: "My study partners", icon: Users },
     { href: "/requests", label: "Partnership requests", icon: FileText },
     { href: "/chat", label: "Messages", icon: MessagesSquare },
     { href: "/calendar", label: "Calendar", icon: CalendarDays },
@@ -67,6 +67,8 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
   const [unread, setUnread] = useState(initialUnread);
   const items = nav(role);
 
@@ -76,8 +78,15 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
   useEffect(() => {
     const el = drawerRef.current;
     if (!el) return;
-    if (open) el.removeAttribute("inert");
-    else el.setAttribute("inert", "");
+    if (open) {
+      el.removeAttribute("inert");
+      // move focus into the drawer so keyboard and screen reader users land in the menu
+      el.querySelector<HTMLElement>("a[aria-current='page'], nav a")?.focus();
+    } else {
+      el.setAttribute("inert", "");
+      if (wasOpen.current) menuButtonRef.current?.focus();
+    }
+    wasOpen.current = open;
   }, [open]);
   useEffect(() => {
     if (!open) return;
@@ -179,7 +188,7 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 lg:block">{sidebar}</aside>
 
       {/* Mobile drawer: always mounted so it can animate out. iOS drawer curve in, faster exit. */}
-      <div className={cn("fixed inset-0 z-40 lg:hidden", !open && "pointer-events-none")} ref={drawerRef}>
+      <div className={cn("fixed inset-0 z-40 lg:hidden", !open && "pointer-events-none")} ref={drawerRef} role="dialog" aria-modal="true" aria-label="Menu">
         <div
           className={cn("absolute inset-0 bg-brand-900/50 transition-opacity", open ? "opacity-100 duration-300" : "opacity-0 duration-200")}
           onClick={() => setOpen(false)}
@@ -196,7 +205,7 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
       </div>
 
       <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-white/10 bg-brand-900 px-4 text-white lg:hidden">
-        <button className="rounded-control p-1.5 hover:bg-white/10" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}>
+        <button ref={menuButtonRef} className="rounded-control p-1.5 hover:bg-white/10" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}>
           <Menu className="size-5" aria-hidden />
         </button>
         <Logo light />

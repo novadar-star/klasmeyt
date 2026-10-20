@@ -52,10 +52,12 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
   const day = date ? new Date(`${date}T12:00:00+08:00`).getUTCDay() : null;
   const windows = useMemo(() => (day === null ? [] : weekly[day]), [day, weekly]);
   const starts = useMemo(() => {
+    const isToday = date === manilaToday();
+    const nowMin = isToday ? toMin(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date())) : -1;
     const out: string[] = [];
-    for (const [lo, hi] of windows) for (let t = Math.ceil(lo / 15) * 15; t + duration <= hi; t += 15) out.push(toHHMM(t));
+    for (const [lo, hi] of windows) for (let t = Math.ceil(lo / 15) * 15; t + duration <= hi; t += 15) if (t > nowMin) out.push(toHHMM(t));
     return out;
-  }, [windows, duration]);
+  }, [windows, duration, date]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -99,7 +101,7 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
           <Field label="Date" htmlFor="dt">
             <input id="dt" type="date" className="field" min={manilaToday()} value={date} onChange={(e) => { setDate(e.target.value); setTime(""); }} />
           </Field>
-          <Field label="Start time" htmlFor="tm" hint={date && !starts.length ? `No shared ${duration}-minute window on ${DAYS[day!]}s. Pick a highlighted day.` : undefined}>
+          <Field label="Start time" htmlFor="tm" hint={date && !starts.length ? (date === manilaToday() && windows.length ? "No shared times left today. Pick another date." : `No shared ${duration}-minute window on ${DAYS[day!]}s. Pick a highlighted day.`) : undefined}>
             <select id="tm" className="field" value={time} onChange={(e) => setTime(e.target.value)} disabled={!date || !starts.length}>
               <option value="">{date ? (starts.length ? "Choose a time…" : "No available times") : "Pick a date first"}</option>
               {starts.map((s) => <option key={s} value={s}>{fmtTime(s)} – {fmtTime(toHHMM(toMin(s) + duration))}</option>)}
@@ -116,7 +118,7 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
         <Field label="Notes (optional)" htmlFor="no"><textarea id="no" rows={2} className="field" placeholder="Topics to cover, e.g. integration by parts" value={notes} onChange={(e) => setNotes(e.target.value)} /></Field>
         <div className="flex justify-end gap-2 border-t border-line pt-5">
           <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
-          <Button type="submit" disabled={busy}>{busy ? "Sending…" : "Propose session"}</Button>
+          <Button type="submit" loading={busy}>Propose session</Button>
         </div>
       </Card>
 
@@ -131,7 +133,7 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
             </li>
           ))}
         </ul>
-        {!anyCommon ? <p className="mt-3 text-xs text-red-600">No overlapping availability. Ask each other to update availability in Profile.</p> : null}
+        {!anyCommon ? <p className="mt-3 text-xs text-red-700">You have no free hours in common yet. Ask each other to add more availability in Profile.</p> : null}
       </Card>
     </form>
   );

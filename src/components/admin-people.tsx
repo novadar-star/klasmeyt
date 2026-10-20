@@ -7,7 +7,7 @@ import type { ApplicantRow } from "@/lib/admin";
 import type { Slot } from "@/lib/types";
 
 const FILTERS = [
-  { v: "", label: "All" },
+  { v: "all", label: "All" },
   { v: "open", label: "Needs review" },
   { v: "verified", label: "Verified" },
   { v: "info_requested", label: "More info requested" },
@@ -19,7 +19,12 @@ export function AdminPeople({ rows, base, filter, subs, slots, counts, kind }: {
     <>
       <div className="mb-4 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
-          <Link key={f.v} href={f.v ? `${base}?status=${f.v}` : base} className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", filter === f.v ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}>
+          <Link
+            key={f.v}
+            href={`${base}?status=${f.v}`}
+            aria-current={filter === f.v ? "page" : undefined}
+            className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", filter === f.v ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}
+          >
             {f.label}
           </Link>
         ))}
@@ -55,7 +60,7 @@ export function AdminPeople({ rows, base, filter, subs, slots, counts, kind }: {
           </table>
         </Card>
       ) : (
-        <Empty title="Nobody here yet" />
+        <Empty title="No one matches this filter">Try another status, or choose All.</Empty>
       )}
     </>
   );

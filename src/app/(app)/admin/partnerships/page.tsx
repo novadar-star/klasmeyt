@@ -7,7 +7,7 @@ import { cn, fmtDateTime, subjectName } from "@/lib/utils";
 
 export const metadata = { title: "Partnership Requests" };
 
-const F = ["", "pending", "accepted", "declined", "cancelled"];
+const F: [string, string][] = [["", "All"], ["pending", "Pending"], ["accepted", "Accepted"], ["declined", "Declined"], ["cancelled", "Withdrawn"]];
 
 export default async function AdminPartnerships({ searchParams }: { searchParams: { status?: string } }) {
   const { supabase } = await requireRole("admin");
@@ -18,11 +18,11 @@ export default async function AdminPartnerships({ searchParams }: { searchParams
   const people = await profilesById(supabase, (data ?? []).flatMap((r) => [r.mentor_id, r.mentee_id]));
   return (
     <>
-      <PageHeader title="Partnership Requests" description="All requests between mentees and mentors. Admins can view but don't decide requests." />
+      <PageHeader title="Partnership requests" description="All requests between mentees and mentors. Admins can view but don't decide requests." />
       <div className="mb-4 flex flex-wrap gap-2">
-        {F.map((f) => (
-          <Link key={f} href={f ? `/admin/partnerships?status=${f}` : "/admin/partnerships"} className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", status === f ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line")}>
-            {f || "All"}
+        {F.map(([f, label]) => (
+          <Link key={f} href={f ? `/admin/partnerships?status=${f}` : "/admin/partnerships"} aria-current={status === f ? "page" : undefined} className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", status === f ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}>
+            {label}
           </Link>
         ))}
       </div>

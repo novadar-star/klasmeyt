@@ -50,7 +50,7 @@ export function AddToGroup(props: Props) {
         </select>
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={go} disabled={busy || !pick}>Send invite</Button>
+          <Button onClick={go} loading={busy} disabled={!pick}>Send invite</Button>
         </div>
       </Modal>
     </>
@@ -61,23 +61,28 @@ export function RenameGroup({ id, name }: { id: string; name: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [v, setV] = useState(name);
+  const [busy, setBusy] = useState(false);
   return (
     <>
-      <button onClick={() => setOpen(true)} className="rounded-control p-1.5 text-muted hover:bg-paper hover:text-ink" aria-label="Rename group"><Pencil className="size-4" /></button>
+      <button onClick={() => setOpen(true)} className="rounded-control p-1.5 text-muted hover:bg-paper hover:text-ink" aria-label={`Rename ${name}`}><Pencil className="size-4" aria-hidden /></button>
       <Modal open={open} onOpenChange={setOpen} title="Rename group">
         <input className="field" value={v} onChange={(e) => setV(e.target.value)} aria-label="Group name" />
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
           <Button
+            loading={busy}
+            disabled={!v.trim() || v.trim() === name}
             onClick={async () => {
-              if (!v.trim()) return;
+              setBusy(true);
               const { error } = await createClient().from("mentoring_groups").update({ name: v.trim() }).eq("id", id);
+              setBusy(false);
               if (error) return toast.error(errMsg(error));
+              toast.success("Group renamed");
               setOpen(false);
               router.refresh();
             }}
           >
-            Save
+            Save name
           </Button>
         </div>
       </Modal>

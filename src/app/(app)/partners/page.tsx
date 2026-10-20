@@ -7,7 +7,7 @@ import { daysText, timeText } from "@/components/avail";
 import { subjectName } from "@/lib/utils";
 import { InviteResponse } from "./invite-response";
 
-export const metadata = { title: "My Partner" };
+export const metadata = { title: "My study partners" };
 
 export default async function PartnersPage() {
   const { supabase, profile } = await requireRole("mentee");
@@ -20,7 +20,7 @@ export default async function PartnersPage() {
 
   return (
     <>
-      <PageHeader title="My study partners" description="Your accepted partnerships and study groups" />
+      <PageHeader title="My study partners" description="Mentors who accepted you, one-on-one or in a study group." />
 
       {invites.length ? (
         <div className="mb-6 space-y-3">
@@ -32,7 +32,7 @@ export default async function PartnersPage() {
                   <p className="font-semibold text-brand-800">{g.name}</p>
                   <StatusBadge status="invited" />
                 </div>
-                <p className="text-xs text-muted">{people[g.mentor_id]?.full_name} invited you · {subjectName(g.subject_id)} · {g.members.filter((m) => m.status === "active").length} members</p>
+                <p className="text-xs text-muted">{people[g.mentor_id]?.full_name} invited you to a {subjectName(g.subject_id)} group with {g.members.filter((m) => m.status === "active").length} {g.members.filter((m) => m.status === "active").length === 1 ? "member" : "members"}.</p>
               </div>
               <InviteResponse groupId={g.id} groupName={g.name} mentorName={people[g.mentor_id]?.full_name ?? "Your mentor"} members={g.members.filter((m) => m.status === "active").length} />
             </Card>
@@ -40,7 +40,7 @@ export default async function PartnersPage() {
         </div>
       ) : null}
 
-      <p className="eyebrow mb-3">{active.length} active registered peer {active.length === 1 ? "partnership" : "partnerships"}</p>
+      <p className="eyebrow mb-3">{active.length} active {active.length === 1 ? "partnership" : "partnerships"}</p>
       {active.length ? (
         <div className="space-y-3">
           {active.map((g) => {
@@ -54,21 +54,19 @@ export default async function PartnersPage() {
                       <p className="text-xs text-muted">{m?.program}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      <Badge color="teal">Partnership accepted</Badge>
                       <VerifiedMentorBadge />
-                      {g.kind === "group" ? <Badge color="violet">Group · {g.members.filter((x) => x.status === "active").length} mentees</Badge> : null}
+                      {g.kind === "group" ? <Badge color="ink">Study group, {g.members.filter((x) => x.status === "active").length} mentees</Badge> : null}
                     </div>
                   </div>
-                  <p className="eyebrow mt-3">Active course match</p>
-                  <span className="chip mt-1.5">{subjectName(g.subject_id)}</span>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <div><p className="eyebrow">Mentoring windows</p><p className="mt-1 text-sm">{daysText(slots[g.mentor_id])}</p></div>
-                    <div><p className="eyebrow">Preferred time slot</p><p className="mt-1 text-sm">{timeText(slots[g.mentor_id])}</p></div>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                    <div><p className="eyebrow">Subject</p><p className="mt-1 text-sm font-semibold text-brand-700">{subjectName(g.subject_id)}</p></div>
+                    <div><p className="eyebrow">Mentor is free on</p><p className="mt-1 text-sm">{daysText(slots[g.mentor_id])}</p></div>
+                    <div><p className="eyebrow">Hours</p><p className="mt-1 text-sm">{timeText(slots[g.mentor_id])}</p></div>
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2 md:w-44 md:flex-col">
-                  {g.kind === "individual" ? <Button asChild><Link href={`/sessions/new?group=${g.id}`}>Schedule session</Link></Button> : null}
                   <Button asChild variant="primary"><Link href={`/chat/${g.id}`}>Open chat</Link></Button>
+                  {g.kind === "individual" ? <Button asChild variant="secondary"><Link href={`/sessions/new?group=${g.id}`}>Schedule session</Link></Button> : null}
                   <Button asChild variant="secondary"><Link href={`/mentors/${g.mentor_id}`}>View profile</Link></Button>
                 </div>
               </Card>

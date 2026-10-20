@@ -21,7 +21,7 @@ export function Reupload({ uid, types }: { uid: string; types: Doc["type"][] }) 
     setBusy(true);
     try {
       await uploadDoc(createClient(), uid, type, file);
-      toast.success("Document uploaded. Your status is back to pending verification.");
+      toast.success("Document uploaded. An administrator will review it, and you'll get a notification.");
       setFile(null);
       router.refresh();
     } catch (e) {
@@ -33,11 +33,14 @@ export function Reupload({ uid, types }: { uid: string; types: Doc["type"][] }) 
 
   return (
     <div className="space-y-3">
-      <select className="field" value={type} onChange={(e) => setType(e.target.value as Doc["type"])} aria-label="Document type">
-        {types.map((t) => <option key={t} value={t}>{DOC_LABEL[t]}</option>)}
-      </select>
-      <FilePick label="Choose a file" file={file} onChange={setFile} />
-      <Button onClick={go} disabled={!file || busy}>{busy ? "Uploading…" : "Upload document"}</Button>
+      <div>
+        <label htmlFor="doc-type" className="label">Document type</label>
+        <select id="doc-type" className="field" value={type} onChange={(e) => setType(e.target.value as Doc["type"])}>
+          {types.map((t) => <option key={t} value={t}>{DOC_LABEL[t]}</option>)}
+        </select>
+      </div>
+      <FilePick label="File" file={file} onChange={setFile} />
+      <Button onClick={go} disabled={!file} loading={busy}>Upload document</Button>
     </div>
   );
 }

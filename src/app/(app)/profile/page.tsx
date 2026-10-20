@@ -15,8 +15,8 @@ export default async function ProfilePage() {
   return (
     <>
       <PageHeader
-        title={isMentor ? "Edit Mentor Profile" : "Edit Mentee Profile"}
-        description="Manage your personal details, subjects, and weekly availability."
+        title="Profile"
+        description={isMentor ? "What mentees see on your profile, plus your subjects and weekly availability." : "Your program, subjects, and the hours you're free. Matching uses these."}
       />
       <ProfileForm
         profile={profile}

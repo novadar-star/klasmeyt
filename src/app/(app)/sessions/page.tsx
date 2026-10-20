@@ -5,7 +5,7 @@ import { Button, Empty, PageHeader } from "@/components/ui";
 import { SessionCard } from "@/components/session-card";
 import { sessionStatus } from "@/lib/utils";
 
-export const metadata = { title: "Upcoming Sessions" };
+export const metadata = { title: "Sessions" };
 
 export default async function SessionsPage() {
   const { supabase, profile } = await requireMe();
@@ -15,15 +15,14 @@ export default async function SessionsPage() {
   const gname = Object.fromEntries((groups ?? []).map((g) => [g.id, g.name]));
   const people = await profilesById(supabase, sessions.flatMap((s) => [s.mentor_id, ...s.participants.map((p) => p.mentee_id)]));
 
-  const now = Date.now();
   const needsMe = sessions.filter((s) => {
-    if (s.status !== "pending") return false;
+    if (sessionStatus(s) !== "pending") return false;
     if (s.mentor_id === profile.id) return !s.mentor_confirmed || (s.format === "group" && s.participants.every((p) => p.response !== "pending"));
     return s.participants.find((p) => p.mentee_id === profile.id)?.response === "pending";
   });
-  const pending = sessions.filter((s) => s.status === "pending" && !needsMe.includes(s) && new Date(s.starts_at).getTime() > now);
+  const pending = sessions.filter((s) => sessionStatus(s) === "pending" && !needsMe.includes(s));
   const upcoming = sessions.filter((s) => sessionStatus(s) === "scheduled");
-  const past = sessions.filter((s) => ["completed", "cancelled"].includes(sessionStatus(s)) || (s.status === "pending" && new Date(s.starts_at).getTime() <= now)).reverse();
+  const past = sessions.filter((s) => ["completed", "cancelled", "expired"].includes(sessionStatus(s))).reverse();
 
   const Section = ({ title, list }: { title: string; list: typeof sessions }) =>
     list.length ? (
@@ -38,7 +37,7 @@ export default async function SessionsPage() {
   return (
     <>
       <PageHeader
-        title="Upcoming Sessions"
+        title="Sessions"
         description="Sessions are confirmed by both sides, then appear on your calendar with the Teams link."
         action={<Button asChild variant="primary" size="sm"><Link href="/sessions/new">Schedule session</Link></Button>}
       />
@@ -47,7 +46,7 @@ export default async function SessionsPage() {
           <Section title="Needs your response" list={needsMe} />
           <Section title="Scheduled" list={upcoming} />
           <Section title="Waiting for others" list={pending} />
-          <Section title="Past & cancelled" list={past} />
+          <Section title="Past, cancelled, and unconfirmed" list={past} />
         </>
       ) : (
         <Empty title="No sessions yet" action={<Button asChild variant="primary"><Link href="/sessions/new">Schedule session</Link></Button>}>

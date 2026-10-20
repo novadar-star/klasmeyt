@@ -22,7 +22,7 @@ export default async function MentorCV({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <PageHeader title="Mentor CV" description="A summary of this mentor's verified background. Open the uploaded file for the full CV." />
+      <PageHeader title={`${m.full_name}'s CV`} description="A summary from their profile. Open the uploaded file for the full CV." />
       {cv && urls[cv.path] ? (
         <a href={urls[cv.path]} target="_blank" rel="noreferrer" className="mb-4 flex max-w-3xl items-center justify-between gap-3 rounded-control border border-brand-200 bg-white px-4 py-2.5 text-sm font-medium text-brand-700 transition-colors duration-150 hover:bg-brand-50">
           Open the uploaded CV file ({cv.file_name}) <ExternalLink className="size-4" />
@@ -31,7 +31,7 @@ export default async function MentorCV({ params }: { params: { id: string } }) {
       <Card className="max-w-3xl p-8">
         <div className="border-b border-line pb-5 text-center">
           <h2 className="text-2xl font-semibold text-brand-800">{m.full_name}</h2>
-          <p className="mt-1 text-sm text-muted">{m.email} · {[m.program, m.year_level].filter(Boolean).join(" (") + (m.program && m.year_level ? ")" : "")}</p>
+          <p className="mt-1 text-sm text-muted">{[m.program, m.year_level].filter(Boolean).join(", ")}</p>
           <p className="mt-1 text-xs font-semibold text-brand-600">Adamson University</p>
         </div>
         <div className="mt-6 space-y-5 text-sm">
@@ -42,7 +42,7 @@ export default async function MentorCV({ params }: { params: { id: string } }) {
           </div>
           <div>
             <p className="text-xs font-semibold text-brand-700">Mentoring subjects</p>
-            <p className="mt-1">{(subs[m.id] ?? []).map(subjectName).join(" • ")}</p>
+            <p className="mt-1">{(subs[m.id] ?? []).map(subjectName).join(", ")}</p>
           </div>
           {m.academic_experience ? (
             <div>
@@ -58,7 +58,7 @@ export default async function MentorCV({ params }: { params: { id: string } }) {
           ) : null}
           <div>
             <p className="text-xs font-semibold text-brand-700">Mentoring experience</p>
-            <p className="mt-1">Verified Peer Mentor at Klasmeyt Adamson.{m.vouched_by ? ` Vouched by ${m.vouched_by}.` : ""}</p>
+            <p className="mt-1">Verified mentor on Klasmeyt.{m.vouched_by ? ` Vouched for by ${m.vouched_by}.` : ""}</p>
           </div>
         </div>
       </Card>

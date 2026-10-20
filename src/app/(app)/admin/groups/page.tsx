@@ -4,7 +4,7 @@ import { Card, Empty, PageHeader } from "@/components/ui";
 import { Badge, StatusBadge } from "@/components/badges";
 import { fmtDate, subjectName } from "@/lib/utils";
 
-export const metadata = { title: "Mentoring Groups" };
+export const metadata = { title: "Partnerships and groups" };
 
 export default async function AdminGroups() {
   const { supabase } = await requireRole("admin");
@@ -15,7 +15,7 @@ export default async function AdminGroups() {
   const list = groups ?? [];
   return (
     <>
-      <PageHeader title="Mentoring Groups" description="Established one-on-one partnerships and group chats. Message contents stay private to members." />
+      <PageHeader title="Partnerships and groups" description="Every one-on-one partnership and study group. Message contents stay private to members." />
       {list.length ? (
         <div className="grid gap-3 lg:grid-cols-2">
           {list.map((g) => {

@@ -5,9 +5,9 @@ export default function NotFound() {
   return (
     <div className="grid min-h-[60dvh] place-items-center px-4 text-center">
       <div>
-        <p className="eyebrow">Page not found</p>
-        <h1 className="mt-2 text-2xl font-semibold text-brand-800">This page doesn&apos;t exist or you don&apos;t have access to it.</h1>
-        <Button asChild className="mt-6"><Link href="/dashboard">Back to portal</Link></Button>
+        <h1 className="display text-[44px] text-brand-800">Page not found</h1>
+        <p className="mx-auto mt-3 max-w-sm text-sm text-muted">This page doesn&apos;t exist, or your account can&apos;t open it.</p>
+        <Button asChild className="mt-6"><Link href="/dashboard">Go to my dashboard</Link></Button>
       </div>
     </div>
   );
