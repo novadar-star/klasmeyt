@@ -79,8 +79,8 @@ export function PageHeader({ title, description, action }: { title: string; desc
     <div className="-mx-4 -mt-6 mb-6 border-b border-line bg-white px-4 pb-5 pt-6 sm:-mx-6 sm:px-6 lg:-mx-8 lg:-mt-8 lg:px-8 lg:pt-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-[26px] font-semibold leading-tight tracking-[-0.01em] text-brand-800">{title}</h1>
-          {description ? <p className="mt-1.5 max-w-2xl text-sm text-muted">{description}</p> : null}
+          <h1 className="display text-[34px] text-brand-800">{title}</h1>
+          {description ? <p className="mt-2 max-w-2xl text-sm text-muted">{description}</p> : null}
         </div>
         {action ? <div className="flex shrink-0 items-center gap-2">{action}</div> : null}
       </div>

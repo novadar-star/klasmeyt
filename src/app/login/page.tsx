@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const [tab, setTab] = useState<"mentee" | "mentor">("mentee");
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -41,31 +40,10 @@ function LoginForm() {
 
   return (
     <form onSubmit={submit} className="w-full" noValidate>
-      <h1 className="text-[26px] font-semibold tracking-[-0.015em] text-brand-800">Log in to Klasmeyt</h1>
-      <p className="mt-1 text-sm text-muted">Use the email you registered with.</p>
+      <h1 className="display text-[44px] text-brand-800">Log in</h1>
+      <p className="mt-3 text-sm text-muted">Use the email you registered with. Mentees, mentors, and administrators all log in here.</p>
 
-      {/* Segmented control: the indicator slides (200ms ease-in-out) instead of the colors swapping. */}
-      <div className="relative mt-6 grid grid-cols-2 rounded-control bg-paper p-1 ring-1 ring-inset ring-line" role="tablist" aria-label="Account type">
-        <span
-          data-motion="transform"
-          className={cn("absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-[6px] bg-white shadow-[0_1px_2px_rgba(12,26,61,0.12)] transition-transform duration-200 ease-in-out", tab === "mentor" && "translate-x-full")}
-          aria-hidden
-        />
-        {(["mentee", "mentor"] as const).map((t) => (
-          <button
-            key={t}
-            type="button"
-            role="tab"
-            aria-selected={tab === t}
-            onClick={() => setTab(t)}
-            className={cn("relative z-10 rounded-[6px] py-2 text-sm font-medium transition-colors duration-150", tab === t ? "text-brand-800" : "text-muted hover:text-ink")}
-          >
-            {t === "mentee" ? "Student mentee" : "Verified mentor"}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-5 space-y-4">
+      <div className="mt-7 space-y-4">
         <Field label="Email" htmlFor="email">
           <input id="email" name="email" type="email" inputMode="email" autoComplete="username" spellCheck={false} required className="field" placeholder="juan.delacruz@adamson.edu.ph" />
         </Field>
@@ -96,12 +74,10 @@ export default function LoginPage() {
           <Suspense><LoginForm /></Suspense>
         </main>
       </div>
-      <div className="relative hidden place-items-center overflow-hidden bg-brand-900 p-12 lg:grid">
-        <div className="w-full max-w-[440px]">
-          <AvailabilityMatch />
-          <p className="mt-6 text-sm text-brand-200">
-            Matched on subject and the hours you're both free. <span className="text-white">Calculus 1, Calculus 2, and Physics.</span>
-          </p>
+      <div className="relative hidden flex-col justify-center bg-brand-900 p-12 text-white lg:flex xl:p-16">
+        <div className="w-full max-w-[560px]">
+          <p className="display text-[40px]">Matched on subject and the hours you&rsquo;re both free.</p>
+          <AvailabilityMatch tone="dark" className="mt-10" />
         </div>
       </div>
     </div>

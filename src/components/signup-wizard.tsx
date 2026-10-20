@@ -131,7 +131,7 @@ export function SignupWizard({ role }: { role: Role }) {
             ))}
           </ol>
         ) : null}
-        <h1 className="text-3xl font-semibold tracking-[-0.015em] text-brand-800">{title}</h1>
+        <h1 className="display text-[clamp(2.5rem,6vw,3.5rem)] text-brand-800">{title}</h1>
         <p className="mt-1 text-sm text-muted">{sub}</p>
       </div>
 

@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Instrument Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Instrument Sans Variable", "Instrument Sans", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       colors: {
         brand: {

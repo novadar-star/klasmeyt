@@ -21,7 +21,7 @@ html {
 
 body {
   @apply bg-paper text-ink antialiased;
-  font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";
   touch-action: manipulation;
 }
@@ -60,12 +60,19 @@ p {
   .num {
     font-variant-numeric: tabular-nums;
   }
+  /* Display headings: the same family, set condensed and heavy. Varsity-scoreboard energy without a second typeface. */
+  .display {
+    font-stretch: 76%;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 0.95;
+  }
 
-  /* Landing hero: availability bars wipe up once, then the overlap and session settle in */
+  /* Landing timetable: availability lanes draw left to right once, then the overlap and session settle in */
   .bar-in {
-    clip-path: inset(100% 0 0 0);
-    animation: bar-in 420ms var(--ease-out) forwards;
-    animation-delay: calc(var(--i, 0) * 70ms + 200ms);
+    clip-path: inset(0 100% 0 0);
+    animation: bar-in 480ms var(--ease-out) forwards;
+    animation-delay: calc(var(--i, 0) * 80ms + 150ms);
   }
   @keyframes bar-in {
     to {
