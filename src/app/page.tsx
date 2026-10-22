@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/badges";
 import { PublicFooter, PublicNav } from "@/components/public-chrome";
-import { AvailabilityMatch } from "@/components/availability-match";
+import { StudyIllustration } from "@/components/study-illustration";
 import { PartnerCardsIllustration } from "@/components/partner-cards-illustration";
 
 const steps = [
@@ -88,8 +88,8 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="mt-14 md:mt-20">
-            <AvailabilityMatch />
+          <div className="mt-14 md:mt-16">
+            <StudyIllustration className="mx-auto h-auto w-full max-w-[760px]" />
           </div>
         </section>
 

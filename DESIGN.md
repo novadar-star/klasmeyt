@@ -9,7 +9,7 @@ Sources: Anthropic's *frontend-design* skill (point of view, type, anti-template
 Klasmeyt is a study tool for Adamson students, not a SaaS dashboard. Its visual identity comes from two real things:
 
 - **Adamson blue and white.** The SRS requires it, and students recognize it immediately.
-- **"Free together."** Klasmeyt matches by the hours a mentee and mentor are both free. The landing hero and login panel show exactly that as a weekly timetable, read like a class schedule: one row per weekday, the mentee's free hours (yellow) and the mentor's (blue) side by side, the shared hours shaded, and the session sitting inside them. It uses the seeded demo pair (Kenneth and Dhennise, Calculus 2) and is labeled "Example" on screen, so it matches what people see after logging in. It's the single signature moment.
+- **Illustrations, one drawing system.** The landing hero (a mentee asking, a mentor answering at one table), the partner cards in "From request to review session", and the login panel ("Matched schedule") are hand-built SVGs in `src/components/*-illustration.tsx`. Rules: brand tokens only; navy (`brand-900`) silhouettes without faces; `brand-600` shirts with halftone dots; 3px navy outlines; solid `brand-700` offset shadows instead of blurred ones; round-capped motion marks used sparingly. Role colors carry meaning: mentee = yellow (`pad`), mentor = light blue (`brand-100`), a match or accepted partnership = solid blue with a white check. Never green (reserved for Verified), never AI-generated raster art. Live text in an illustration uses the `.display` face.
 - **Verification shown, not asserted.** The landing page lists the actual uploads each role sends and the real review stages (Documents submitted, In review, Verified). Trust comes from specifics, not a badge.
 
 Everything else stays quiet so those read clearly. No floating cards, icon tiles, or rows of identical cards on public pages; use lists, rules, and the app's own components.
@@ -66,7 +66,7 @@ Before animating, ask how often the user sees it.
 |---|---|---|
 | Dozens of times a day | No animation, just a fast color change | Sidebar nav, list rows |
 | Occasional | Short, purposeful | Modals, drawer, tabs, new chat messages, toasts |
-| Once | Can delight | Hero timetable: lanes draw left to right, shared hours appear, session settles |
+| Once | Can delight | Nothing yet. The illustrations are static on purpose |
 
 Easing tokens (`globals.css` / Tailwind):
 
@@ -83,11 +83,10 @@ Patterns in use:
 - **Mobile drawer:** always mounted, slides with the drawer curve in 300ms, leaves in 200ms; `inert` when closed.
 - **Checkbox cards:** the check mark goes from `scale(0.9)`/opacity 0 to full. Never from `scale(0)`.
 - **Chat:** only messages that arrive after the page loads ease in (6px rise plus fade, 180ms, `@starting-style`).
-- **Hero timetable:** availability lanes draw left to right with `clip-path: inset()` (480ms, 80ms stagger), then the "free together" band fades in and the session block settles from `scale(0.98)`. Plays once, about 1.3s total.
 - Hover styles only apply on devices that can hover (`future.hoverOnlyWhenSupported`).
 - Everything UI-related stays under 300ms.
 
-**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade, and the hero schedule fades in instead of wiping.
+**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade.
 
 ## 6. Components and voice
 

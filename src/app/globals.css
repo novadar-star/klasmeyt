@@ -71,35 +71,6 @@ p {
     line-height: 0.95;
   }
 
-  /* Landing timetable: availability lanes draw left to right once, then the overlap and session settle in */
-  .bar-in {
-    clip-path: inset(0 100% 0 0);
-    animation: bar-in 480ms var(--ease-out) forwards;
-    animation-delay: calc(var(--i, 0) * 80ms + 150ms);
-  }
-  @keyframes bar-in {
-    to {
-      clip-path: inset(0 0 0 0);
-    }
-  }
-  .match-in {
-    opacity: 0;
-    animation: fade-in 300ms ease forwards;
-    animation-delay: 750ms;
-  }
-  .session-in {
-    opacity: 0;
-    transform: translateY(4px) scale(0.98);
-    animation: settle-in 320ms var(--ease-out) forwards;
-    animation-delay: 1000ms;
-  }
-  @keyframes settle-in {
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
   /* New chat message entry (only messages that arrive after mount get this class) */
   .msg-in {
     transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
@@ -112,20 +83,6 @@ p {
 
 @media (prefers-reduced-motion: reduce) {
   /* Fewer, gentler animations — keep opacity, drop movement */
-  .bar-in {
-    clip-path: none;
-    opacity: 0;
-    animation: fade-in 200ms ease forwards;
-    animation-delay: 0ms;
-  }
-  .session-in {
-    transform: none;
-    animation: fade-in 200ms ease forwards;
-    animation-delay: 0ms;
-  }
-  .match-in {
-    animation-delay: 0ms;
-  }
   .msg-in {
     @starting-style {
       transform: none;
