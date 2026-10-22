@@ -8,9 +8,11 @@ export default async function NotificationsPage() {
   const { supabase } = await requireMe();
   const { data } = await supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100);
   return (
-    <div className="max-w-3xl">
+    <>
       <PageHeader title="Notifications" description="Updates on your account, requests, groups, messages, and sessions." />
-      {data?.length ? <NotificationList items={data} /> : <Empty title="You're all caught up">New requests, messages, and session updates will show up here.</Empty>}
-    </div>
+      <div className="max-w-3xl">
+        {data?.length ? <NotificationList items={data} /> : <Empty title="You're all caught up">New requests, messages, and session updates will show up here.</Empty>}
+      </div>
+    </>
   );
 }
