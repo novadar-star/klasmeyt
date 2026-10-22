@@ -39,17 +39,17 @@ export default async function AdminHome() {
         {queue.length ? (
           <div className="space-y-2">
             {queue.map((r) => (
-              <div key={r.user_id} className="grid items-center gap-3 rounded-control border border-line px-4 py-3 sm:grid-cols-[1.3fr_1fr_auto_auto]">
+              <div key={r.user_id} className="grid items-center gap-3 rounded-control border border-line px-4 py-3 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_10.5rem_auto]">
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-ink">{r.profile.full_name}</p>
-                  <p className="truncate text-xs text-muted">{[r.profile.year_level, r.profile.program].filter(Boolean).join(" • ")}</p>
+                  <p className="truncate text-xs text-muted">{[r.profile.year_level, r.profile.program].filter(Boolean).join(" • ") || "Profile incomplete"}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs font-medium text-muted">Supported courses</p>
-                  <p className="text-sm font-semibold text-brand-700">{(subs[r.user_id] ?? []).map(subjectName).join(", ") || "—"}</p>
+                  <p className="truncate text-sm font-semibold text-brand-700">{(subs[r.user_id] ?? []).map(subjectName).join(", ") || <span className="font-normal text-muted">None yet</span>}</p>
                 </div>
-                <VerificationBadge status={r.status} kind="mentor" />
-                <Button asChild size="sm"><Link href={`/admin/users/${r.user_id}`}>Review application</Link></Button>
+                <div className="sm:justify-self-end"><VerificationBadge status={r.status} kind="mentor" /></div>
+                <Button asChild size="sm" variant={r.status === "verified" ? "secondary" : "primary"}><Link href={`/admin/users/${r.user_id}`}>{r.status === "verified" ? "View" : "Review application"}</Link></Button>
               </div>
             ))}
           </div>
@@ -63,12 +63,12 @@ export default async function AdminHome() {
         {menteeQueue.length ? (
           <div className="space-y-2">
             {menteeQueue.map((r) => (
-              <div key={r.user_id} className="flex flex-wrap items-center gap-3 rounded-control border border-line px-4 py-3">
-                <div className="min-w-0 flex-1">
+              <div key={r.user_id} className="grid items-center gap-3 rounded-control border border-line px-4 py-3 sm:grid-cols-[minmax(0,1fr)_10.5rem_auto]">
+                <div className="min-w-0">
                   <p className="truncate font-semibold">{r.profile.full_name}</p>
                   <p className="truncate text-xs text-muted">{[r.profile.year_level, r.profile.program].filter(Boolean).join(" • ")} · {relTime(r.updated_at)}</p>
                 </div>
-                <VerificationBadge status={r.status} />
+                <div className="sm:justify-self-end"><VerificationBadge status={r.status} /></div>
                 <Button asChild size="sm" variant="secondary"><Link href={`/admin/users/${r.user_id}`}>Review documents</Link></Button>
               </div>
             ))}

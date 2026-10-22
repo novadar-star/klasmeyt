@@ -1,8 +1,10 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, Verification } from "@/lib/types";
 
-export async function getMe() {
+/** Cached per request: the layout and the page share one auth check and one profile lookup. */
+export const getMe = cache(async function getMe() {
   const supabase = createClient();
   const {
     data: { user },
@@ -14,7 +16,7 @@ export async function getMe() {
   ]);
   if (!profile) return null;
   return { supabase, user, profile, verification, verified: verification?.status === "verified" };
-}
+});
 
 export async function requireMe() {
   const me = await getMe();

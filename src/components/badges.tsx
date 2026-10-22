@@ -3,10 +3,11 @@ import { cn } from "@/lib/utils";
 
 /**
  * Status color is meaning, not decoration:
- *  blue = done/verified · pad (yellow) = waiting on someone · red = needs action/failed · gray = inactive · neutral = info
+ *  green = verified/approved · blue = arrangement in place · pad (yellow) = waiting on someone · red = needs action/failed · gray = inactive · neutral = info
  */
 const tone = {
   blue: "bg-brand-50 text-brand-700",
+  green: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
   pad: "bg-pad-100 text-pad-800",
   red: "bg-red-50 text-red-700",
   gray: "bg-slate-100 text-slate-600",
@@ -31,9 +32,9 @@ export function Badge({ children, color = "blue", className }: { children: React
 
 const V: Record<string, [string, Tone]> = {
   submitted: ["Waiting for documents", "gray"],
-  pending: ["Pending review", "pad"],
+  pending: ["Needs review", "pad"],
   under_review: ["In review", "pad"],
-  verified: ["Verified", "blue"],
+  verified: ["Verified", "green"],
   info_requested: ["Needs more info", "red"],
   rejected: ["Rejected", "red"],
 };

@@ -32,12 +32,13 @@ Everything else stays quiet so those read clearly. No floating cards, icon tiles
 
 Status color is meaning, not decoration:
 
-- **Blue** means done or verified: Verified, Scheduled, Confirmed, Accepted.
-- **Yellow (pad)** means waiting on someone: Pending, In review, Group invite.
+- **Green** means a person passed verification: Verified, Approved. It's the only green in the app, so an approved account is obvious at a glance.
+- **Blue** means an arrangement is in place: Scheduled, Confirmed, Accepted.
+- **Yellow (pad)** means waiting on someone: Needs review, In review, Pending, Group invite.
 - **Red** means it needs action or failed: Needs more info, Rejected, Declined.
 - **Gray** means inactive: Cancelled, Completed, Left.
 
-Don't introduce new hues (no teal, purple, or orange). If something needs to stand out, use weight, size, or position first.
+Don't introduce other hues (no teal, purple, or orange). If something needs to stand out, use weight, size, or position first.
 
 ## 3. Type
 
