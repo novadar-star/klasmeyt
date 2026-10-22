@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { CalendarDays, ChevronRight, Clock } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui";
-import { Badge, VerifiedMentorBadge } from "@/components/badges";
+import { Badge } from "@/components/badges";
 import { PublicFooter, PublicNav } from "@/components/public-chrome";
 import { AvailabilityMatch } from "@/components/availability-match";
 import { PartnerCardsIllustration } from "@/components/partner-cards-illustration";
@@ -68,37 +68,6 @@ function Uploads({ who, items }: { who: string; items: string[] }) {
 }
 
 /** What a search result looks like inside the app (Find a mentor), rendered with the app's own badges. */
-function ExampleResult() {
-  return (
-    <figure className="rounded-panel border border-line bg-white">
-      <figcaption className="flex items-center justify-between border-b border-line px-5 py-3 text-[13px] text-muted">
-        <span>A result in Find a mentor</span>
-        <span className="rounded-[4px] bg-paper px-1.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset ring-line">Example</span>
-      </figcaption>
-      <div className="p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-lg font-semibold text-brand-800">Dhennise B. Maala</p>
-          <VerifiedMentorBadge />
-        </div>
-        <p className="mt-0.5 text-xs text-muted">4th Year, BS Civil Engineering. One-on-one or group.</p>
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          <span className="chip">Calculus 1</span>
-          <span className="chip">Calculus 2</span>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs text-ink">
-          <span className="flex items-center gap-1.5"><CalendarDays className="size-3.5 text-muted" aria-hidden />Tue, Thu</span>
-          <span className="flex items-center gap-1.5"><Clock className="size-3.5 text-muted" aria-hidden />1:00 – 5:00 PM</span>
-          <Badge color="blue">Free when you are: Tue, Thu</Badge>
-        </div>
-        <div className="mt-5 flex gap-2" aria-hidden>
-          <span className="inline-flex h-10 items-center rounded-control bg-brand-600 px-4 text-sm font-semibold text-white">Request partnership</span>
-          <span className="inline-flex h-10 items-center rounded-control px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-line">View profile</span>
-        </div>
-      </div>
-    </figure>
-  );
-}
-
 export default function Landing() {
   return (
     <div className="min-h-dvh bg-white">
@@ -138,7 +107,7 @@ export default function Landing() {
                 <li aria-hidden><ChevronRight className="size-4 text-brand-300" /></li>
                 <li><Badge color="pad">In review</Badge></li>
                 <li aria-hidden><ChevronRight className="size-4 text-brand-300" /></li>
-                <li><Badge color="blue">Verified</Badge></li>
+                <li><Badge color="green">Verified</Badge></li>
               </ol>
             </div>
             <div className="grid gap-10 sm:grid-cols-2 md:pt-3">
@@ -166,9 +135,8 @@ export default function Landing() {
                 </li>
               ))}
             </ol>
-            <div className="md:pt-1">
-              <ExampleResult />
-              <PartnerCardsIllustration className="mx-auto mt-10 hidden h-auto w-full max-w-[520px] md:block" />
+            <div className="md:self-center">
+              <PartnerCardsIllustration className="mx-auto h-auto w-full max-w-[520px]" />
             </div>
           </div>
         </section>
