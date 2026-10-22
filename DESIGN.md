@@ -112,7 +112,7 @@ Patterns in use:
 
 ## 8. Open items
 
-- Replace `/public/logo-coin.png` (a crop from a screenshot) with the client's real logo file.
+- Logo: the official file is `public/logo.png` (transparent circle); favicon and app icons are generated from it in `src/app/`.
 - The login page has no mentee/mentor toggle. It never changed anything (the role comes from the account), so it was removed.
 - Copy inside the app still has a few Figma-era labels that break the voice rules ("Course alignment", "Courses focus", Title Case page titles). Change them once the client agrees.
 - The colors move away from the client's Figma (teal and orange). Layouts and screens still follow it. Get the client's sign-off on the palette.
