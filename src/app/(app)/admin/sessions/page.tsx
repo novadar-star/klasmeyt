@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { profilesById, sessionsFor } from "@/lib/queries";
 import { Card, Empty, PageHeader } from "@/components/ui";
-import { StatusBadge } from "@/components/badges";
+import { SessionBadge } from "@/components/badges";
 import { fmtDateTime, sessionStatus, subjectName } from "@/lib/utils";
 
 export const metadata = { title: "Sessions" };
@@ -27,7 +27,7 @@ export default async function AdminSessions() {
                   <td className="px-4 py-3">{people[s.mentor_id]?.full_name}</td>
                   <td className="px-4 py-3 text-xs">{s.participants.map((p) => `${people[p.mentee_id]?.full_name ?? ""}${s.status === "pending" ? ` (${p.response})` : ""}`).join(", ")}</td>
                   <td className="max-w-[12rem] truncate px-4 py-3 text-xs">{s.teams_link ? <a className="inline-block py-1.5 text-brand-700 hover:underline" href={s.teams_link} target="_blank" rel="noreferrer">{s.teams_link}</a> : <span className="text-muted">—</span>}</td>
-                  <td className="px-4 py-3"><StatusBadge status={sessionStatus(s)} /></td>
+                  <td className="px-4 py-3"><SessionBadge status={sessionStatus(s)} /></td>
                 </tr>
               ))}
             </tbody>

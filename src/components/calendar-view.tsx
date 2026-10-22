@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui";
-import { StatusBadge } from "@/components/badges";
+import { SessionBadge } from "@/components/badges";
 import { DAYS_SHORT, TZ, cn, fmtClock, fmtDateTime, sessionStatus, subjectName } from "@/lib/utils";
 import type { SessionFull } from "@/lib/queries";
 
@@ -80,7 +80,7 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
             <Link key={s.id} href={link} className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm transition-colors duration-100 hover:bg-paper">
               <span className="w-full shrink-0 font-semibold sm:w-48">{fmtDateTime(s.starts_at, { weekday: "short", year: undefined })}</span>
               <span className="min-w-0 flex-1 sm:truncate">{subjectName(s.subject_id)} · {s.duration_min} min{names ? ` · ${names[s.mentor_id] ?? ""}` : ""}</span>
-              <StatusBadge status={sessionStatus(s)} />
+              <SessionBadge status={sessionStatus(s)} />
             </Link>
           ))}
         </Card>

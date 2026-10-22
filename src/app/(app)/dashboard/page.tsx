@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { requireMe } from "@/lib/auth";
-import { myGroups, profilesById, sessionsFor } from "@/lib/queries";
+import { myGroups, notAttending, profilesById, sessionsFor } from "@/lib/queries";
 import { Card, CardTitle, PageHeader, Stat } from "@/components/ui";
 import { Badge } from "@/components/badges";
 import { fmtClock, fmtDate, sessionStatus, subjectName, DAYS, fmtTime } from "@/lib/utils";
@@ -18,7 +18,7 @@ export default async function Dashboard() {
     sessionsFor(supabase),
   ]);
   const subjects = (subs ?? []).map((s) => s.subject_id as number);
-  const upcoming = sessions.filter((s) => ["pending", "scheduled"].includes(sessionStatus(s)) && new Date(s.starts_at) > new Date());
+  const upcoming = sessions.filter((s) => ["pending", "scheduled"].includes(sessionStatus(s)) && new Date(s.starts_at) > new Date() && !notAttending(s, profile.id));
   const next = upcoming.find((s) => s.status === "scheduled") ?? upcoming[0];
   const people = await profilesById(supabase, next ? [next.mentor_id, ...next.participants.map((p) => p.mentee_id)] : []);
 
@@ -29,7 +29,7 @@ export default async function Dashboard() {
         <Link href="/sessions" className="press block rounded-control bg-paper p-4 ring-1 ring-inset ring-line hover:ring-brand-300 active:scale-[0.99]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="font-semibold text-brand-800">{subjectName(next.subject_id)} {next.format === "group" ? "group session" : "session"}</p>
-            {next.status === "pending" ? <Badge color="pad">Waiting for confirmation</Badge> : <Badge color="blue">Scheduled</Badge>}
+            {next.status === "pending" ? <Badge color="pad">Pending confirmation</Badge> : <Badge color="blue">Scheduled</Badge>}
           </div>
           <p className="mt-0.5 text-xs text-muted">
             {profile.role === "mentor"

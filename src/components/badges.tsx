@@ -64,6 +64,7 @@ export function VouchedBadge({ by }: { by: string | null }) {
 
 const S: Record<string, [string, Tone]> = {
   pending: ["Pending", "pad"],
+  not_attending: ["Not attending", "gray"],
   scheduled: ["Scheduled", "blue"],
   completed: ["Completed", "gray"],
   cancelled: ["Cancelled", "gray"],
@@ -78,4 +79,9 @@ const S: Record<string, [string, Tone]> = {
 export function StatusBadge({ status, label }: { status: string; label?: string }) {
   const [l, c] = S[status] ?? [status, "gray"];
   return <Badge color={c}>{label ?? l}</Badge>;
+}
+
+/** Session status, worded for sessions: a proposal waits on "Pending confirmation" until everyone answers. */
+export function SessionBadge({ status }: { status: string }) {
+  return <StatusBadge status={status} label={status === "pending" ? "Pending confirmation" : undefined} />;
 }

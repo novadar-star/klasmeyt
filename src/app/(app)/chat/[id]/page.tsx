@@ -4,7 +4,7 @@ import { CalendarClock, Video } from "lucide-react";
 import { requireMe } from "@/lib/auth";
 import { profilesById, sessionsFor } from "@/lib/queries";
 import { Button, Card } from "@/components/ui";
-import { Badge, StatusBadge } from "@/components/badges";
+import { Badge, SessionBadge } from "@/components/badges";
 import { fmtDateTime, sessionStatus, subjectName } from "@/lib/utils";
 import type { Group } from "@/lib/types";
 import { ChatRoom } from "./room";
@@ -56,7 +56,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
                   <p className="text-xs font-semibold">{fmtDateTime(s.starts_at, { weekday: "short", year: undefined })}</p>
                   <p className="text-[11px] text-muted">{s.duration_min} min</p>
                 </div>
-                <StatusBadge status={sessionStatus(s)} />
+                <SessionBadge status={sessionStatus(s)} />
                 {s.status === "scheduled" && s.teams_link ? (
                   <a href={s.teams_link} target="_blank" rel="noreferrer" className="press inline-flex items-center gap-1 rounded bg-brand-700 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-brand-800"><Video className="size-3" /> Join</a>
                 ) : (

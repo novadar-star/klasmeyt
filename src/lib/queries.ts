@@ -62,3 +62,42 @@ export async function subjectsFor(supabase: SupabaseClient, ids: string[]) {
   });
   return out;
 }
+
+/** A mentee said "Cannot attend": the session isn't theirs anymore (hidden from their calendar). */
+export function notAttending(s: SessionFull, uid: string) {
+  return s.participants.some((p) => p.mentee_id === uid && p.response === "declined");
+}
+
+export type Window = { day: number; start: string; end: string };
+
+/**
+ * The schedule agreed when each partnership was accepted (mentee's hours at request ∩ mentor's at acceptance),
+ * per active mentee of each group. Sessions can only be proposed inside the intersection of these.
+ */
+export async function agreedWindows(supabase: SupabaseClient, groups: GroupFull[]) {
+  const out: Record<string, Record<string, Window[]>> = {};
+  const mentees = Array.from(new Set(groups.flatMap((g) => g.members.filter((m) => m.status === "active").map((m) => m.mentee_id))));
+  const mentors = Array.from(new Set(groups.map((g) => g.mentor_id)));
+  if (!mentees.length) return out;
+  const { data: reqs } = await supabase
+    .from("partnership_requests")
+    .select("id,mentee_id,mentor_id,subject_id,responded_at,created_at")
+    .eq("status", "accepted")
+    .in("mentee_id", mentees)
+    .in("mentor_id", mentors)
+    .order("responded_at", { ascending: false, nullsFirst: false });
+  const reqIds = (reqs ?? []).map((r) => r.id);
+  const { data: wins } = reqIds.length ? await supabase.from("agreed_windows").select("*").in("request_id", reqIds) : { data: [] };
+  for (const g of groups) {
+    out[g.id] = {};
+    for (const m of g.members.filter((x) => x.status === "active")) {
+      const r = (reqs ?? []).find((x) => x.mentee_id === m.mentee_id && x.mentor_id === g.mentor_id && x.subject_id === g.subject_id);
+      out[g.id][m.mentee_id] = r
+        ? (wins ?? [])
+            .filter((w: { request_id: string }) => w.request_id === r.id)
+            .map((w: { day: number; start_time: string; end_time: string }) => ({ day: w.day, start: w.start_time.slice(0, 5), end: w.end_time.slice(0, 5) }))
+        : [];
+    }
+  }
+  return out;
+}

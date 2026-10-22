@@ -35,6 +35,16 @@ where email = 'student@adamson.edu.ph';
 
 **Adding email later (future version / quoted separately):** configure custom SMTP (e.g. Brevo free tier), turn Confirm email ON, add `https://<site>/**` to Redirect URLs, and set `NEXT_PUBLIC_EMAIL_ENABLED=true` in Vercel. The confirmation flow, `/auth/callback`, and the forgot/reset password pages are already built and switch on with that flag.
 
+## Session workflow (client-confirmed, SRS §9)
+
+1. **Propose:** the mentor picks the group, sees the subject and format set by the partnership, picks a duration and adds the Teams link. Dates and times come only from the **agreed schedule**: the mentee's free hours when they sent the request, intersected with the mentor's free hours when they accepted it (`agreed_windows`). For a group, every mentee's agreed hours must overlap. Later profile edits don't change an agreed schedule. The database rejects any time outside it (`schedule_session`).
+2. **Invite:** each mentee gets a notification and answers **Confirm attendance** or **Cannot attend**.
+3. **Pending confirmation** while anyone hasn't answered.
+4. **Finalize when everyone has answered:** all confirmed, it's scheduled automatically. Nobody can attend, it's cancelled and the mentor is asked to propose another time. Mixed answers, the mentor sees who's coming and chooses **Proceed with N confirmed** or **Propose another time** (the new proposal replaces the old one).
+5. **Calendar:** the scheduled session shows for the mentor and the mentees who confirmed. Mentees who can't attend don't get it on their calendar.
+
+One-on-one partnerships still let the mentee propose a time (FR-C5); the mentor confirms it and adds the Teams link.
+
 ## Security model
 
 - **Row-level security on every table.** Users only read their own data, their partners', and verified mentor profiles. Admins can't read chats.

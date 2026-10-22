@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireMe } from "@/lib/auth";
-import { profilesById, sessionsFor } from "@/lib/queries";
+import { notAttending, profilesById, sessionsFor } from "@/lib/queries";
 import { Button, Empty, PageHeader } from "@/components/ui";
 import { SessionCard } from "@/components/session-card";
 import { sessionStatus } from "@/lib/utils";
@@ -17,12 +17,15 @@ export default async function SessionsPage() {
 
   const needsMe = sessions.filter((s) => {
     if (sessionStatus(s) !== "pending") return false;
-    if (s.mentor_id === profile.id) return !s.mentor_confirmed || (s.format === "group" && s.participants.every((p) => p.response !== "pending"));
+    if (s.mentor_id === profile.id)
+      return !s.mentor_confirmed || (s.format === "group" && s.participants.every((p) => p.response !== "pending") && s.participants.some((p) => p.response === "confirmed"));
     return s.participants.find((p) => p.mentee_id === profile.id)?.response === "pending";
   });
-  const pending = sessions.filter((s) => sessionStatus(s) === "pending" && !needsMe.includes(s));
-  const upcoming = sessions.filter((s) => sessionStatus(s) === "scheduled");
-  const past = sessions.filter((s) => ["completed", "cancelled", "expired"].includes(sessionStatus(s))).reverse();
+  // a mentee who said "Cannot attend" no longer has the session: it moves to the bottom list
+  const out = (s: (typeof sessions)[number]) => notAttending(s, profile.id);
+  const pending = sessions.filter((s) => sessionStatus(s) === "pending" && !needsMe.includes(s) && !out(s));
+  const upcoming = sessions.filter((s) => sessionStatus(s) === "scheduled" && !out(s));
+  const past = sessions.filter((s) => ["completed", "cancelled", "expired"].includes(sessionStatus(s)) || (out(s) && ["pending", "scheduled"].includes(sessionStatus(s)))).reverse();
 
   const Section = ({ title, list }: { title: string; list: typeof sessions }) =>
     list.length ? (
@@ -38,7 +41,7 @@ export default async function SessionsPage() {
     <>
       <PageHeader
         title="Sessions"
-        description="Sessions are confirmed by both sides, then appear on your calendar with the Teams link."
+        description="A proposal stays pending until every invited mentee answers. Confirmed sessions appear on your calendar with the Teams link."
         action={<Button asChild variant="primary" size="sm"><Link href="/sessions/new">Schedule session</Link></Button>}
       />
       {sessions.length ? (
@@ -46,11 +49,11 @@ export default async function SessionsPage() {
           <Section title="Needs your response" list={needsMe} />
           <Section title="Scheduled" list={upcoming} />
           <Section title="Waiting for others" list={pending} />
-          <Section title="Past, cancelled, and unconfirmed" list={past} />
+          <Section title="Past, cancelled, and not attending" list={past} />
         </>
       ) : (
         <Empty title="No sessions yet" action={<Button asChild variant="primary"><Link href="/sessions/new">Schedule session</Link></Button>}>
-          Propose a time inside your shared availability. It shows up here once the other side confirms.
+          Propose a time inside the schedule agreed with your partner. It shows up here once it is confirmed.
         </Empty>
       )}
     </>

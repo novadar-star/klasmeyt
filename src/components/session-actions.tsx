@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -24,59 +25,81 @@ export function SessionActions({ s, me, isMentor, status }: { s: SessionFull; me
   }
 
   const mine = s.participants.find((p) => p.mentee_id === me);
-  const allResponded = s.participants.every((p) => p.response !== "pending");
+  const total = s.participants.length;
+  const waiting = s.participants.filter((p) => p.response === "pending").length;
   const confirmed = s.participants.filter((p) => p.response === "confirmed").length;
+  const anotherTime = (
+    <Button asChild size="sm" variant="secondary">
+      <Link href={`/sessions/new?group=${s.group_id}&replace=${s.id}`}>Propose another time</Link>
+    </Button>
+  );
 
   if (status === "pending") {
     // mentor reviewing a mentee-proposed one-on-one session
     if (isMentor && !s.mentor_confirmed) {
       return (
         <div className="flex w-full flex-col gap-2 sm:flex-row">
-          <input className="field sm:max-w-xs" placeholder="Microsoft Teams link (https://…)" value={link} onChange={(e) => setLink(e.target.value)} aria-label="Teams link" />
+          <input className="field sm:max-w-xs" type="url" inputMode="url" autoComplete="off" spellCheck={false} placeholder="Microsoft Teams link (https://…)" value={link} onChange={(e) => setLink(e.target.value)} aria-label="Teams link" />
           <Button size="sm" className="h-10" loading={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true, p_teams_link: link }, "Session confirmed")}>Confirm session</Button>
           <ConfirmButton size="sm" title="Decline this session?" body="The mentee is notified and can propose another time." confirmLabel="Decline session" disabled={busy} onConfirm={() => rpc("respond_session", { p_session: s.id, p_accept: false }, "Session declined")}>Decline</ConfirmButton>
         </div>
       );
     }
-    if (isMentor && s.format === "group") {
-      return (
-        <>
-          <span className="text-sm text-muted">{allResponded ? `Everyone responded. ${confirmed} confirmed.` : "Waiting for mentees to respond."}</span>
-          <Button size="sm" disabled={busy || !allResponded || confirmed === 0} onClick={() => rpc("finalize_session", { p_session: s.id, p_proceed: true }, "Session scheduled")}>
-            Proceed with confirmed
-          </Button>
-          <ConfirmButton size="sm" title="Cancel this group session?" body="Every invited mentee is notified. You can propose another time afterwards." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("finalize_session", { p_session: s.id, p_proceed: false }, "Session cancelled")}>Cancel session</ConfirmButton>
-        </>
-      );
-    }
+
     if (isMentor) {
+      // everyone answered, some can't attend: the mentor decides
+      if (s.format === "group" && waiting === 0 && confirmed > 0) {
+        return (
+          <div className="w-full space-y-2">
+            <p className="text-sm text-ink">
+              Everyone responded: {confirmed} of {total} can attend. Go ahead with them, or find a time that works for everyone.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" loading={busy} onClick={() => rpc("finalize_session", { p_session: s.id, p_proceed: true }, "Session scheduled with the confirmed mentees")}>
+                Proceed with {confirmed} confirmed
+              </Button>
+              {anotherTime}
+            </div>
+          </div>
+        );
+      }
       return (
         <>
-          <span className="text-sm text-muted">Waiting for the mentee to confirm.</span>
-          <ConfirmButton size="sm" variant="quiet" title="Cancel this session?" body="The mentee is notified." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel</ConfirmButton>
+          <span className="text-sm text-muted">
+            {s.format === "group" ? `Waiting for ${waiting} of ${total} mentees to respond.` : "Waiting for the mentee to confirm."}
+          </span>
+          {s.proposed_by === me ? anotherTime : null}
+          <ConfirmButton size="sm" variant="quiet" title="Cancel this session?" body="Every invited mentee is notified." confirmLabel="Cancel session" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Session cancelled")}>Cancel</ConfirmButton>
         </>
       );
     }
+
     if (mine?.response === "pending") {
       return (
         <>
           <Button size="sm" variant="primary" loading={busy} onClick={() => rpc("respond_session", { p_session: s.id, p_accept: true }, "Attendance confirmed")}>Confirm attendance</Button>
           <ConfirmButton
             size="sm"
-            title="Tell your mentor you can't attend?"
-            body={s.format === "group" ? "Your mentor is notified. The session can still go ahead with the others." : "This cancels the session and notifies your mentor. Either of you can propose another time."}
-            confirmLabel="I can't attend"
+            title="Tell your mentor you cannot attend?"
+            body={s.format === "group" ? "Your mentor sees your answer once everyone responds and decides whether to go ahead or propose another time." : "This cancels the session and notifies your mentor so they can propose another time."}
+            confirmLabel="Cannot attend"
             disabled={busy}
-            onConfirm={() => rpc("respond_session", { p_session: s.id, p_accept: false }, s.format === "group" ? "Your mentor was told you can't attend" : "Session cancelled. Your mentor was notified.")}
+            onConfirm={() => rpc("respond_session", { p_session: s.id, p_accept: false }, s.format === "group" ? "Your mentor was told you cannot attend" : "Session cancelled. Your mentor was notified.")}
           >
-            Can&rsquo;t attend
+            Cannot attend
           </ConfirmButton>
         </>
       );
     }
     return (
       <>
-        <span className="text-sm text-muted">{mine?.response === "confirmed" ? (s.mentor_confirmed ? "You confirmed. Waiting for the mentor to finalize." : "Waiting for your mentor to confirm and add the Teams link.") : "You said you can't attend this one."}</span>
+        <span className="text-sm text-muted">
+          {mine?.response === "confirmed"
+            ? s.mentor_confirmed
+              ? waiting ? `You confirmed. Waiting for ${waiting} more ${waiting === 1 ? "mentee" : "mentees"}.` : "You confirmed. Waiting for your mentor to decide."
+              : "Waiting for your mentor to confirm and add the Teams link."
+            : "You said you cannot attend."}
+        </span>
         {s.proposed_by === me ? (
           <ConfirmButton size="sm" variant="quiet" title="Withdraw your proposal?" body="Your mentor is notified." confirmLabel="Withdraw proposal" disabled={busy} onConfirm={() => rpc("cancel_session", { p_session: s.id }, "Proposal withdrawn")}>Withdraw</ConfirmButton>
         ) : null}
