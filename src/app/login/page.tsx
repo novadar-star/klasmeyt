@@ -7,7 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/logo";
 import { Button, Field } from "@/components/ui";
-import { AvailabilityMatch } from "@/components/availability-match";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 function LoginForm() {
@@ -114,11 +114,17 @@ export default function LoginPage() {
           <Suspense><LoginForm /></Suspense>
         </main>
       </div>
-      <div className="relative hidden flex-col justify-center bg-brand-900 p-12 text-white lg:flex xl:p-16">
-        <div className="w-full max-w-[560px]">
-          <p className="display text-[40px]">Matched on subject and the hours you&rsquo;re both free.</p>
-          <AvailabilityMatch tone="dark" className="mt-10" />
-        </div>
+      <div className="relative hidden items-center justify-center overflow-hidden border-l border-line bg-brand-50 p-12 lg:flex xl:p-16">
+        <Image
+          src="/login-match.webp"
+          alt="A mentee and a mentor beside a weekly calendar, one shared slot highlighted: Matched schedule!"
+          width={1065}
+          height={1100}
+          priority
+          sizes="(min-width: 1024px) 50vw, 0px"
+          className="h-auto w-full max-w-[560px] select-none"
+          draggable={false}
+        />
       </div>
     </div>
   );
