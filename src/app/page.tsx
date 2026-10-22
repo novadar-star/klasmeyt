@@ -4,6 +4,7 @@ import { Button } from "@/components/ui";
 import { Badge, VerifiedMentorBadge } from "@/components/badges";
 import { PublicFooter, PublicNav } from "@/components/public-chrome";
 import { AvailabilityMatch } from "@/components/availability-match";
+import { PartnerCardsIllustration } from "@/components/partner-cards-illustration";
 
 const steps = [
   {
@@ -154,7 +155,7 @@ export default function Landing() {
         <section id="about" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-16 sm:px-6 md:py-24">
           <h2 className="display max-w-xl text-[clamp(2.5rem,5vw,3.75rem)] text-brand-800">From request to review session.</h2>
           <div className="mt-12 grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-16">
-            <ol className="ml-[13px] border-l border-line">
+            <ol className="ml-[13px] self-start border-l border-line">
               {steps.map((s, i) => (
                 <li key={s.title} className="relative pb-9 pl-8 last:pb-0">
                   <span className="num absolute -left-[13px] top-0 grid size-[26px] place-items-center rounded-full bg-white text-[13px] font-semibold text-brand-700 ring-1 ring-brand-200" aria-hidden>
@@ -167,6 +168,7 @@ export default function Landing() {
             </ol>
             <div className="md:pt-1">
               <ExampleResult />
+              <PartnerCardsIllustration className="mx-auto mt-10 hidden h-auto w-full max-w-[520px] md:block" />
             </div>
           </div>
         </section>
