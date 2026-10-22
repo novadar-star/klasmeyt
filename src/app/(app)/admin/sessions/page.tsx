@@ -14,7 +14,7 @@ export default async function AdminSessions() {
     <>
       <PageHeader title="Sessions" description="Every proposed and scheduled session, with its Microsoft Teams link." />
       {sessions.length ? (
-        <Card className="overflow-x-auto">
+        <Card className="overflow-x-auto" tabIndex={0} role="region" aria-label="Sessions table, scrolls sideways on small screens">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead className="border-b border-line bg-paper text-xs font-medium text-muted">
               <tr><th className="px-4 py-3">When</th><th className="px-4 py-3">Subject</th><th className="px-4 py-3">Mentor</th><th className="px-4 py-3">Mentees</th><th className="px-4 py-3">Meeting link</th><th className="px-4 py-3">Status</th></tr>
@@ -26,7 +26,7 @@ export default async function AdminSessions() {
                   <td className="px-4 py-3 font-medium text-brand-700">{subjectName(s.subject_id)}</td>
                   <td className="px-4 py-3">{people[s.mentor_id]?.full_name}</td>
                   <td className="px-4 py-3 text-xs">{s.participants.map((p) => `${people[p.mentee_id]?.full_name ?? ""}${s.status === "pending" ? ` (${p.response})` : ""}`).join(", ")}</td>
-                  <td className="max-w-[12rem] truncate px-4 py-3 text-xs">{s.teams_link ? <a className="text-brand-700 hover:underline" href={s.teams_link} target="_blank" rel="noreferrer">{s.teams_link}</a> : <span className="text-muted">—</span>}</td>
+                  <td className="max-w-[12rem] truncate px-4 py-3 text-xs">{s.teams_link ? <a className="inline-block py-1.5 text-brand-700 hover:underline" href={s.teams_link} target="_blank" rel="noreferrer">{s.teams_link}</a> : <span className="text-muted">—</span>}</td>
                   <td className="px-4 py-3"><StatusBadge status={sessionStatus(s)} /></td>
                 </tr>
               ))}

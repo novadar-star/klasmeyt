@@ -24,7 +24,7 @@ export default async function MentorCV({ params }: { params: { id: string } }) {
     <>
       <PageHeader title={`${m.full_name}'s CV`} description="A summary from their profile. Open the uploaded file for the full CV." />
       {cv && urls[cv.path] ? (
-        <a href={urls[cv.path]} target="_blank" rel="noreferrer" className="mb-4 flex max-w-3xl items-center justify-between gap-3 rounded-control border border-brand-200 bg-white px-4 py-2.5 text-sm font-medium text-brand-700 transition-colors duration-150 hover:bg-brand-50">
+        <a href={urls[cv.path]} target="_blank" rel="noreferrer" className="press mb-4 flex max-w-3xl items-center justify-between gap-3 rounded-control border border-brand-200 bg-white px-4 py-2.5 text-sm font-medium text-brand-700 active:scale-[0.99] hover:bg-brand-50">
           Open the uploaded CV file ({cv.file_name}) <ExternalLink className="size-4" />
         </a>
       ) : null}

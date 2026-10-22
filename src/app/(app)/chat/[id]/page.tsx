@@ -35,7 +35,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <Link href="/chat" className="text-xs font-semibold text-muted hover:text-ink">Messages /</Link>
+              <Link href="/chat" className="hit text-xs font-semibold text-muted hover:text-ink">Messages /</Link>
               <h1 className="truncate text-lg font-semibold text-brand-800">{title}</h1>
               <Badge color={g.kind === "group" ? "violet" : "teal"}>{g.kind === "group" ? "Group" : "One-on-one"}</Badge>
               <span className="chip">{subjectName(g.subject_id)}</span>
@@ -58,9 +58,9 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
                 </div>
                 <StatusBadge status={sessionStatus(s)} />
                 {s.status === "scheduled" && s.teams_link ? (
-                  <a href={s.teams_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded bg-brand-700 px-2 py-1 text-xs font-medium text-white hover:bg-brand-800"><Video className="size-3" /> Join</a>
+                  <a href={s.teams_link} target="_blank" rel="noreferrer" className="press inline-flex items-center gap-1 rounded bg-brand-700 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-brand-800"><Video className="size-3" /> Join</a>
                 ) : (
-                  <Link href="/sessions" className="text-xs font-medium text-brand-700 hover:underline">Respond</Link>
+                  <Link href="/sessions" className="hit text-xs font-medium text-brand-700 hover:underline">Respond</Link>
                 )}
               </Card>
             ))}

@@ -88,6 +88,15 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
     }
     wasOpen.current = open;
   }, [open]);
+  // lock the page behind the open drawer so a swipe doesn't scroll the content underneath
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = prev;
+    };
+  }, [open]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -140,7 +149,7 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
         <Link href={role === "admin" ? "/admin" : "/dashboard"} className="rounded-control">
           <Logo light />
         </Link>
-        <button className="rounded-control p-1.5 text-brand-200 hover:bg-white/10 hover:text-white lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu">
+        <button className="press icon-btn rounded-control p-1.5 text-brand-200 hover:bg-white/10 hover:text-white lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu">
           <X className="size-5" aria-hidden />
         </button>
       </div>
@@ -162,7 +171,7 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
               href={it.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-control px-3 py-2 text-sm transition-colors duration-100",
+                "flex items-center gap-3 rounded-control px-3 py-2 text-sm transition-colors duration-100 [@media(pointer:coarse)]:py-2.5",
                 active ? "bg-white font-semibold text-brand-800" : "text-brand-100 hover:bg-white/[0.07] hover:text-white"
               )}
             >
@@ -176,7 +185,7 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
         })}
       </nav>
       <div className="border-t border-white/10 p-3">
-        <button onClick={logout} className="flex w-full items-center gap-3 rounded-control px-3 py-2 text-sm text-brand-200 transition-colors duration-100 hover:bg-white/[0.07] hover:text-white">
+        <button onClick={logout} className="flex w-full items-center gap-3 rounded-control px-3 py-2 text-sm [@media(pointer:coarse)]:py-2.5 text-brand-200 transition-colors duration-100 hover:bg-white/[0.07] hover:text-white">
           <LogOut className="size-[18px]" aria-hidden /> Log out
         </button>
       </div>
@@ -205,11 +214,11 @@ export function AppShell({ children, role, verified, name, subline, userId, unre
       </div>
 
       <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-white/10 bg-brand-900 px-4 text-white lg:hidden">
-        <button ref={menuButtonRef} className="rounded-control p-1.5 hover:bg-white/10" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}>
+        <button ref={menuButtonRef} className="press icon-btn rounded-control p-1.5 hover:bg-white/10" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}>
           <Menu className="size-5" aria-hidden />
         </button>
         <Logo light />
-        <Link href="/notifications" className="relative ml-auto rounded-control p-1.5 hover:bg-white/10" aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}>
+        <Link href="/notifications" className="press icon-btn relative ml-auto rounded-control p-1.5 hover:bg-white/10" aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}>
           <Bell className="size-5" aria-hidden />
           {unread > 0 ? <span className="absolute right-1 top-1 size-2 rounded-full bg-pad-300" aria-hidden /> : null}
         </Link>

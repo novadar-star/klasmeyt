@@ -161,12 +161,12 @@ export default function Landing() {
             <h2 className="display text-[clamp(2.5rem,5vw,3.75rem)] text-brand-800">Questions students ask</h2>
             <div className="divide-y divide-line border-y border-line">
               {faqs.map((f) => (
-                <details key={f.q} className="group py-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-control text-[17px] font-medium text-ink [&::-webkit-details-marker]:hidden">
+                <details key={f.q} className="group">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-control py-4 text-[17px] font-medium text-ink transition-colors duration-150 hover:text-brand-700 [&::-webkit-details-marker]:hidden">
                     {f.q}
                     <span className="text-xl leading-none text-brand-500 transition-transform duration-200 ease-out group-open:rotate-45" aria-hidden>+</span>
                   </summary>
-                  <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-muted">{f.a}</p>
+                  <p className="-mt-1 max-w-prose pb-4 text-[15px] leading-relaxed text-muted animate-fade-in">{f.a}</p>
                 </details>
               ))}
             </div>

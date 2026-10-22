@@ -21,13 +21,13 @@ export default async function AdminPartnerships({ searchParams }: { searchParams
       <PageHeader title="Partnership requests" description="All requests between mentees and mentors. Admins can view but don't decide requests." />
       <div className="mb-4 flex flex-wrap gap-2">
         {F.map(([f, label]) => (
-          <Link key={f} href={f ? `/admin/partnerships?status=${f}` : "/admin/partnerships"} aria-current={status === f ? "page" : undefined} className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", status === f ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}>
+          <Link key={f} href={f ? `/admin/partnerships?status=${f}` : "/admin/partnerships"} aria-current={status === f ? "page" : undefined} className={cn("press rounded-full px-3 py-2.5 text-xs font-semibold ring-1 ring-inset sm:py-1.5", status === f ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}>
             {label}
           </Link>
         ))}
       </div>
       {data?.length ? (
-        <Card className="overflow-x-auto">
+        <Card className="overflow-x-auto" tabIndex={0} role="region" aria-label="Partnership requests table, scrolls sideways on small screens">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-line bg-paper text-xs font-medium text-muted">
               <tr><th className="px-4 py-3">Mentee</th><th className="px-4 py-3">Mentor</th><th className="px-4 py-3">Subject</th><th className="px-4 py-3">Sent</th><th className="px-4 py-3">Status</th></tr>

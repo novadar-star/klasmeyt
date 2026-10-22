@@ -112,7 +112,7 @@ export default async function RequestsPage() {
                 <span className="min-w-0 flex-1 font-semibold text-brand-700">{people[r.mentee_id]?.full_name}</span>
                 <span className="text-xs text-muted">{subjectName(r.subject_id)}</span>
                 <StatusBadge status={r.status} label={r.status === "accepted" ? "Accepted" : undefined} />
-                {r.group_id ? <Link href={`/chat/${r.group_id}`} className="text-xs font-semibold text-brand-700 hover:underline">Chat</Link> : null}
+                {r.group_id ? <Link href={`/chat/${r.group_id}`} className="hit text-xs font-semibold text-brand-700 hover:underline">Chat</Link> : null}
               </div>
             ))}
           </Card>

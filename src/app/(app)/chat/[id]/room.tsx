@@ -108,7 +108,7 @@ export function ChatRoom({ groupId, me, names, initial, joinedAt, isGroup }: { g
           className="field max-h-32 min-h-[40px] flex-1 resize-none"
           aria-label="Message"
         />
-        <button type="submit" disabled={sending || !text.trim()} className="grid size-10 shrink-0 place-items-center rounded-control bg-brand-600 text-white transition-[transform,background-color] duration-150 ease-out hover:bg-brand-700 active:scale-[0.94] disabled:opacity-40" aria-label="Send">
+        <button type="submit" disabled={sending || !text.trim()} className="grid size-10 shrink-0 place-items-center rounded-control bg-brand-600 text-white transition-[transform,background-color] duration-150 ease-out hover:bg-brand-700 active:scale-[0.94] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 disabled:opacity-40" aria-label="Send">
           <SendHorizontal className="size-4" aria-hidden />
         </button>
       </form>

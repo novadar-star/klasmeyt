@@ -23,14 +23,14 @@ export function AdminPeople({ rows, base, filter, subs, slots, counts, kind }: {
             key={f.v}
             href={`${base}?status=${f.v}`}
             aria-current={filter === f.v ? "page" : undefined}
-            className={cn("rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset", filter === f.v ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}
+            className={cn("press rounded-full px-3 py-2.5 text-xs font-semibold ring-1 ring-inset sm:py-1.5", filter === f.v ? "bg-brand-700 text-white ring-brand-700" : "bg-white text-brand-700 ring-line hover:ring-brand-300")}
           >
             {f.label}
           </Link>
         ))}
       </div>
       {rows.length ? (
-        <Card className="overflow-x-auto">
+        <Card className="overflow-x-auto" tabIndex={0} role="region" aria-label="People table, scrolls sideways on small screens">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="border-b border-line bg-paper text-xs font-medium text-muted">
               <tr>

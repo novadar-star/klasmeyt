@@ -60,6 +60,36 @@ p {
   .chip {
     @apply inline-flex items-center rounded-control bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700;
   }
+  /* Pressable (Emil): anything you tap that isn't a <Button>. 150ms ease-out, scale 0.97 on press. */
+  .press {
+    transition-property: transform, background-color, color, box-shadow, border-color, text-decoration-color;
+    transition-duration: 150ms;
+    transition-timing-function: var(--ease-out);
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+  /* Small icon-only controls: same press, plus an invisible 44px hit area so they're easy to tap. */
+  .icon-btn {
+    position: relative;
+  }
+  .icon-btn::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((44px - 100%) / -2));
+  }
+  .icon-btn:active {
+    transform: scale(0.92);
+  }
+  /* Small text links (Edit, View all, Chat): a larger invisible tap area, no change to layout */
+  .hit {
+    position: relative;
+  }
+  .hit::after {
+    content: "";
+    position: absolute;
+    inset: -12px -8px;
+  }
   .num {
     font-variant-numeric: tabular-nums;
   }
@@ -69,6 +99,26 @@ p {
     font-weight: 700;
     letter-spacing: -0.012em;
     line-height: 0.95;
+  }
+
+  /* Illustrations (seen once per visit): a part settles in from its anchor. SVG groups need fill-box to scale from themselves. */
+  .pop-in {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+    transform-box: fill-box;
+    animation: settle-in 340ms var(--ease-out) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+  .fade-late {
+    opacity: 0;
+    animation: fade-in 260ms ease forwards;
+    animation-delay: var(--d, 0ms);
+  }
+  @keyframes settle-in {
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* New chat message entry (only messages that arrive after mount get this class) */
@@ -83,6 +133,20 @@ p {
 
 @media (prefers-reduced-motion: reduce) {
   /* Fewer, gentler animations — keep opacity, drop movement */
+  .pop-in {
+    transform: none;
+    animation: fade-in 200ms ease forwards;
+    animation-delay: 0ms;
+  }
+  .fade-late {
+    animation-delay: 0ms;
+  }
+  /* Press feedback without movement: a brief dim instead of the scale */
+  .press:active,
+  .icon-btn:active {
+    transform: none;
+    opacity: 0.8;
+  }
   .msg-in {
     @starting-style {
       transform: none;

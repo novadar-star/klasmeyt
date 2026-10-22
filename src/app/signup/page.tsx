@@ -38,7 +38,7 @@ export default function SignupChooser() {
             <li key={o.href}>
               <Link
                 href={o.href}
-                className="group -mx-4 grid gap-3 rounded-control px-4 py-7 transition-colors duration-150 hover:bg-paper sm:grid-cols-[1fr_auto] sm:items-center sm:gap-10"
+                className="press group -mx-4 grid gap-3 rounded-control px-4 py-7 hover:bg-paper active:scale-[0.99] sm:grid-cols-[1fr_auto] sm:items-center sm:gap-10"
               >
                 <span>
                   <span className="block text-xl font-semibold text-brand-800">{o.title}</span>

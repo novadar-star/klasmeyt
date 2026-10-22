@@ -5,11 +5,11 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Buttons: sentence case, 160ms ease-out press (scale 0.97), color transitions on hover only.
+ * Buttons: sentence case, 150ms ease-out press (scale 0.97; a dim instead under reduced motion), color on hover only.
  * Variants by intent: primary (one per view), secondary (outlined), quiet (text), danger.
  */
 export const buttonVariants = cva(
-  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-control text-sm font-semibold transition-[transform,background-color,color,box-shadow] duration-150 ease-out active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-control text-sm font-semibold transition-[transform,background-color,color,box-shadow] duration-150 ease-out active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -30,7 +30,8 @@ export const buttonVariants = cva(
         ghost: "text-brand-700 hover:bg-brand-50",
         light: "bg-white text-brand-800 hover:bg-brand-50",
       },
-      size: { sm: "h-8 px-3 text-[13px]", md: "h-10 px-4", lg: "h-11 px-5 text-[15px]" },
+      // touch screens get taller targets (40–48px); mouse keeps the compact sizes
+      size: { sm: "h-8 px-3 text-[13px] [@media(pointer:coarse)]:h-10", md: "h-10 px-4 [@media(pointer:coarse)]:h-11", lg: "h-11 px-5 text-[15px] [@media(pointer:coarse)]:h-12" },
     },
     defaultVariants: { variant: "primary", size: "md" },
   }
@@ -123,7 +124,7 @@ export function Section({ title, children }: { title: string; children: React.Re
 
 export function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <Card className="p-5 transition-[border-color] duration-150 hover:border-brand-200">
+    <Card className="p-5">
       <p className="text-[13px] text-muted">{label}</p>
       <p className="num mt-1 text-[28px] font-semibold leading-none tracking-[-0.02em] text-brand-800">{value}</p>
     </Card>

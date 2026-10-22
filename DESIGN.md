@@ -66,7 +66,7 @@ Before animating, ask how often the user sees it.
 |---|---|---|
 | Dozens of times a day | No animation, just a fast color change | Sidebar nav, list rows |
 | Occasional | Short, purposeful | Modals, drawer, tabs, new chat messages, toasts |
-| Once | Can delight | Nothing yet. The illustrations are static on purpose |
+| Once | Can delight | Landing hero: the mentee's question bubble settles in, then the mentor's reply (`.pop-in`, 340ms, staggered) |
 
 Easing tokens (`globals.css` / Tailwind):
 
@@ -83,10 +83,15 @@ Patterns in use:
 - **Mobile drawer:** always mounted, slides with the drawer curve in 300ms, leaves in 200ms; `inert` when closed.
 - **Checkbox cards:** the check mark goes from `scale(0.9)`/opacity 0 to full. Never from `scale(0)`.
 - **Chat:** only messages that arrive after the page loads ease in (6px rise plus fade, 180ms, `@starting-style`).
+- **Pressables that aren't `<Button>`** use `.press` (150ms ease-out, scale 0.97). Large tiles and rows add `active:scale-[0.98]`/`[0.99]` so big surfaces barely move.
+- **Icon-only controls** use `.press icon-btn`: scale 0.92 on press plus an invisible hit area that grows any icon to 44×44px.
+- **Small text links** (Edit, View all, Chat) use `.hit`: a larger invisible tap area with no layout change.
+- **Touch sizes:** on touch screens (`pointer: coarse`) buttons grow (sm 40px, md 44px, lg 48px), sidebar rows get taller, and filter chips are 36px on phones.
+- **SVG parts** that animate set `transform-box: fill-box` so they scale from their own anchor (bubble tails), not the canvas corner.
 - Hover styles only apply on devices that can hover (`future.hoverOnlyWhenSupported`).
 - Everything UI-related stays under 300ms.
 
-**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade.
+**Reduced motion:** movement is removed, opacity stays. Transitions fall back to color and opacity only, modals fade, illustration parts only fade, and presses dim (opacity 0.8) instead of scaling.
 
 ## 6. Components and voice
 

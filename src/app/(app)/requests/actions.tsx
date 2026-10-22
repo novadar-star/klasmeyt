@@ -75,7 +75,7 @@ export function RespondRequest({ id, subjectId, menteeName, groups }: { id: stri
             <label
               key={o.v}
               className={cn(
-                "flex cursor-pointer gap-3 rounded-control p-3 ring-1 ring-inset",
+                "press flex cursor-pointer gap-3 rounded-control p-3 ring-1 ring-inset active:scale-[0.99]",
                 mode === o.v ? "bg-brand-50/60 ring-brand-500" : "ring-line hover:ring-brand-300",
                 o.disabled && "cursor-not-allowed opacity-50"
               )}

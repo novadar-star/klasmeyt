@@ -35,7 +35,7 @@ export default async function AdminHome() {
       </div>
 
       <Card className="mt-6 p-5">
-        <CardTitle action={<Link href="/admin/mentors?status=all" className="text-xs font-semibold text-brand-700 hover:underline">View all mentors</Link>}>Mentor applications, newest needing review first</CardTitle>
+        <CardTitle action={<Link href="/admin/mentors?status=all" className="hit text-xs font-semibold text-brand-700 hover:underline">View all mentors</Link>}>Mentor applications, newest needing review first</CardTitle>
         {queue.length ? (
           <div className="space-y-2">
             {queue.map((r) => (
@@ -59,7 +59,7 @@ export default async function AdminHome() {
       </Card>
 
       <Card className="mt-6 p-5">
-        <CardTitle action={<Link href="/admin/mentees" className="text-xs font-semibold text-brand-700 hover:underline">View all</Link>}>Mentees waiting for verification</CardTitle>
+        <CardTitle action={<Link href="/admin/mentees" className="hit text-xs font-semibold text-brand-700 hover:underline">View all</Link>}>Mentees waiting for verification</CardTitle>
         {menteeQueue.length ? (
           <div className="space-y-2">
             {menteeQueue.map((r) => (

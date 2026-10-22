@@ -38,9 +38,9 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
         <div className="flex items-center justify-between border-b border-line px-5 py-3">
           <h2 className="font-semibold text-brand-800">{label}</h2>
           <div className="flex items-center gap-1">
-            <Link href={`${basePath}?m=${prev}`} className="rounded-control p-1.5 hover:bg-paper" aria-label="Previous month"><ChevronLeft className="size-4" /></Link>
-            <Link href={basePath} className="rounded-control px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50">Today</Link>
-            <Link href={`${basePath}?m=${next}`} className="rounded-control p-1.5 hover:bg-paper" aria-label="Next month"><ChevronRight className="size-4" /></Link>
+            <Link href={`${basePath}?m=${prev}`} className="press icon-btn rounded-control p-1.5 hover:bg-paper" aria-label="Previous month"><ChevronLeft className="size-4" /></Link>
+            <Link href={basePath} className="press hit rounded-control px-2 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50">Today</Link>
+            <Link href={`${basePath}?m=${next}`} className="press icon-btn rounded-control p-1.5 hover:bg-paper" aria-label="Next month"><ChevronRight className="size-4" /></Link>
           </div>
         </div>
         <div className="grid grid-cols-7 border-b border-line bg-paper text-center text-xs font-medium text-muted">
@@ -48,14 +48,15 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
         </div>
         <div className="grid grid-cols-7">
           {cells.map((c, i) => (
-            <div key={i} className={cn("min-h-[5.5rem] border-b border-r border-line p-1.5 text-xs [&:nth-child(7n)]:border-r-0", !c && "bg-paper/60")}>
+            <div key={i} className={cn("min-h-[3.25rem] border-b border-r border-line p-1 text-xs sm:min-h-[5.5rem] sm:p-1.5 [&:nth-child(7n)]:border-r-0", !c && "bg-paper/60")}>
               {c ? (
                 <>
                   <span className={cn("inline-grid size-6 place-items-center rounded-full font-semibold", c === today ? "bg-brand-600 text-white" : "text-ink")}>{Number(c.slice(8))}</span>
                   <div className="mt-1 space-y-1">
                     {(byDay[c] ?? []).slice(0, 3).map((s) => (
-                      <Link key={s.id} href={link} className={cn("block truncate rounded px-1.5 py-0.5 text-xs font-semibold ring-1 ring-inset", DOT[sessionStatus(s)])} title={`${subjectName(s.subject_id)} · ${fmtClock(s.starts_at)}`}>
-                        <span className="hidden sm:inline">{fmtClock(s.starts_at)} </span>{subjectName(s.subject_id)}
+                      <Link key={s.id} href={link} className={cn("block h-1.5 truncate rounded ring-1 ring-inset sm:h-auto sm:px-1.5 sm:py-0.5 sm:text-xs sm:font-semibold", DOT[sessionStatus(s)])} title={`${subjectName(s.subject_id)} · ${fmtClock(s.starts_at)}`}>
+                        {/* phones: a status-colored bar (the list below has the details); larger screens: time and subject */}
+                        <span className="sr-only sm:not-sr-only">{fmtClock(s.starts_at)} {subjectName(s.subject_id)}</span>
                       </Link>
                     ))}
                     {(byDay[c]?.length ?? 0) > 3 ? <p className="px-1 text-xs text-muted">+{byDay[c].length - 3} more</p> : null}
@@ -76,11 +77,11 @@ export function CalendarView({ sessions, month, basePath, link, names }: { sessi
       {monthList.length ? (
         <Card className="divide-y divide-line">
           {monthList.map((s) => (
-            <div key={s.id} className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm">
-              <span className="w-48 shrink-0 font-semibold">{fmtDateTime(s.starts_at, { weekday: "short", year: undefined })}</span>
-              <span className="min-w-0 flex-1 truncate">{subjectName(s.subject_id)} · {s.duration_min} min{names ? ` · ${names[s.mentor_id] ?? ""}` : ""}</span>
+            <Link key={s.id} href={link} className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm transition-colors duration-100 hover:bg-paper">
+              <span className="w-full shrink-0 font-semibold sm:w-48">{fmtDateTime(s.starts_at, { weekday: "short", year: undefined })}</span>
+              <span className="min-w-0 flex-1 sm:truncate">{subjectName(s.subject_id)} · {s.duration_min} min{names ? ` · ${names[s.mentor_id] ?? ""}` : ""}</span>
               <StatusBadge status={sessionStatus(s)} />
-            </div>
+            </Link>
           ))}
         </Card>
       ) : (

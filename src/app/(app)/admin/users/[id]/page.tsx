@@ -38,7 +38,7 @@ export default async function ReviewUser({ params }: { params: { id: string } })
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-brand-800">{p.full_name}</h2>
-                <p className="text-sm text-muted">{p.email}</p>
+                <p className="break-all text-sm text-muted">{p.email}</p>
               </div>
               <VerificationBadge status={v?.status ?? "submitted"} kind={p.role} />
             </div>

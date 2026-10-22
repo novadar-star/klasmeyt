@@ -35,7 +35,7 @@ export function SessionCard({ s, people, me, groupName, compact }: { s: SessionF
       {s.notes && !compact ? <p className="mt-2 text-sm text-muted">{s.notes}</p> : null}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {canJoin ? (
-          <a href={s.teams_link!} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-control bg-brand-600 px-4 text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97]">
+          <a href={s.teams_link!} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-control bg-brand-600 px-4 text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80">
             <Video className="size-4" /> Join meeting
           </a>
         ) : null}

@@ -25,7 +25,7 @@ export function DocList({ docs, urls }: { docs: Doc[]; urls: Record<string, stri
             <p className="truncate text-[11px] text-muted">{d.file_name} · {fmtDate(d.uploaded_at)}</p>
           </div>
           {urls[d.path] ? (
-            <a href={urls[d.path]} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50">
+            <a href={urls[d.path]} target="_blank" rel="noreferrer" className="press inline-flex items-center gap-1 rounded px-2 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50">
               Open <ExternalLink className="size-3" />
             </a>
           ) : null}

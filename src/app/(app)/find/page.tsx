@@ -90,7 +90,7 @@ export default async function FindPage({ searchParams }: { searchParams: SP }) {
                   {m.preferred_schedule ? <span className="text-muted">Prefers {m.preferred_schedule}</span> : null}
                 </div>
               </div>
-              <div className="flex shrink-0 gap-2 md:flex-col">
+              <div className="flex shrink-0 flex-wrap gap-2 md:flex-col [&>*]:flex-1 md:[&>*]:flex-none">
                 <Button asChild variant="primary"><Link href={`/mentors/${m.id}/request${subject ? `?subject=${subject}` : ""}`}>Request partnership</Link></Button>
                 <Button asChild variant="secondary"><Link href={`/mentors/${m.id}`}>View profile</Link></Button>
               </div>

@@ -18,7 +18,7 @@ export function Modal({ open, onOpenChange, title, description, children }: { op
           <Dialog.Title className="pr-8 text-lg font-semibold text-brand-800">{title}</Dialog.Title>
           {description ? <Dialog.Description className="mt-1 text-sm text-muted">{description}</Dialog.Description> : <Dialog.Description className="sr-only">{title}</Dialog.Description>}
           <div className="mt-5">{children}</div>
-          <Dialog.Close className="absolute right-4 top-4 rounded-control p-1 text-muted transition-colors duration-150 hover:bg-paper hover:text-ink" aria-label="Close">
+          <Dialog.Close className="press icon-btn absolute right-4 top-4 rounded-control p-1 text-muted hover:bg-paper hover:text-ink" aria-label="Close">
             <X className="size-5" aria-hidden />
           </Dialog.Close>
         </Dialog.Content>

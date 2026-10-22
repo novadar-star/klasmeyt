@@ -22,7 +22,7 @@ export function SubjectPicker({ value, onChange, id, invalid }: { value: number[
           <label
             key={s.id}
             className={cn(
-              "flex cursor-pointer items-center gap-3 rounded-control px-4 py-3 ring-1 ring-inset transition-[background-color,box-shadow] duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500",
+              "press flex cursor-pointer items-center gap-3 rounded-control px-4 py-3 ring-1 ring-inset active:scale-[0.99] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500",
               on ? "bg-brand-50 ring-brand-300" : "bg-white ring-line hover:ring-brand-200"
             )}
           >
@@ -53,7 +53,7 @@ export function AvailabilityEditor({ value, onChange }: { value: Slot[]; onChang
           <input type="time" className="field w-[8.5rem] flex-1 sm:flex-none" value={s.start_time.slice(0, 5)} onChange={(e) => set(i, { start_time: e.target.value })} aria-label={`Slot ${i + 1} start time`} step={900} />
           <span className="text-xs text-muted">to</span>
           <input type="time" className="field w-[8.5rem] flex-1 sm:flex-none" value={s.end_time.slice(0, 5)} onChange={(e) => set(i, { end_time: e.target.value })} aria-label={`Slot ${i + 1} end time`} step={900} />
-          <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} className="rounded-control p-2 text-muted transition-colors duration-150 hover:bg-red-50 hover:text-red-600" aria-label={`Remove slot ${i + 1}`}>
+          <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} className="press icon-btn rounded-control p-2 text-muted hover:bg-red-50 hover:text-red-600" aria-label={`Remove slot ${i + 1}`}>
             <Trash2 className="size-4" aria-hidden />
           </button>
         </div>
@@ -61,7 +61,7 @@ export function AvailabilityEditor({ value, onChange }: { value: Slot[]; onChang
       <button
         type="button"
         onClick={() => onChange([...value, { day: 1, start_time: "13:00", end_time: "15:00" }])}
-        className="inline-flex items-center gap-1.5 rounded-control px-2 py-1.5 text-sm font-medium text-brand-700 transition-[background-color,transform] duration-150 ease-out hover:bg-brand-50 active:scale-[0.97]"
+        className="inline-flex items-center gap-1.5 rounded-control px-2 py-1.5 text-sm font-medium text-brand-700 transition-[background-color,transform] duration-150 ease-out hover:bg-brand-50 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80"
       >
         <Plus className="size-4" aria-hidden /> Add time slot
       </button>

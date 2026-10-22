@@ -26,7 +26,7 @@ export default async function Dashboard() {
     <Card className="p-5">
       <CardTitle>Next session</CardTitle>
       {next ? (
-        <Link href="/sessions" className="block rounded-control bg-paper p-4 ring-1 ring-inset ring-line hover:ring-brand-300">
+        <Link href="/sessions" className="press block rounded-control bg-paper p-4 ring-1 ring-inset ring-line hover:ring-brand-300 active:scale-[0.99]">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="font-semibold text-brand-800">{subjectName(next.subject_id)} {next.format === "group" ? "group session" : "session"}</p>
             {next.status === "pending" ? <Badge color="pad">Waiting for confirmation</Badge> : <Badge color="blue">Scheduled</Badge>}
@@ -58,9 +58,9 @@ export default async function Dashboard() {
       <>
         <PageHeader title={`Welcome, ${first}`} description={[profile.year_level, profile.program, "verified mentor"].filter(Boolean).join(", ")} />
         <div className="grid gap-4 sm:grid-cols-3">
-          <Link href="/requests" className="rounded-panel"><Stat label="Requests waiting for you" value={pending ?? 0} /></Link>
-          <Link href="/mentees" className="rounded-panel"><Stat label="Active mentees" value={mentees.size} /></Link>
-          <Link href="/subjects" className="rounded-panel"><Stat label="Subjects you mentor" value={subjects.length} /></Link>
+          <Link href="/requests" className="press rounded-panel active:scale-[0.98] hover:[&>div]:border-brand-300"><Stat label="Requests waiting for you" value={pending ?? 0} /></Link>
+          <Link href="/mentees" className="press rounded-panel active:scale-[0.98] hover:[&>div]:border-brand-300"><Stat label="Active mentees" value={mentees.size} /></Link>
+          <Link href="/subjects" className="press rounded-panel active:scale-[0.98] hover:[&>div]:border-brand-300"><Stat label="Subjects you mentor" value={subjects.length} /></Link>
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Card className="p-5">
@@ -117,7 +117,7 @@ export default async function Dashboard() {
       {!verified ? (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-control border border-pad-200 bg-pad-50 px-4 py-3 text-sm text-pad-800">
           <span><span className="font-semibold">Verification in progress.</span> An administrator is checking your COE and Student ID. You can search for mentors once you&rsquo;re verified.</span>
-          <Link href="/status" className="text-xs font-semibold text-pad-800 hover:underline">View status</Link>
+          <Link href="/status" className="hit text-xs font-semibold text-pad-800 hover:underline">View status</Link>
         </div>
       ) : null}
       <Card className="divide-y divide-line">
@@ -134,7 +134,7 @@ export default async function Dashboard() {
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {nextCard}
         <Card className="p-5">
-          <CardTitle action={<Link href="/profile" className="text-xs font-semibold text-brand-700 hover:underline">Edit</Link>}>Subjects you need help with</CardTitle>
+          <CardTitle action={<Link href="/profile" className="hit text-xs font-semibold text-brand-700 hover:underline">Edit</Link>}>Subjects you need help with</CardTitle>
           <div className="space-y-2">
             {subjects.length ? subjects.map((id) => (
               <p key={id} className="rounded-control border border-brand-300 bg-brand-50/50 px-3 py-2 text-xs font-semibold text-brand-700">{subjectName(id)}</p>

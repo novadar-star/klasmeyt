@@ -28,19 +28,19 @@ export function StudyIllustration({ className }: { className?: string }) {
       <rect x="30" y="14" width="840" height="402" rx="40" fill="#EFF3FB" />
 
       {/* Bubbles */}
-      <g>
+      <g className="pop-in" style={{ "--d": "250ms", transformOrigin: "40% 100%" } as React.CSSProperties}>
         <rect x="262" y="58" width="104" height="72" rx="20" fill="#173478" transform="translate(6 7)" />
         <path d="M262 78 a20 20 0 0 1 20 -20 h64 a20 20 0 0 1 20 20 v32 a20 20 0 0 1 -20 20 h-36 l-22 22 v-22 h-6 a20 20 0 0 1 -20 -20 Z" fill="#FFF3C4" stroke="#0C1A3D" strokeWidth="3" strokeLinejoin="round" />
         <text x="314" y="111" textAnchor="middle" fill="#0C1A3D" fontSize="46" fontWeight="700" style={{ fontStretch: "76%" }}>?</text>
       </g>
-      <g>
+      <g className="pop-in" style={{ "--d": "800ms", transformOrigin: "75% 100%" } as React.CSSProperties}>
         <rect x="528" y="38" width="128" height="72" rx="20" fill="#173478" transform="translate(6 7)" />
         <path d="M528 58 a20 20 0 0 1 20 -20 h88 a20 20 0 0 1 20 20 v32 a20 20 0 0 1 -20 20 h-6 v22 l-22 -22 h-60 a20 20 0 0 1 -20 -20 Z" fill="#DCE5F6" stroke="#0C1A3D" strokeWidth="3" strokeLinejoin="round" />
         {[566, 592, 618].map((x) => <circle key={x} cx={x} cy="74" r="7" fill="#1D4196" />)}
       </g>
 
       {/* Motion marks */}
-      <g stroke="#2C55AD" strokeWidth="7" strokeLinecap="round">
+      <g className="fade-late" style={{ "--d": "1100ms" } as React.CSSProperties} stroke="#2C55AD" strokeWidth="7" strokeLinecap="round">
         <path d="M236 92 l-20 -8" />
         <path d="M244 64 l-14 -16" />
         <path d="M682 72 l20 -8" />
