@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 /**
  * Login illustration: "Matched schedule".
  * Hand-built SVG drawn only from the brand tokens, so it reads as part of the app rather than stock art.
@@ -31,8 +32,7 @@ export function MatchIllustration({ className }: { className?: string }) {
   const [sc, sr] = SHARED;
   const cx = GX + sc * CW + CW / 2, cy = GY + sr * CH + CH / 2;
   return (
-    <svg viewBox="0 0 640 600" className={className} role="img" aria-labelledby="match-title">
-      <title id="match-title">A mentee and a mentor beside a weekly calendar with one shared hour highlighted: matched schedule.</title>
+    <svg viewBox="0 0 640 600" className={cn("select-none", className)} aria-hidden="true" focusable="false">
       <defs>
         <pattern id="mi-dots" width="7" height="7" patternUnits="userSpaceOnUse">
           <circle cx="3.5" cy="3.5" r="1.9" fill="#1D4196" />

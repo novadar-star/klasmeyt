@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 /**
  * Landing hero: a mentee and a mentor talking it through at one table.
  * Third piece in the same drawing system as match-illustration.tsx and partner-cards-illustration.tsx:
@@ -7,8 +8,7 @@
 
 export function StudyIllustration({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 900 430" className={className} role="img" aria-labelledby="study-title">
-      <title id="study-title">A mentee asks a question and a mentor answers from a laptop, sitting across one table.</title>
+    <svg viewBox="0 0 900 430" className={cn("select-none", className)} aria-hidden="true" focusable="false">
       <defs>
         <pattern id="st-dots" width="7" height="7" patternUnits="userSpaceOnUse">
           <circle cx="3.5" cy="3.5" r="1.8" fill="#1D4196" />

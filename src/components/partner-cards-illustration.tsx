@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 /**
  * Landing "From request to review session": a mentor and a mentee card, paired.
  * Same drawing system as the login illustration (match-illustration.tsx): brand tokens only,
@@ -68,8 +69,7 @@ function Card({ x, y, rotate, tint, band, role, id }: CardProps) {
 
 export function PartnerCardsIllustration({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 700 470" className={className} role="img" aria-labelledby="partner-cards-title">
-      <title id="partner-cards-title">A mentor card and a mentee card for Calculus 2, paired with a check mark: partnership accepted.</title>
+    <svg viewBox="0 0 700 470" className={cn("select-none", className)} aria-hidden="true" focusable="false">
       <Card id="pc-mentor" x={40} y={40} rotate={-3} tint="#DCE5F6" band="#B9CBEC" role="Mentor" />
       <Card id="pc-mentee" x={290} y={196} rotate={2} tint="#FFF3C4" band="#F4D65F" role="Mentee" />
       {/* the pairing */}
