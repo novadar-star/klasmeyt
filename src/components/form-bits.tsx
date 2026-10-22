@@ -135,8 +135,9 @@ export function FilePick({ id, label, file, onChange, required, hint }: { id?: s
 }
 
 export const MODALITIES = ["Online (Teams)", "Face-to-face (Campus Library)", "Hybrid (Online or Campus Library)"];
+/** Engineering programs only (client decision). Keep in sync with public.engineering_programs() in the database. */
 export const PROGRAMS = [
-  "BS Civil Engineering", "BS Chemical Engineering", "BS Computer Engineering", "BS Electrical Engineering", "BS Electronics Engineering",
-  "BS Mechanical Engineering", "BS Industrial Engineering", "BS Computer Science", "BS Information Technology", "BS Architecture",
-  "BS Mathematics", "BS Physics", "BS Chemistry", "BS Pharmacy", "BS Accountancy",
+  "BS Ceramic Engineering", "BS Chemical Engineering", "BS Civil Engineering", "BS Computer Engineering",
+  "BS Electrical Engineering", "BS Electronics Engineering", "BS Environmental and Sanitary Engineering",
+  "BS Industrial Engineering", "BS Mechanical Engineering", "BS Mining Engineering",
 ];

@@ -78,9 +78,11 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Full name" hint="Ask an administrator to change this."><input className="field" value={profile.full_name} disabled /></Field>
           <Field label="Adamson email" hint="Used to log in. It can't be changed here."><input className="field" value={profile.email} disabled /></Field>
-          <Field label="Academic program" htmlFor="p">
-            <input id="p" list="programs" className="field" value={f.program} onChange={set("program")} />
-            <datalist id="programs">{PROGRAMS.map((p) => <option key={p} value={p} />)}</datalist>
+          <Field label="Engineering program" htmlFor="p">
+            <select id="p" className="field" value={f.program} onChange={set("program")}>
+              <option value="">Choose your program…</option>
+              {PROGRAMS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
           </Field>
           <Field label="Year level" htmlFor="y">
             <select id="y" className="field" value={f.year_level} onChange={set("year_level")}>

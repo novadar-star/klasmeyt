@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MailCheck } from "lucide-react";
+import { Check, MailCheck, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Field, Section } from "@/components/ui";
 import { AvailabilityEditor, FilePick, MODALITIES, PROGRAMS, SubjectPicker, validSlots } from "@/components/form-bits";
@@ -42,7 +42,7 @@ export function SignupWizard({ role }: { role: Role }) {
     if (!/^\S+@\S+\.\S+$/.test(f.email)) return ["Enter a valid email address.", "email"];
     { const pw = passwordProblem(f.password, f.email); if (pw) return [pw, "pw"]; }
     if (f.password !== f.confirm) return ["The passwords don't match.", "pw2"];
-    if (!f.program.trim()) return ["Enter your academic program.", "prog"];
+    if (!PROGRAMS.includes(f.program)) return ["Choose your engineering program.", "prog"];
     if (!f.year_level) return ["Choose your year level.", "yr"];
     if (!subjects.length) return [role === "mentee" ? "Choose at least one subject you need help with." : "Choose at least one subject you can mentor.", "subjects"];
     if (!validSlots(slots)) return ["Add at least one availability slot, with the end time after the start time.", "availability"];
@@ -190,10 +190,19 @@ export function SignupWizard({ role }: { role: Role }) {
                 <Field label="Full name" htmlFor="name"><input id="name" aria-invalid={badField === "name" || undefined} name="name" className="field" placeholder="Juan Dela Cruz" value={f.full_name} onChange={set("full_name")} autoComplete="name" /></Field>
                 <Field label="Adamson email" htmlFor="email"><input id="email" aria-invalid={badField === "email" || undefined} name="email" type="email" inputMode="email" spellCheck={false} className="field" placeholder="juan.delacruz@adamson.edu.ph" value={f.email} onChange={set("email")} autoComplete="email" /></Field>
                 <Field label="Password" htmlFor="pw" hint="At least 8 characters, with letters and numbers."><input id="pw" aria-invalid={badField === "pw" || undefined} name="new-password" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
-                <Field label="Confirm password" htmlFor="pw2"><input id="pw2" aria-invalid={badField === "pw2" || undefined} name="confirm-password" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" /></Field>
-                <Field label="Academic program" htmlFor="prog" hint="Shown for reference only. It doesn't limit matching.">
-                  <input id="prog" aria-invalid={badField === "prog" || undefined} list="programs" className="field" placeholder="BS Civil Engineering…" value={f.program} onChange={set("program")} />
-                  <datalist id="programs">{PROGRAMS.map((p) => <option key={p} value={p} />)}</datalist>
+                <div>
+                  <label className="label" htmlFor="pw2">Confirm password</label>
+                  <input id="pw2" aria-invalid={badField === "pw2" || (f.confirm.length > 0 && f.confirm !== f.password) || undefined} aria-describedby="pw2-match" name="confirm-password" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" />
+                  {/* live feedback as they type; announced politely to screen readers */}
+                  <p id="pw2-match" aria-live="polite" className={cn("mt-1.5 flex min-h-[1rem] items-center gap-1 text-xs font-medium", f.confirm === f.password ? "text-brand-700" : "text-red-700")}>
+                    {f.confirm ? (f.confirm === f.password ? <><Check className="size-3.5" aria-hidden /> Passwords match</> : <><X className="size-3.5" aria-hidden /> Passwords don&rsquo;t match</>) : null}
+                  </p>
+                </div>
+                <Field label="Engineering program" htmlFor="prog" hint="Klasmeyt is for Adamson engineering students.">
+                  <select id="prog" aria-invalid={badField === "prog" || undefined} className="field" value={f.program} onChange={set("program")}>
+                    <option value="">Choose your program…</option>
+                    {PROGRAMS.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
                 </Field>
                 <Field label="Year level" htmlFor="yr">
                   <select id="yr" aria-invalid={badField === "yr" || undefined} className="field" value={f.year_level} onChange={set("year_level")}>

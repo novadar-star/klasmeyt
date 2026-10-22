@@ -64,7 +64,7 @@ begin
   -- mentees
   update public.profiles set year_level = '2nd Year', program = 'BS Chemical Engineering', modality = 'Hybrid (Online or Campus Library)', preferred_schedule = 'Tue/Thu after 2 PM, Fridays',
     about = 'Determined ChE Falcon trying to master Calculus 2 before finals.', interests = 'Process design, chemical thermodynamics' where id = kenneth;
-  update public.profiles set year_level = '1st Year', program = 'BS Computer Science', modality = 'Online (Teams)', preferred_schedule = 'Thursday afternoons',
+  update public.profiles set year_level = '1st Year', program = 'BS Computer Engineering', modality = 'Online (Teams)', preferred_schedule = 'Thursday afternoons',
     about = 'Freshman who needs help with integration by parts.', interests = 'Game development' where id = andrea;
   update public.profiles set year_level = '2nd Year', program = 'BS Electronics Engineering', modality = 'Online (Teams)', preferred_schedule = 'Mon/Wed after 3 PM',
     about = 'Physics is my weakest subject this sem.', interests = 'Robotics' where id = paolo;
