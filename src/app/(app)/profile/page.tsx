@@ -1,6 +1,7 @@
 import { requireMe } from "@/lib/auth";
 import { PageHeader } from "@/components/ui";
 import { ProfileForm } from "./profile-form";
+import { ChangePassword } from "./change-password";
 import type { Slot } from "@/lib/types";
 
 export const metadata = { title: "Profile" };
@@ -24,6 +25,7 @@ export default async function ProfilePage() {
         subjects={(subs ?? []).map((s) => s.subject_id)}
         slots={((slots ?? []) as Slot[]).map((s) => ({ day: s.day, start_time: s.start_time.slice(0, 5), end_time: s.end_time.slice(0, 5) }))}
       />
+      <ChangePassword email={profile.email} />
     </>
   );
 }

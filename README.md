@@ -19,16 +19,21 @@ npm run dev                  # http://localhost:3000
 
 ## Required Supabase settings (Authentication)
 
-Sign-up is email-verified: the account is created with the student's profile, subjects, and availability, but nothing else works until they click the link in the confirmation email. Documents chosen during sign-up stay in that browser and upload automatically after they confirm.
+Per the SRS (FR-C10 and "Not included"), v1 sends **no emails or SMS**. Accounts are verified by an administrator reviewing the COE/Student ID (mentees) or Student ID, grades, and CV (mentors), not by email.
 
-Set these in the Supabase dashboard before going live:
+1. **Sign In / Providers → Email:** turn **Confirm email OFF**. Sign-up then creates the account, saves the profile, and uploads the documents in one step.
+2. **URL Configuration:** Site URL = your Vercel URL (e.g. `https://klasmeyt.vercel.app`).
+3. **Policies → Password:** minimum length **8**, require **letters and digits** (the app checks the same rules).
+4. **Rate Limits:** keep the defaults.
 
-1. **Sign In / Providers → Email:** keep **Confirm email ON**. Turn on **Secure email change**.
-2. **URL Configuration:** Site URL = your Vercel URL (e.g. `https://klasmeyt.vercel.app`). Add Redirect URLs `https://klasmeyt.vercel.app/**` and `http://localhost:3000/**`.
-3. **Emails → SMTP Settings:** turn on **custom SMTP**. Supabase's built-in sender only delivers to your own team's addresses and about 2 emails an hour, so real students won't get confirmation emails without it. Free options: Brevo (300/day, verify a single sender) or a Gmail account with an App Password (`smtp.gmail.com`, port 587).
-4. **Policies → Password:** minimum length **8**, require **letters and digits** (the app checks the same rules).
-5. **Rate Limits:** keep the defaults (they throttle sign-up, login, and email sends).
-6. Optional on the Pro plan: **Leaked password protection** (HaveIBeenPwned) and **CAPTCHA** (Turnstile) on sign-up.
+**Forgotten passwords:** an administrator sets a temporary password in the Supabase SQL editor, tells the student privately, and the student changes it in Profile:
+
+```sql
+update auth.users set encrypted_password = crypt('TempPass123', gen_salt('bf')), updated_at = now()
+where email = 'student@adamson.edu.ph';
+```
+
+**Adding email later (future version / quoted separately):** configure custom SMTP (e.g. Brevo free tier), turn Confirm email ON, add `https://<site>/**` to Redirect URLs, and set `NEXT_PUBLIC_EMAIL_ENABLED=true` in Vercel. The confirmation flow, `/auth/callback`, and the forgot/reset password pages are already built and switch on with that flag.
 
 ## Security model
 

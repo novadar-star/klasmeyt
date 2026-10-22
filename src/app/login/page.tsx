@@ -74,7 +74,13 @@ function LoginForm() {
         <div>
           <div className="mb-1.5 flex items-baseline justify-between">
             <label className="label mb-0" htmlFor="password">Password</label>
-            <Link href="/forgot-password" className="text-[13px] text-brand-700 underline decoration-brand-200 underline-offset-4 hover:decoration-brand-600">Forgot password?</Link>
+            {/* Password reset needs an email sender, which the SRS leaves out (v1). Admins reset passwords from Supabase.
+                Set NEXT_PUBLIC_EMAIL_ENABLED=true once custom SMTP is configured to show the link. */}
+            {process.env.NEXT_PUBLIC_EMAIL_ENABLED === "true" ? (
+              <Link href="/forgot-password" className="text-[13px] text-brand-700 underline decoration-brand-200 underline-offset-4 hover:decoration-brand-600">Forgot password?</Link>
+            ) : (
+              <span className="text-[13px] text-muted">Forgot it? Ask an administrator.</span>
+            )}
           </div>
           <div className="relative">
             <input id="password" name="password" type={show ? "text" : "password"} autoComplete="current-password" required className="field pr-10" />
