@@ -14,8 +14,21 @@ function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const [show, setShow] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(params.get("error") === "link" ? "That link is invalid or has expired. Log in, or request a new link." : null);
   const [busy, setBusy] = useState(false);
+  const [unconfirmed, setUnconfirmed] = useState<string | null>(null);
+  const [resent, setResent] = useState(false);
+
+  async function resend() {
+    if (!unconfirmed) return;
+    const { error } = await createClient().auth.resend({
+      type: "signup",
+      email: unconfirmed,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/status` },
+    });
+    setResent(true);
+    if (error && /rate limit/i.test(error.message)) setError("Too many requests. Wait a few minutes before resending.");
+  }
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,13 +41,24 @@ function LoginForm() {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error || !data.user) {
       setBusy(false);
-      setError(error?.message === "Invalid login credentials" ? "That email and password don't match an account. Check for typos, or sign up if you're new." : error?.message ?? "Couldn't log in. Try again in a moment.");
+      if (error && /not confirmed/i.test(error.message)) {
+        setUnconfirmed(email);
+        setResent(false);
+        setError("Confirm your email first. Open the link we sent when you signed up.");
+        return;
+      }
+      setError(
+        error?.message === "Invalid login credentials" ? "That email and password don't match an account. Check for typos, or sign up if you're new."
+        : error && /rate limit|too many/i.test(error.message) ? "Too many attempts. Wait a few minutes and try again."
+        : "Couldn't log in. Try again in a moment."
+      );
       (document.getElementById("password") as HTMLInputElement | null)?.focus();
       return;
     }
     const { data: p } = await supabase.from("profiles").select("role").eq("id", data.user.id).single();
-    const next = params.get("next");
-    router.push(next && next !== "/" ? next : p?.role === "admin" ? "/admin" : "/dashboard");
+    const raw = params.get("next");
+    const next = raw && raw.startsWith("/") && !raw.startsWith("//") && !raw.includes("\\") && raw !== "/" ? raw : null; // same-site only
+    router.push(next ?? (p?.role === "admin" ? "/admin" : "/dashboard"));
     router.refresh();
   }
 
@@ -47,15 +71,25 @@ function LoginForm() {
         <Field label="Email" htmlFor="email">
           <input id="email" name="email" type="email" inputMode="email" autoComplete="username" spellCheck={false} required className="field" placeholder="juan.delacruz@adamson.edu.ph" />
         </Field>
-        <Field label="Password" htmlFor="password">
+        <div>
+          <div className="mb-1.5 flex items-baseline justify-between">
+            <label className="label mb-0" htmlFor="password">Password</label>
+            <Link href="/forgot-password" className="text-[13px] text-brand-700 underline decoration-brand-200 underline-offset-4 hover:decoration-brand-600">Forgot password?</Link>
+          </div>
           <div className="relative">
             <input id="password" name="password" type={show ? "text" : "password"} autoComplete="current-password" required className="field pr-10" />
             <button type="button" onClick={() => setShow(!show)} className="absolute inset-y-0 right-0 grid w-10 place-items-center rounded-control text-muted transition-colors duration-150 hover:text-ink" aria-label={show ? "Hide password" : "Show password"}>
               {show ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
             </button>
           </div>
-        </Field>
-        <p aria-live="polite" className={cn("text-sm text-red-700", !error && "sr-only")}>{error}</p>
+        </div>
+        <div aria-live="polite" className={cn("text-sm text-red-700", !error && "sr-only")}>
+          {error}
+          {unconfirmed ? (
+            resent ? <p className="mt-1 text-ink">Sent. Check your inbox and spam folder.</p>
+            : <button type="button" onClick={resend} className="mt-1 block font-medium text-brand-700 underline underline-offset-4">Resend confirmation email</button>
+          ) : null}
+        </div>
         <Button type="submit" className="w-full" size="lg" loading={busy}>Log in</Button>
         <p className="text-center text-sm text-muted">
           New to Klasmeyt? <Link href="/signup" className="font-medium text-brand-700 underline decoration-brand-200 underline-offset-4 hover:decoration-brand-600">Create an account</Link>

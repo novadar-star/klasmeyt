@@ -1,11 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Field, Section } from "@/components/ui";
 import { AvailabilityEditor, FilePick, MODALITIES, PROGRAMS, SubjectPicker, validSlots } from "@/components/form-bits";
-import { saveAvailability, saveSubjects, uploadDoc } from "@/lib/data";
+import { uploadDoc } from "@/lib/data";
+import { savePending } from "@/lib/pending-docs";
+import { passwordProblem } from "@/lib/password";
 import { YEAR_LEVELS, cn, errMsg } from "@/lib/utils";
 import type { Slot } from "@/lib/types";
 
@@ -36,7 +40,7 @@ export function SignupWizard({ role }: { role: Role }) {
   function checkProfile(): Problem {
     if (!f.full_name.trim()) return ["Enter your full name.", "name"];
     if (!/^\S+@\S+\.\S+$/.test(f.email)) return ["Enter a valid email address.", "email"];
-    if (f.password.length < 8) return ["Use at least 8 characters for your password.", "pw"];
+    { const pw = passwordProblem(f.password, f.email); if (pw) return [pw, "pw"]; }
     if (f.password !== f.confirm) return ["The passwords don't match.", "pw2"];
     if (!f.program.trim()) return ["Enter your academic program.", "prog"];
     if (!f.year_level) return ["Choose your year level.", "yr"];
@@ -54,7 +58,6 @@ export function SignupWizard({ role }: { role: Role }) {
     return null;
   }
   const [badField, setBadField] = useState<string | null>(null);
-  const [partial, setPartial] = useState(false);
   function report(p: Problem) {
     setError(p ? p[0] : null);
     setBadField(p ? p[1] : null);
@@ -64,6 +67,9 @@ export function SignupWizard({ role }: { role: Role }) {
       (el as HTMLElement | null)?.focus({ preventScroll: true });
     }
   }
+
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [savedLocally, setSavedLocally] = useState(true);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -82,62 +88,78 @@ export function SignupWizard({ role }: { role: Role }) {
     setError(null);
     setBadField(null);
     const supabase = createClient();
-    let created = false;
+    const email = f.email.trim().toLowerCase();
+    const docs: { type: "coe" | "student_id" | "academic_record" | "cv"; file: File }[] =
+      role === "mentee"
+        ? [{ type: "coe", file: coe! }, { type: "student_id", file: sid! }]
+        : [{ type: "student_id", file: sid! }, { type: "academic_record", file: record! }, { type: "cv", file: cv! }];
     try {
+      // Profile, subjects and availability travel with the sign-up and are validated by the database.
+      // Nothing else is written until the student proves they own the email.
       const { data, error } = await supabase.auth.signUp({
-        email: f.email.trim().toLowerCase(),
+        email,
         password: f.password,
-        options: { data: { role, full_name: f.full_name.trim() } },
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/status`,
+          data: {
+            role,
+            full_name: f.full_name.trim(),
+            year_level: f.year_level,
+            program: f.program.trim(),
+            preferred_schedule: f.preferred_schedule.trim(),
+            about: f.about.trim(),
+            interests: f.interests.trim(),
+            modality: f.modality,
+            subjects,
+            availability: slots.map((s) => ({ day: s.day, start_time: s.start_time, end_time: s.end_time })),
+            ...(role === "mentor"
+              ? { mentoring_format: f.mentoring_format, intro: f.intro.trim(), academic_experience: f.academic_experience.trim(), skills_achievements: f.skills_achievements.trim(), privacy_consent: consent }
+              : {}),
+          },
+        },
       });
       if (error) throw error;
-      if (!data.session || !data.user) throw new Error("Your account was created, but email confirmation is turned on in Supabase. Turn it off, then log in.");
-      const uid = data.user.id;
-      created = true;
-      const { error: pe } = await supabase
-        .from("profiles")
-        .update({
-          year_level: f.year_level,
-          program: f.program.trim(),
-          preferred_schedule: f.preferred_schedule.trim() || null,
-          about: f.about.trim() || null,
-          interests: f.interests.trim() || null,
-          modality: f.modality,
-          ...(role === "mentor"
-            ? {
-                mentoring_format: f.mentoring_format,
-                intro: f.intro.trim(),
-                academic_experience: f.academic_experience.trim() || null,
-                skills_achievements: f.skills_achievements.trim() || null,
-                privacy_consent_at: new Date().toISOString(),
-              }
-            : {}),
-        })
-        .eq("id", uid);
-      if (pe) throw pe;
-      await saveSubjects(supabase, uid, subjects);
-      await saveAvailability(supabase, uid, slots);
-      if (role === "mentee") {
-        await uploadDoc(supabase, uid, "coe", coe!);
-        await uploadDoc(supabase, uid, "student_id", sid!);
-      } else {
-        await uploadDoc(supabase, uid, "student_id", sid!);
-        await uploadDoc(supabase, uid, "academic_record", record!);
-        await uploadDoc(supabase, uid, "cv", cv!);
+
+      if (data.session && data.user) {
+        // Email confirmation is off (local testing): upload right away.
+        for (const d of docs) await uploadDoc(supabase, data.user.id, d.type, d.file);
+        router.push("/status");
+        router.refresh();
+        return;
       }
-      router.push(role === "mentor" ? "/status" : "/dashboard");
-      router.refresh();
+      // Email confirmation is on: keep the files in this browser until they confirm and log in.
+      setSavedLocally(await savePending(email, docs));
+      setSentTo(email);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       const m = errMsg(err);
-      if (created) {
-        // The account exists and the student is signed in, but a later step (profile, subjects, or an upload) failed.
-        // Retrying this form would only say "already registered", so send them to the page where they can finish.
-        setPartial(true);
-        setError(`Your account was created, but this step didn't finish: ${m}. Open your status page to upload any missing documents.`);
-      } else {
-        setError(/already (been )?registered/i.test(m) ? "An account with this email already exists. Log in instead." : m);
-      }
+      setError(
+        /rate limit/i.test(m) ? "Too many sign-up attempts. Wait a few minutes and try again."
+        : /already (been )?registered/i.test(m) ? "An account with this email already exists. Log in instead."
+        : /password/i.test(m) ? m
+        : `Couldn't create your account: ${m}`
+      );
+    } finally {
       setBusy(false);
     }
+  }
+
+  if (sentTo) {
+    return (
+      <div className="mx-auto max-w-lg rounded-panel border border-line bg-white p-8 text-center">
+        <span className="mx-auto grid size-12 place-items-center rounded-full bg-brand-50 text-brand-600"><MailCheck className="size-6" aria-hidden /></span>
+        <h1 className="mt-4 text-2xl font-semibold text-brand-800">Confirm your email</h1>
+        <p className="mt-2 text-sm text-muted">
+          We sent a link to <span className="font-medium text-ink">{sentTo}</span>. Open it on this device to activate your account. The link expires in 24 hours.
+        </p>
+        <p className="mt-4 rounded-control bg-paper px-4 py-3 text-left text-sm text-ink">
+          {savedLocally
+            ? "Your documents are saved in this browser and upload automatically after you confirm. If you open the link on another device, you can upload them again from your status page."
+            : "After you confirm, upload your documents from your status page."}
+        </p>
+        <p className="mt-4 text-xs text-muted">No email after a few minutes? Check spam, or <Link href="/login" className="font-medium text-brand-700 underline underline-offset-4">go to login</Link> to resend it.</p>
+      </div>
+    );
   }
 
   const title = role === "mentee" ? "Register as a mentee" : step === 0 ? "Apply to be a mentor" : "Upload your documents";
@@ -167,7 +189,7 @@ export function SignupWizard({ role }: { role: Role }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Full name" htmlFor="name"><input id="name" aria-invalid={badField === "name" || undefined} name="name" className="field" placeholder="Juan Dela Cruz" value={f.full_name} onChange={set("full_name")} autoComplete="name" /></Field>
                 <Field label="Adamson email" htmlFor="email"><input id="email" aria-invalid={badField === "email" || undefined} name="email" type="email" inputMode="email" spellCheck={false} className="field" placeholder="juan.delacruz@adamson.edu.ph" value={f.email} onChange={set("email")} autoComplete="email" /></Field>
-                <Field label="Password" htmlFor="pw"><input id="pw" aria-invalid={badField === "pw" || undefined} name="new-password" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
+                <Field label="Password" htmlFor="pw" hint="At least 8 characters, with letters and numbers."><input id="pw" aria-invalid={badField === "pw" || undefined} name="new-password" type="password" className="field" value={f.password} onChange={set("password")} autoComplete="new-password" /></Field>
                 <Field label="Confirm password" htmlFor="pw2"><input id="pw2" aria-invalid={badField === "pw2" || undefined} name="confirm-password" type="password" className="field" value={f.confirm} onChange={set("confirm")} autoComplete="new-password" /></Field>
                 <Field label="Academic program" htmlFor="prog" hint="Shown for reference only. It doesn't limit matching.">
                   <input id="prog" aria-invalid={badField === "prog" || undefined} list="programs" className="field" placeholder="BS Civil Engineering…" value={f.program} onChange={set("program")} />
@@ -263,9 +285,6 @@ export function SignupWizard({ role }: { role: Role }) {
         {error ? (
           <div className="rounded-control bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
             <p>{error}</p>
-            {partial ? (
-              <a href="/status" className="mt-2 inline-block font-semibold text-red-800 underline underline-offset-4">Go to my status page</a>
-            ) : null}
           </div>
         ) : null}
 

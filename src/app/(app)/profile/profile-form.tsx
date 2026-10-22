@@ -53,7 +53,7 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
         })
         .eq("id", profile.id);
       if (error) throw error;
-      await saveSubjects(supabase, profile.id, subjects);
+      await saveSubjects(supabase, profile.id, subjects, s0);
       await saveAvailability(supabase, profile.id, slots);
       toast.success("Profile saved");
       router.refresh();
@@ -91,7 +91,20 @@ export function ProfileForm({ profile, verified, subjects: s0, slots: a0 }: { pr
         </div>
 
         <Section title={isMentor ? "Subjects you mentor" : "Subjects you need help with"}>
-          <SubjectPicker value={subjects} onChange={setSubjects} />
+          {isMentor && verified ? (
+            <p className="text-xs text-muted">You can remove a subject anytime. To add one, send your grades to an administrator so it can be verified.</p>
+          ) : null}
+          <SubjectPicker
+            value={subjects}
+            onChange={(next) => {
+              // verified mentors can't self-add subjects (enforced in the database too)
+              if (isMentor && verified && next.some((x) => !s0.includes(x))) {
+                toast.info("New subjects need an administrator's approval. Send them your grades for it.");
+                return;
+              }
+              setSubjects(next);
+            }}
+          />
         </Section>
 
         <Section title="When you're free">

@@ -4,6 +4,7 @@ import { requireMe } from "@/lib/auth";
 import { Button, Card, PageHeader } from "@/components/ui";
 import { DocList, signDocs } from "@/components/doc-list";
 import { Reupload } from "@/components/reupload";
+import { RequiredDocs } from "@/components/required-docs";
 import type { Doc } from "@/lib/types";
 import { cn, fmtDateTime } from "@/lib/utils";
 
@@ -15,7 +16,9 @@ export default async function StatusPage() {
   const isMentor = profile.role === "mentor";
   const { data: docs } = await supabase.from("documents").select("*").eq("owner_id", profile.id).order("uploaded_at", { ascending: false });
   const urls = await signDocs(supabase, (docs ?? []) as Doc[]);
-  const hasDocs = (docs ?? []).length > 0;
+  const types = Array.from(new Set(((docs ?? []) as Doc[]).map((d) => d.type)));
+  const requiredTypes: Doc["type"][] = isMentor ? ["student_id", "academic_record", "cv"] : ["coe", "student_id"];
+  const hasDocs = requiredTypes.every((t) => types.includes(t));
 
   // checklist state: done | current | todo | blocked. Once verified, every step is done (seeded accounts may have no files).
   const verified = status === "verified";
@@ -35,6 +38,7 @@ export default async function StatusPage() {
     verified ? (isMentor ? "Application approved" : "Account verified")
     : status === "rejected" ? (isMentor ? "Application not approved" : "Verification not approved")
     : status === "info_requested" ? "More information needed"
+    : !hasDocs ? "Upload your documents"
     : isMentor ? "Application submitted" : "Verification in progress";
   // Pending mentors see this page without the app's page header, so the card heading is the page's h1.
   const Heading = isMentor && !verified ? "h1" : "h2";
@@ -93,10 +97,16 @@ export default async function StatusPage() {
         <h2 className="font-semibold text-brand-800">Your documents</h2>
         <p className="mb-3 text-xs text-muted">Only you and Klasmeyt administrators can open these.</p>
         <DocList docs={(docs ?? []) as Doc[]} urls={urls} />
-        {status !== "verified" ? (
+        {status !== "verified" && !hasDocs && profile.role !== "admin" ? (
           <div className="mt-6 border-t border-line pt-6">
-            <h3 className="mb-3 text-sm font-semibold">{status === "info_requested" ? "Upload the requested document" : "Upload another document"}</h3>
-            <Reupload uid={profile.id} types={isMentor ? ["student_id", "academic_record", "cv"] : ["coe", "student_id"]} />
+            <h3 className="mb-3 text-sm font-semibold">Required to finish {isMentor ? "your application" : "verification"}</h3>
+            <RequiredDocs uid={profile.id} email={profile.email} role={isMentor ? "mentor" : "mentee"} uploaded={types} />
+          </div>
+        ) : null}
+        {status !== "verified" && hasDocs ? (
+          <div className="mt-6 border-t border-line pt-6">
+            <h3 className="mb-3 text-sm font-semibold">{status === "info_requested" ? "Upload the requested document" : "Replace a document"}</h3>
+            <Reupload uid={profile.id} types={requiredTypes} />
           </div>
         ) : null}
       </Card>

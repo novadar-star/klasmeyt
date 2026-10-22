@@ -30,7 +30,7 @@ export function Badge({ children, color = "blue", className }: { children: React
 }
 
 const V: Record<string, [string, Tone]> = {
-  submitted: ["Documents submitted", "gray"],
+  submitted: ["Waiting for documents", "gray"],
   pending: ["Pending review", "pad"],
   under_review: ["In review", "pad"],
   verified: ["Verified", "blue"],
@@ -42,7 +42,7 @@ export function VerificationBadge({ status, kind }: { status: string; kind?: str
   return <Badge color={c}>{status === "verified" && kind === "mentor" ? "Approved" : label}</Badge>;
 }
 export const verificationLabel = (s: string) =>
-  ({ submitted: "Documents submitted", pending: "Pending verification", under_review: "Administrator review", verified: "Verified", info_requested: "Additional information requested", rejected: "Rejected" })[s] ?? s;
+  ({ submitted: "Waiting for documents", pending: "Pending verification", under_review: "Administrator review", verified: "Verified", info_requested: "Additional information requested", rejected: "Rejected" })[s] ?? s;
 
 export function VerifiedMentorBadge() {
   return (

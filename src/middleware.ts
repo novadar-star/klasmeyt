@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = ["/", "/login", "/signup", "/signup/mentee", "/signup/mentor"];
+const PUBLIC = ["/", "/login", "/signup", "/signup/mentee", "/signup/mentor", "/forgot-password", "/auth/callback"];
 
 export async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);

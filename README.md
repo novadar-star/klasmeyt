@@ -17,11 +17,29 @@ npm run dev                  # http://localhost:3000
 2. Add env vars `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (values in `.env.example`).
 3. Deploy. In Supabase → Authentication → URL Configuration, set **Site URL** to the Vercel URL.
 
-## Required Supabase setting
+## Required Supabase settings (Authentication)
 
-Authentication → Sign In / Providers → Email → turn **off "Confirm email"**.
-Registration uploads documents right after sign-up, which needs a session immediately.
-(The free tier also only sends ~2 auth emails/hour, which would break a live demo.)
+Sign-up is email-verified: the account is created with the student's profile, subjects, and availability, but nothing else works until they click the link in the confirmation email. Documents chosen during sign-up stay in that browser and upload automatically after they confirm.
+
+Set these in the Supabase dashboard before going live:
+
+1. **Sign In / Providers → Email:** keep **Confirm email ON**. Turn on **Secure email change**.
+2. **URL Configuration:** Site URL = your Vercel URL (e.g. `https://klasmeyt.vercel.app`). Add Redirect URLs `https://klasmeyt.vercel.app/**` and `http://localhost:3000/**`.
+3. **Emails → SMTP Settings:** turn on **custom SMTP**. Supabase's built-in sender only delivers to your own team's addresses and about 2 emails an hour, so real students won't get confirmation emails without it. Free options: Brevo (300/day, verify a single sender) or a Gmail account with an App Password (`smtp.gmail.com`, port 587).
+4. **Policies → Password:** minimum length **8**, require **letters and digits** (the app checks the same rules).
+5. **Rate Limits:** keep the defaults (they throttle sign-up, login, and email sends).
+6. Optional on the Pro plan: **Leaked password protection** (HaveIBeenPwned) and **CAPTCHA** (Turnstile) on sign-up.
+
+## Security model
+
+- **Row-level security on every table.** Users only read their own data, their partners', and verified mentor profiles. Admins can't read chats.
+- **Admin-only fields** (role, verification status, Vouched By, full name, email) can't be changed through the API by students, even with crafted requests.
+- **Private documents bucket** (PDF/PNG/JPG/WEBP, 10 MB). Paths are forced into the owner's folder. Only the owner and admins can open files; verified mentees can open a verified mentor's CV (FR-M4).
+- **Verification gates:** an account moves to "pending" only after every required document is uploaded. Only verified mentees can search or send requests; only verified mentors appear in search. Verified mentors can't self-add subjects.
+- **Workflow actions** (accept request, propose/confirm/cancel session, group invites) run as database functions that check who's calling.
+- **Meeting links** must be Microsoft Teams URLs, so a session can't carry a phishing link.
+- **Abuse limits:** 5 pending requests per mentee, 30 messages a minute, 21 availability slots, 20 files per user, text length caps.
+- **Web:** strict security headers (CSP, frame blocking, HSTS, nosniff), same-site redirects only, logout of other devices after a password reset.
 
 ## Demo accounts (password `Klasmeyt2026!`)
 

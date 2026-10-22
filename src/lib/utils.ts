@@ -90,3 +90,6 @@ export function errMsg(e: unknown) {
   const m = (e as { message?: string }).message;
   return m ?? "Something went wrong";
 }
+
+/** Same rule the database enforces: only Microsoft Teams meeting links. */
+export const isTeamsLink = (v: string) => /^https:\/\/([a-z0-9-]+\.)*(teams\.microsoft\.com|teams\.live\.com)\/[^\s<>"]*$/i.test(v.trim());

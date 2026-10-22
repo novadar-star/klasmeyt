@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Card, Field } from "@/components/ui";
-import { DAYS, cn, errMsg, fmtTime, manilaToISO, subjectName } from "@/lib/utils";
+import { isTeamsLink, DAYS, cn, errMsg, fmtTime, manilaToISO, subjectName } from "@/lib/utils";
 
 type S = { day: number; start: string; end: string };
 export type Opt = { id: string; label: string; kind: "individual" | "group"; subject: number; mentor: string; mentees: string[]; slots: S[][] };
@@ -62,7 +62,7 @@ export function ScheduleForm({ options, initial, isMentor }: { options: Opt[]; i
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!date || !time) return toast.error("Pick a date and a start time inside the shared availability.");
-    if (isMentor && !/^https:\/\//i.test(link.trim())) return toast.error("Add the Microsoft Teams link (starting with https://).");
+    if (isMentor && !isTeamsLink(link)) return toast.error("Paste a Microsoft Teams meeting link (https://teams.microsoft.com/…).");
     setBusy(true);
     const { error } = await createClient().rpc("propose_session", {
       p_group: gid,
